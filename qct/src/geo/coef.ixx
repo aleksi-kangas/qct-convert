@@ -7,8 +7,11 @@ export module qct:geo.coef;
 
 import :util.reader;
 
-namespace qct::geo {
-export struct GeorefCoefficients final {
+export namespace qct::geo {
+/**
+ *
+ */
+struct GeorefCoefficients final {
   double eas;
   double eas_y;
   double eas_x;
@@ -79,7 +82,9 @@ export struct GeorefCoefficients final {
     return os;
   }
 };
+}  // namespace qct::geo
 
+namespace qct::geo {
 GeorefCoefficients GeorefCoefficients::parse(std::ifstream& file, const std::int32_t byte_offset) {
   const std::vector<double> eas_doubles = util::readDoubles(file, byte_offset + 0x00, 10);
   const std::vector<double> nor_doubles = util::readDoubles(file, byte_offset + 0x50, 10);

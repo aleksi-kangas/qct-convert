@@ -12,7 +12,9 @@ FetchContent_Declare(googletest
 FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
-add_executable(${PROJECT_NAME} test.cpp)
+add_executable(${PROJECT_NAME} test.cpp
+    geo/poly_test.cpp
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE libqct gtest gmock gtest_main)
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>

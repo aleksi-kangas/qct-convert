@@ -7,25 +7,44 @@ export module qct:geo.poly;
 import :geo.coef;
 import :meta.datum;
 
-namespace qct::geo {
-export struct Wgs84Coordinates final {
+export namespace qct::geo {
+/**
+ *
+ */
+struct Wgs84Coordinates final {
   double longitude;
   double latitude;
 };
 
-export struct ImageCoordinates final {
+/**
+ *
+ */
+struct ImageCoordinates final {
   double x;
   double y;
 };
 
-export Wgs84Coordinates toWgs84Coordinates(const ImageCoordinates& image_coordinates,
-                                           const GeorefCoefficients& georef_coefficients,
-                                           const meta::DatumShift& datum_shift);
+/**
+ *
+ * @param image_coordinates
+ * @param georef_coefficients
+ * @param datum_shift
+ * @return
+ */
+Wgs84Coordinates toWgs84Coordinates(const ImageCoordinates& image_coordinates,
+                                    const GeorefCoefficients& georef_coefficients, const meta::DatumShift& datum_shift);
+/**
+ *
+ * @param wgs84_coordinates
+ * @param georef_coefficients
+ * @param datum_shift
+ * @return
+ */
+ImageCoordinates toImageCoordinates(const Wgs84Coordinates& wgs84_coordinates,
+                                    const GeorefCoefficients& georef_coefficients, const meta::DatumShift& datum_shift);
+}  // namespace qct::geo
 
-export ImageCoordinates toImageCoordinates(const Wgs84Coordinates& wgs84_coordinates,
-                                           const GeorefCoefficients& georef_coefficients,
-                                           const meta::DatumShift& datum_shift);
-
+namespace qct::geo {
 Wgs84Coordinates geo::toWgs84Coordinates(const ImageCoordinates& image_coordinates,
                                          const GeorefCoefficients& georef_coefficients,
                                          const meta::DatumShift& datum_shift) {
@@ -61,32 +80,33 @@ Wgs84Coordinates geo::toWgs84Coordinates(const ImageCoordinates& image_coordinat
 ImageCoordinates geo::toImageCoordinates(const Wgs84Coordinates& wgs84_coordinates,
                                          const GeorefCoefficients& georef_coefficients,
                                          const meta::DatumShift& datum_shift) {
+  const double longitude = wgs84_coordinates.longitude - datum_shift.east;
+  const double latitude = wgs84_coordinates.latitude - datum_shift.north;
+
   // clang-format off
-  double x =
-      georef_coefficients.eas_xxx * std::pow(wgs84_coordinates.longitude, 3) +
-      georef_coefficients.eas_xx * std::pow(wgs84_coordinates.longitude, 2) +
-      georef_coefficients.eas_x * wgs84_coordinates.longitude +
-      georef_coefficients.eas_yyy * std::pow(wgs84_coordinates.latitude, 3) +
-      georef_coefficients.eas_yy * std::pow(wgs84_coordinates.latitude, 2) +
-      georef_coefficients.eas_y * wgs84_coordinates.latitude +
-      georef_coefficients.eas_yxx * wgs84_coordinates.latitude * std::pow(wgs84_coordinates.longitude, 2) +
-      georef_coefficients.eas_yyx * std::pow(wgs84_coordinates.latitude, 2) * wgs84_coordinates.longitude  +
-      georef_coefficients.eas_xy * wgs84_coordinates.longitude * wgs84_coordinates.latitude +
+  const double x =
+      georef_coefficients.eas_xxx * std::pow(longitude, 3) +
+      georef_coefficients.eas_xx * std::pow(longitude, 2) +
+      georef_coefficients.eas_x * longitude +
+      georef_coefficients.eas_yyy * std::pow(latitude, 3) +
+      georef_coefficients.eas_yy * std::pow(latitude, 2) +
+      georef_coefficients.eas_y * latitude +
+      georef_coefficients.eas_yxx * latitude * std::pow(longitude, 2) +
+      georef_coefficients.eas_yyx * std::pow(latitude, 2) * longitude  +
+      georef_coefficients.eas_xy * longitude * latitude +
       georef_coefficients.eas;
-  double y =
-      georef_coefficients.nor_xxx * std::pow(wgs84_coordinates.longitude, 3) +
-      georef_coefficients.nor_xx * std::pow(wgs84_coordinates.longitude, 2) +
-      georef_coefficients.nor_x * wgs84_coordinates.longitude +
-      georef_coefficients.nor_yyy * std::pow(wgs84_coordinates.latitude, 3) +
-      georef_coefficients.nor_yy * std::pow(wgs84_coordinates.latitude, 2) +
-      georef_coefficients.nor_y * wgs84_coordinates.latitude +
-      georef_coefficients.nor_yxx * wgs84_coordinates.latitude * std::pow(wgs84_coordinates.longitude, 2) +
-      georef_coefficients.nor_yyx * std::pow(wgs84_coordinates.latitude, 2) * wgs84_coordinates.longitude +
-      georef_coefficients.nor_xy * wgs84_coordinates.longitude * wgs84_coordinates.latitude +
+  const double y =
+      georef_coefficients.nor_xxx * std::pow(longitude, 3) +
+      georef_coefficients.nor_xx * std::pow(longitude, 2) +
+      georef_coefficients.nor_x * longitude +
+      georef_coefficients.nor_yyy * std::pow(latitude, 3) +
+      georef_coefficients.nor_yy * std::pow(latitude, 2) +
+      georef_coefficients.nor_y * latitude +
+      georef_coefficients.nor_yxx * latitude * std::pow(longitude, 2) +
+      georef_coefficients.nor_yyx * std::pow(latitude, 2) * longitude +
+      georef_coefficients.nor_xy * longitude * latitude +
       georef_coefficients.nor;
   // clang-format on
-  x -= datum_shift.east;
-  y -= datum_shift.north;
   return {.x = x, .y = y};
 }
 
