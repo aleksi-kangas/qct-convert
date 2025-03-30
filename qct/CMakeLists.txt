@@ -40,7 +40,6 @@ target_sources(${PROJECT_NAME}
         src/palette/sub_palette.ixx
 
         # util
-        src/util/kml.ixx
         src/util/reader.ixx
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)

@@ -3,17 +3,19 @@ module;
 #include <filesystem>
 #include <fstream>
 
-export module qct:util.kml;
+export module qctexport:kml;
 
-import :common.exception;
-import :geo.poly;
-import :meta.outline;
+import qct;
 
-namespace qct::util {
-export void exportKml(const std::filesystem::path& kml_export_path, const meta::MapOutline& map_outline);
-
-void util::exportKml(const std::filesystem::path& kml_export_path, const meta::MapOutline& map_outline) {
-  if (map_outline.points.empty()) {
+export namespace qct::ex::kml {
+/**
+ *
+ * @param kml_export_path
+ * @param qct_file
+ */
+void exportKml(const std::filesystem::path& kml_export_path, const QctFile& qct_file) {
+  const auto& [points] = qct_file.metadata.map_outline;
+  if (points.empty()) {
     throw common::QctException{"No points provided for .kml export"};
   }
   std::ofstream file{kml_export_path};
@@ -33,10 +35,10 @@ void util::exportKml(const std::filesystem::path& kml_export_path, const meta::M
        << "      <description>MapOutline</description>" << "\n"
        << "      <LineString>" << "\n"
        << "        <coordinates>" << "\n";
-  for (const auto [latitude, longitude] : map_outline.points) {
+  for (const auto [latitude, longitude] : points) {
     file << longitude << "," << latitude << "," << "0" << " ";
   }
-  file << map_outline.points[0].longitude << "," << map_outline.points[0].latitude << "," << "0";
+  file << points[0].longitude << "," << points[0].latitude << "," << "0";
   file << "        </coordinates>" << "\n"
        << "      </LineString>" << "\n"
        << "    </Placemark>" << "\n"
@@ -44,5 +46,4 @@ void util::exportKml(const std::filesystem::path& kml_export_path, const meta::M
        << "</kml>" << "\n";
   file.close();
 }
-
-}  // namespace qct::util
+}  // namespace qct::ex::kml
