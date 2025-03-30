@@ -1,13 +1,5 @@
-module;
-
-#include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <optional>
-#include <utility>
-
 export module qct;
+export import :file;
 
 // common
 export import :common.exception;
@@ -15,6 +7,12 @@ export import :common.exception;
 // geo
 export import :geo.coef;
 export import :geo.poly;
+
+// image
+export import :image;
+export import :image.decode;
+export import :image.index;
+export import :image.tile;
 
 // metadata
 export import :meta;
@@ -24,27 +22,10 @@ export import :meta.magic;
 export import :meta.outline;
 export import :meta.version;
 
+// palette
+export import :palette;
+export import :palette.color;
+export import :palette.sub;
+
 //  util
-export import :util.kml;
 export import :util.reader;
-
-namespace qct {
-export struct QctFile final {
-  meta::Metadata metadata{};
-  geo::GeorefCoefficients georef_coefficients{};
-
-  static QctFile parse(std::ifstream& file, const std::optional<std::filesystem::path>& kml_export_path);
-};
-
-QctFile QctFile::parse(std::ifstream& file, const std::optional<std::filesystem::path>& kml_export_path) {
-  auto metadata = meta::Metadata::parse(file, 0x0000);
-  std::cout << metadata << std::endl;
-  if (kml_export_path.has_value()) {
-    util::exportKml(kml_export_path.value(), metadata.map_outline);
-  }
-  const auto georef_coefficients = geo::GeorefCoefficients::parse(file, 0x0060);
-  std::cout << georef_coefficients << std::endl;
-  return {.metadata = std::move(metadata), .georef_coefficients = georef_coefficients};
-}
-
-}  // namespace qct

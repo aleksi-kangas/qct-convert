@@ -11,6 +11,13 @@ target_sources(${PROJECT_NAME}
         TYPE CXX_MODULES
         FILES
         src/qct.ixx
+        src/qct_file.ixx
+
+        # image
+        src/image/image.ixx
+        src/image/decode.ixx
+        src/image/index.ixx
+        src/image/tile.ixx
 
         # common
         src/common/exception.ixx
@@ -19,7 +26,7 @@ target_sources(${PROJECT_NAME}
         src/geo/coef.ixx
         src/geo/poly.ixx
 
-        # metadata
+        # meta
         src/meta/datum_shift.ixx
         src/meta/extended_data.ixx
         src/meta/magic_number.ixx
@@ -41,7 +48,6 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class>
         $<$<CXX_COMPILER_ID:GNU>:-Wall>)
-target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 add_subdirectory(test)
 
