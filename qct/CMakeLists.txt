@@ -27,6 +27,11 @@ target_sources(${PROJECT_NAME}
         src/meta/map_outline.ixx
         src/meta/file_format_version.ixx
 
+        # palette
+        src/palette/color.ixx
+        src/palette/palette.ixx
+        src/palette/sub_palette.ixx
+
         # util
         src/util/kml.ixx
         src/util/reader.ixx
