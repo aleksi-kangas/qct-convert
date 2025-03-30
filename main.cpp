@@ -1,7 +1,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <random>  // TODO REMOVE
 
 #include "CLI11.hpp"
 
@@ -40,7 +39,7 @@ int main(const int argc, char** argv) {
         std::cerr << e.what() << std::endl;
       }
     } else {
-      std::cerr << "Not a file." << std::endl;
+      std::cerr << "Not a file: " << qct_file_path << std::endl;
     }
   } else {
     std::cerr << "File does not exist:  " << qct_file_path << std::endl;
