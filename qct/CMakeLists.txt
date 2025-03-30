@@ -16,7 +16,10 @@ target_sources(${PROJECT_NAME}
         # image
         src/image/image.ixx
         src/image/decode.ixx
+        src/image/huffman.ixx
         src/image/index.ixx
+        src/image/pp.ixx
+        src/image/rle.ixx
         src/image/tile.ixx
 
         # common

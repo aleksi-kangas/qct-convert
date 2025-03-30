@@ -42,14 +42,7 @@ ImageIndex ImageIndex::parse(std::ifstream& file, const std::int32_t byte_offset
     for (std::int32_t x_tile = 0; x_tile < width_tiles; ++x_tile) {
       const std::int32_t image_tile_byte_offset = readImageTilePointer(file, byte_offset, width_tiles, y_tile, x_tile);
       const ImageTile::Encoding tile_encoding = ImageTile::encodingOf(file, image_tile_byte_offset);
-      tile_bytes_2D_t tile_bytes{};
-      switch (tile_encoding) {
-        case ImageTile::Encoding::RUN_LENGTH_CODING: {
-          tile_bytes = rle::decode(file, image_tile_byte_offset, palette);
-        } break;
-        default:
-          break;
-      }
+      tile_bytes_2D_t tile_bytes = decode(file, image_tile_byte_offset, palette, tile_encoding);
       copyTileToImage(y_tile, x_tile, tile_bytes, width_tiles * TILE_ROW_BYTE_COUNT, bytes);
     }
   }

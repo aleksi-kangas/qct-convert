@@ -11,7 +11,10 @@ export import :geo.poly;
 // image
 export import :image;
 export import :image.decode;
+export import :image.huffman;
 export import :image.index;
+export import :image.pp;
+export import :image.rle;
 export import :image.tile;
 
 // metadata
