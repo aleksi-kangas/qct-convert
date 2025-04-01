@@ -2,6 +2,7 @@ module;
 
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -18,6 +19,8 @@ export namespace qct::meta {
  *
  */
 struct Metadata final {
+  static constexpr std::int32_t BYTE_OFFSET{0x0000};
+
   MagicNumber magic_number{};
   FileFormatVersion file_format_version{};
   std::int32_t width_tiles{0};
@@ -40,7 +43,7 @@ struct Metadata final {
   ExtendedData extended_data{};
   MapOutline map_outline{};
 
-  static Metadata parse(std::ifstream& file, std::int32_t byte_offset);
+  static Metadata parse(const std::filesystem::path& filepath);
 
   friend std::ostream& operator<<(std::ostream& os, const Metadata& metadata) {
     os << "Metadata:" << "\n"
@@ -71,31 +74,31 @@ struct Metadata final {
 }  // namespace qct::meta
 
 namespace qct::meta {
-Metadata Metadata::parse(std::ifstream& file, const std::int32_t byte_offset) {
-  file.seekg(0, std::ios::beg);
+Metadata Metadata::parse(const std::filesystem::path& filepath) {
+  std::ifstream file{filepath, std::ios::binary};
   Metadata metadata{};
-  metadata.magic_number = static_cast<MagicNumber>(util::readInt(file, byte_offset + 0x00));
-  metadata.file_format_version = static_cast<FileFormatVersion>(util::readInt(file, byte_offset + 0x04));
-  metadata.width_tiles = util::readInt(file, byte_offset + 0x08);
-  metadata.height_tiles = util::readInt(file, byte_offset + 0x0C);
-  metadata.long_title = util::readStringFromPointer(file, byte_offset + 0x10);
-  metadata.name = util::readStringFromPointer(file, byte_offset + 0x14);
-  metadata.identifier = util::readStringFromPointer(file, byte_offset + 0x18);
-  metadata.edition = util::readStringFromPointer(file, byte_offset + 0x1C);
-  metadata.revision = util::readStringFromPointer(file, byte_offset + 0x20);
-  metadata.keywords = util::readStringFromPointer(file, byte_offset + 0x24);
-  metadata.copyright = util::readStringFromPointer(file, byte_offset + 0x28);
-  metadata.scale = util::readStringFromPointer(file, byte_offset + 0x2C);
-  metadata.datum = util::readStringFromPointer(file, byte_offset + 0x30);
-  metadata.depths = util::readStringFromPointer(file, byte_offset + 0x34);
-  metadata.heights = util::readStringFromPointer(file, byte_offset + 0x38);
-  metadata.projection = util::readStringFromPointer(file, byte_offset + 0x3C);
-  metadata.original_file_name = util::readStringFromPointer(file, byte_offset + 0x44);
-  metadata.original_file_size = util::readInt(file, byte_offset + 0x48);
+  metadata.magic_number = static_cast<MagicNumber>(util::readInt(file, BYTE_OFFSET + 0x00));
+  metadata.file_format_version = static_cast<FileFormatVersion>(util::readInt(file, BYTE_OFFSET + 0x04));
+  metadata.width_tiles = util::readInt(file, BYTE_OFFSET + 0x08);
+  metadata.height_tiles = util::readInt(file, BYTE_OFFSET + 0x0C);
+  metadata.long_title = util::readStringFromPointer(file, BYTE_OFFSET + 0x10);
+  metadata.name = util::readStringFromPointer(file, BYTE_OFFSET + 0x14);
+  metadata.identifier = util::readStringFromPointer(file, BYTE_OFFSET + 0x18);
+  metadata.edition = util::readStringFromPointer(file, BYTE_OFFSET + 0x1C);
+  metadata.revision = util::readStringFromPointer(file, BYTE_OFFSET + 0x20);
+  metadata.keywords = util::readStringFromPointer(file, BYTE_OFFSET + 0x24);
+  metadata.copyright = util::readStringFromPointer(file, BYTE_OFFSET + 0x28);
+  metadata.scale = util::readStringFromPointer(file, BYTE_OFFSET + 0x2C);
+  metadata.datum = util::readStringFromPointer(file, BYTE_OFFSET + 0x30);
+  metadata.depths = util::readStringFromPointer(file, BYTE_OFFSET + 0x34);
+  metadata.heights = util::readStringFromPointer(file, BYTE_OFFSET + 0x38);
+  metadata.projection = util::readStringFromPointer(file, BYTE_OFFSET + 0x3C);
+  metadata.original_file_name = util::readStringFromPointer(file, BYTE_OFFSET + 0x44);
+  metadata.original_file_size = util::readInt(file, BYTE_OFFSET + 0x48);
   metadata.original_file_creation_time =
-      std::chrono::system_clock::from_time_t(util::readInt(file, byte_offset + 0x4C));
-  metadata.extended_data = ExtendedData::parse(file, byte_offset + 0x54);
-  metadata.map_outline = MapOutline::parse(file, byte_offset + 0x58, byte_offset + 0x5C);
+      std::chrono::system_clock::from_time_t(util::readInt(file, BYTE_OFFSET + 0x4C));
+  metadata.extended_data = ExtendedData::parse(file, BYTE_OFFSET + 0x54);
+  metadata.map_outline = MapOutline::parse(file, BYTE_OFFSET + 0x58, BYTE_OFFSET + 0x5C);
   return metadata;
 }
 

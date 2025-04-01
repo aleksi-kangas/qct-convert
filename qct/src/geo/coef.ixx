@@ -1,6 +1,7 @@
 module;
 
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 
 export module qct:geo.coef;
@@ -12,6 +13,8 @@ export namespace qct::geo {
  *
  */
 struct GeorefCoefficients final {
+  static constexpr std::int32_t BYTE_OFFSET{0x0060};
+
   double eas;
   double eas_y;
   double eas_x;
@@ -56,7 +59,7 @@ struct GeorefCoefficients final {
   double lon_xyy;
   double lon_yyy;
 
-  static GeorefCoefficients parse(std::ifstream& file, std::int32_t byte_offset);
+  static GeorefCoefficients parse(const std::filesystem::path& filepath);
 
   friend std::ostream& operator<<(std::ostream& os, const GeorefCoefficients& georef_coefficients) {
     os << "Georef Coefficients:" << "\n"
@@ -85,11 +88,12 @@ struct GeorefCoefficients final {
 }  // namespace qct::geo
 
 namespace qct::geo {
-GeorefCoefficients GeorefCoefficients::parse(std::ifstream& file, const std::int32_t byte_offset) {
-  const std::vector<double> eas_doubles = util::readDoubles(file, byte_offset + 0x00, 10);
-  const std::vector<double> nor_doubles = util::readDoubles(file, byte_offset + 0x50, 10);
-  const std::vector<double> lat_doubles = util::readDoubles(file, byte_offset + 0xA0, 10);
-  const std::vector<double> lon_doubles = util::readDoubles(file, byte_offset + 0xF0, 10);
+GeorefCoefficients GeorefCoefficients::parse(const std::filesystem::path& filepath) {
+  std::ifstream file{filepath, std::ios::binary};
+  const std::vector<double> eas_doubles = util::readDoubles(file, BYTE_OFFSET + 0x00, 10);
+  const std::vector<double> nor_doubles = util::readDoubles(file, BYTE_OFFSET + 0x50, 10);
+  const std::vector<double> lat_doubles = util::readDoubles(file, BYTE_OFFSET + 0xA0, 10);
+  const std::vector<double> lon_doubles = util::readDoubles(file, BYTE_OFFSET + 0xF0, 10);
   // clang-format off
   return {
     .eas = eas_doubles[0],

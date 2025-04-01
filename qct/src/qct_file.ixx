@@ -1,7 +1,8 @@
 module;
 
 #include <chrono>
-#include <fstream>
+#include <filesystem>
+#include <future>
 #include <iostream>
 #include <utility>
 
@@ -26,23 +27,25 @@ struct QctFile final {
   [[nodiscard]] std::int32_t height() const { return metadata.height_tiles * image::TILE_HEIGHT; }
   [[nodiscard]] std::int32_t width() const { return metadata.width_tiles * image::TILE_WIDTH; }
 
-  static QctFile parse(std::ifstream& file);
+  static QctFile parse(const std::filesystem::path& filepath);
 };
 }  // namespace qct
 
 namespace qct {
-QctFile QctFile::parse(std::ifstream& file) {
-  auto metadata = meta::Metadata::parse(file, 0x0000);
+QctFile QctFile::parse(const std::filesystem::path& filepath) {
+  auto metadata_future = std::async(std::launch::async, meta::Metadata::parse, filepath);
+  auto georef_coefficients_future = std::async(std::launch::async, geo::GeorefCoefficients::parse, filepath);
+  auto palette_future = std::async(std::launch::async, palette::Palette::parse, filepath);
+  meta::Metadata metadata = metadata_future.get();
   std::cout << metadata << std::endl;
-  const auto georef_coefficients = geo::GeorefCoefficients::parse(file, 0x0060);
+  geo::GeorefCoefficients georef_coefficients = georef_coefficients_future.get();
   std::cout << georef_coefficients << std::endl;
-  const auto palette = palette::Palette::parse(file, 0x01A0);
+  palette::Palette palette = palette_future.get();
   std::cout << palette << std::endl;
-  auto image_index = image::ImageIndex::parse(file, 0x45A0, metadata.height_tiles, metadata.width_tiles, palette);
-
+  auto image_index = image::ImageIndex::parse(filepath, metadata, palette);
   return {.metadata = std::move(metadata),
-          .georef_coefficients = georef_coefficients,
-          .palette = palette,
+          .georef_coefficients = std::move(georef_coefficients),
+          .palette = std::move(palette),
           .image_index = std::move(image_index)};
 }
 

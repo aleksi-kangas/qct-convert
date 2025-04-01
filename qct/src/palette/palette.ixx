@@ -2,6 +2,7 @@ module;
 
 #include <array>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 
 export module qct:palette;
@@ -14,11 +15,12 @@ export namespace qct::palette {
  *
  */
 struct Palette final {
-  static constexpr std::int32_t COLOR_COUNT = 128;
+  static constexpr std::int32_t BYTE_OFFSET{0x01A0};
+  static constexpr std::int32_t COLOR_COUNT{128};
 
   std::array<Color, COLOR_COUNT> colors{};
 
-  static Palette parse(std::ifstream& file, std::int32_t byte_offset);
+  static Palette parse(const std::filesystem::path& filepath);
 
   friend std::ostream& operator<<(std::ostream& os, const Palette& palette) {
     os << "Palette:" << "\n";
@@ -36,9 +38,10 @@ struct Palette final {
 }  // namespace qct::palette
 
 namespace qct::palette {
-Palette Palette::parse(std::ifstream& file, const std::int32_t byte_offset) {
+Palette Palette::parse(const std::filesystem::path& filepath) {
+  std::ifstream file{filepath, std::ios::binary};
   std::array<Color, COLOR_COUNT> colors{};
-  const std::vector<std::uint8_t> bytes = util::readBytes(file, byte_offset, COLOR_COUNT * 4);
+  const std::vector<std::uint8_t> bytes = util::readBytes(file, BYTE_OFFSET, COLOR_COUNT * 4);
   for (std::int32_t i = 0; i < COLOR_COUNT; ++i) {
     const std::uint8_t blue = bytes[i * 4 + 0];
     const std::uint8_t green = bytes[i * 4 + 1];

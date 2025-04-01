@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <iostream>
 
 #include "CLI11.hpp"
@@ -23,7 +24,7 @@ int main(const int argc, char** argv) {
     if (is_regular_file(qct_file_path)) {
       std::ifstream file{qct_file_path, std::ios::binary};
       try {
-        const qct::QctFile qct_file = qct::QctFile::parse(file);
+        const qct::QctFile qct_file = qct::QctFile::parse(qct_file_path);
         if (!kml_export_file_path.empty()) {
           qct::ex::kml::exportKml(kml_export_file_path, qct_file);
         }
