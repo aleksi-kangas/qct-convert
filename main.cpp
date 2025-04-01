@@ -15,7 +15,7 @@ int main(const int argc, char** argv) {
   std::filesystem::path qct_file_path{};
   std::filesystem::path kml_export_file_path{};
   std::filesystem::path png_export_file_path{};
-  app.add_option("-p,--path", qct_file_path, "Path to the .qct file");
+  app.add_option("qct-file", qct_file_path, "Path to the .qct file")->required();
   app.add_option("--export-kml-path", kml_export_file_path, "Path to optional .kml export");
   app.add_option("--export-png-path", png_export_file_path, "Path to optional .png export");
   CLI11_PARSE(app, argc, argv);
