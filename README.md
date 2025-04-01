@@ -1,11 +1,14 @@
 # QCT Convert
 
+[![Build](https://github.com/aleksi-kangas/qct-convert/actions/workflows/workflow.yaml/badge.svg)](https://github.com/aleksi-kangas/qct-convert/actions/workflows/workflow.yaml)
+
 > A C++ implementation of the [(unofficial) Quick Chart (.QCT)
 > File Format Specification (v1.03)](https://www.etheus.net/Quick_Chart_File_Format) offering decoding of .QCT map files
 > and export to various formats
 
 ![](map.png)
-*A small sample of a `.PNG` file exported from a `.QCT` file, depicting the famous Ben Nevis, the highest point in the UK.*
+*A small sample of a `.PNG` file exported from a `.QCT` file, depicting the famous Ben Nevis, the highest point in the
+UK.*
 
 ## Motivation
 
