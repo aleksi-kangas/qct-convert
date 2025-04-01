@@ -4,7 +4,9 @@ project(libqct-export LANGUAGES CXX VERSION 0.0.1)
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME}
+        src/fpng.cpp
+)
 target_sources(${PROJECT_NAME}
         PUBLIC
         FILE_SET cxx_modules
@@ -12,7 +14,6 @@ target_sources(${PROJECT_NAME}
         FILES
         src/qctexport.ixx
 
-        src/bmp.ixx
         src/kml.ixx
         src/png.ixx
 )
