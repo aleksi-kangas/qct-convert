@@ -8,6 +8,9 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -19,14 +22,47 @@ jobs:
         build_type: [ Release ]
         c_compiler: [ cl ]
 
+    env:
+      _VCPKG_: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg/bincache
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
     steps:
-      - uses: actions/checkout@v4
+      - name: "Set env vars to use GitHub Actions cache for vcpkg binary cache"
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Create binary cache directory '${{ env.VCPKG_DEFAULT_BINARY_CACHE }}'"
+        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+        shell: bash
 
       - name: Set reusable strings
         id: strings
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: "Restore vcpkg"
+        uses: actions/cache@v3
+        with:
+          # The first path is the location of vcpkg: it contains the vcpkg executable and data files, as long as the
+          # built package archives (aka binary cache) which are located by VCPKG_DEFAULT_BINARY_CACHE env var.
+          # The other paths starting with '!' are exclusions: they contain temporary files generated during the build of the installed packages.
+          path: |
+            ${{ env._VCPKG_ }}
+            !${{ env._VCPKG_ }}/buildtrees
+            !${{ env._VCPKG_ }}/packages
+            !${{ env._VCPKG_ }}/downloads
+            !${{ env._VCPKG_ }}/installed
+          # The key is composed in a way that it gets properly invalidated whenever a different version of vcpkg is being used.
+          key: |
+            ${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}
 
       - name: Configure CMake
         run: >
