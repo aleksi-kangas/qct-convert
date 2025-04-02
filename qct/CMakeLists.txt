@@ -53,5 +53,3 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 add_subdirectory(test)
 
-enable_testing()
-

@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 10,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 30,
@@ -10,7 +10,13 @@
       "name": "ninja-common",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "build/${presetName}"
+      "binaryDir": "build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "FILEPATH",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        }
+      }
     },
     {
       "name": "ninja-common-windows",

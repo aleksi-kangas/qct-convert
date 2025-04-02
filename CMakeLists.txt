@@ -13,4 +13,4 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class>
         $<$<CXX_COMPILER_ID:GNU>:-Wall>)
-target_link_libraries(${PROJECT_NAME} PUBLIC libqct libqct-export)
+target_link_libraries(${PROJECT_NAME} PRIVATE libqct libqct-export)
