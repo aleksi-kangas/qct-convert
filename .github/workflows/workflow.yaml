@@ -19,8 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest ]
-        build_type: [ Release ]
-        c_compiler: [ cl ]
+        build_type: [ release ]
 
     env:
       _VCPKG_: ${{ github.workspace }}/vcpkg
@@ -28,19 +27,12 @@ jobs:
       VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
     steps:
-      - name: "Set env vars to use GitHub Actions cache for vcpkg binary cache"
-        uses: actions/github-script@v6
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
       - name: "Checkout repository"
         uses: actions/checkout@v4
 
-      - name: "Create binary cache directory '${{ env.VCPKG_DEFAULT_BINARY_CACHE }}'"
-        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
-        shell: bash
+      - name: "Setup VCPKG & cache"
+        uses: friendlyanon/setup-vcpkg@v1
+        with: { committish: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4 }
 
       - name: Set reusable strings
         id: strings
@@ -48,28 +40,11 @@ jobs:
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: "Restore vcpkg"
-        uses: actions/cache@v3
-        with:
-          # The first path is the location of vcpkg: it contains the vcpkg executable and data files, as long as the
-          # built package archives (aka binary cache) which are located by VCPKG_DEFAULT_BINARY_CACHE env var.
-          # The other paths starting with '!' are exclusions: they contain temporary files generated during the build of the installed packages.
-          path: |
-            ${{ env._VCPKG_ }}
-            !${{ env._VCPKG_ }}/buildtrees
-            !${{ env._VCPKG_ }}/packages
-            !${{ env._VCPKG_ }}/downloads
-            !${{ env._VCPKG_ }}/installed
-          # The key is composed in a way that it gets properly invalidated whenever a different version of vcpkg is being used.
-          key: |
-            ${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}
-
       - name: Configure CMake
         run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          cmake
+          --preset release-windows
+          -B ${{ steps.strings.outputs.build-output-dir }}
           -S ${{ github.workspace }}
-
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --preset release-windows
