@@ -30,11 +30,6 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@v4
 
-      - name: Setup Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
-        with:
-          version: 1.12.1
-
       - name: "Setup VCPKG & cache"
         uses: friendlyanon/setup-vcpkg@v1
         with: { committish: acd5bba5aac8b6573b5f6f463dc0341ac0ee6fa4 }
@@ -48,8 +43,8 @@ jobs:
       - name: Configure CMake
         run: >
           cmake
-          --preset release-windows
+          --preset release
           -B ${{ steps.strings.outputs.build-output-dir }}
           -S ${{ github.workspace }}
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --preset release-windows
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --preset release

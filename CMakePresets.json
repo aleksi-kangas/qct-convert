@@ -7,24 +7,14 @@
   },
   "configurePresets": [
     {
-      "name": "ninja-common",
+      "name": "common",
       "hidden": true,
-      "generator": "Ninja",
       "binaryDir": "build/${presetName}",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
           "type": "FILEPATH",
           "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         }
-      }
-    },
-    {
-      "name": "ninja-common-windows",
-      "hidden": true,
-      "inherits": "ninja-common",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "cl",
-        "CMAKE_CXX_COMPILER": "cl"
       },
       "vendor": {
         "jetbrains.com/clion": {
@@ -33,17 +23,17 @@
       }
     },
     {
-      "name": "debug-windows",
-      "displayName": "Debug (Windows)",
-      "inherits": "ninja-common-windows",
+      "name": "debug",
+      "displayName": "Debug",
+      "inherits": "common",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "release-windows",
-      "displayName": "Release (Windows)",
-      "inherits": "ninja-common-windows",
+      "name": "release",
+      "displayName": "Release",
+      "inherits": "common",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -51,21 +41,21 @@
   ],
   "buildPresets": [
     {
-      "name": "debug-windows",
-      "displayName": "Debug (Windows)",
-      "configurePreset": "debug-windows"
+      "name": "debug",
+      "displayName": "Debug",
+      "configurePreset": "debug"
     },
     {
-      "name": "release-windows",
-      "displayName": "Release (Windows)",
-      "configurePreset": "release-windows"
+      "name": "release",
+      "displayName": "Release",
+      "configurePreset": "release"
     }
   ],
   "testPresets": [
     {
-      "name": "test-windows",
-      "displayName": "Tests (Windows)",
-      "configurePreset": "debug-windows",
+      "name": "test",
+      "displayName": "Tests",
+      "configurePreset": "debug",
       "output": {
         "outputOnFailure": true
       }
