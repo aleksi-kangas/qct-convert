@@ -4,13 +4,34 @@ module;
 #include <filesystem>
 #include <fstream>
 
-export module qct:geo.coef;
+export module qct:georef.coef;
 
+import :georef.coordinates;
+import :meta.datum;
 import :util.reader;
 
-export namespace qct::geo {
+export namespace qct::georef {
 /**
+ * +--------+--------------+----------------------------------------------------+
+ * | Offset | Size (Bytes) | Content                                            |
+ * +--------+--------------+----------------------------------------------------+
+ * | 0x0060 | 40 x 8       | Geographical Referencing Coefficients - 40 Doubles |
+ * +--------+--------------+----------------------------------------------------+
  *
+ * +------------+-------------------+-------------------+-------------------+-------------------+
+ * | Offset     | 0x00              | 0x50              | 0xA0              | 0xF0              |
+ * +------------+-------------------+-------------------+-------------------+-------------------+
+ * | 0x00       | eas               | nor               | lat               | lon               |
+ * | 0x08       | easY              | norY              | latX              | lonX              |
+ * | 0x10       | easX              | norX              | latY              | lonY              |
+ * | 0x18       | easYY             | norYY             | latXX             | lonXX             |
+ * | 0x20       | easXY             | norXY             | latXY             | lonXY             |
+ * | 0x28       | easXX             | norXX             | latYY             | lonYY             |
+ * | 0x30       | easYYY            | norYYY            | latXXX            | lonXXX            |
+ * | 0x38       | easYYX            | norYYX            | latXXY            | lonXXY            |
+ * | 0x40       | easYXX            | norYXX            | latXYY            | lonXYY            |
+ * | 0x48       | easXXX            | norXXX            | latYYY            | lonYYY            |
+ * +------------+-------------------+-------------------+-------------------+-------------------+
  */
 struct GeorefCoefficients final {
   static constexpr std::int32_t BYTE_OFFSET{0x0060};
@@ -85,9 +106,9 @@ struct GeorefCoefficients final {
     return os;
   }
 };
-}  // namespace qct::geo
+}  // namespace qct::georef
 
-namespace qct::geo {
+namespace qct::georef {
 GeorefCoefficients GeorefCoefficients::parse(const std::filesystem::path& filepath) {
   std::ifstream file{filepath, std::ios::binary};
   const std::vector<double> eas_doubles = util::readDoubles(file, BYTE_OFFSET + 0x00, 10);
@@ -143,4 +164,4 @@ GeorefCoefficients GeorefCoefficients::parse(const std::filesystem::path& filepa
   // clang-format on
 }
 
-}  // namespace qct::geo
+}  // namespace qct::georef

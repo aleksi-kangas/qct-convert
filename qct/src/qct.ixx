@@ -4,9 +4,9 @@ export import :file;
 // common
 export import :common.exception;
 
-// geo
-export import :geo.coef;
-export import :geo.poly;
+// georef
+export import :georef.coef;
+export import :georef.coordinates;
 
 // image
 export import :image;

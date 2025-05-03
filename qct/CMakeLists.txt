@@ -25,9 +25,10 @@ target_sources(${PROJECT_NAME}
         # common
         src/common/exception.ixx
 
-        # geo
-        src/geo/coef.ixx
-        src/geo/poly.ixx
+        # georef
+        src/georef/coefficients.ixx
+        src/georef/coordinates.ixx
+        src/georef/georef.ixx
 
         # meta
         src/meta/datum_shift.ixx
