@@ -23,8 +23,8 @@ struct QctFile final {
   palette::Palette palette{};
   image::ImageIndex image_index{};
 
-  [[nodiscard]] std::int32_t height() const { return metadata.height_tiles * image::TILE_HEIGHT; }
-  [[nodiscard]] std::int32_t width() const { return metadata.width_tiles * image::TILE_WIDTH; }
+  [[nodiscard]] std::int32_t height() const { return metadata.height_tiles * image::ImageTile::HEIGHT; }
+  [[nodiscard]] std::int32_t width() const { return metadata.width_tiles * image::ImageTile::WIDTH; }
 
   static QctFile parse(const std::filesystem::path& filepath);
 };

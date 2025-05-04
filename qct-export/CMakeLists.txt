@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME}
         FILES
         src/qctexport.ixx
 
+        src/exception.ixx
         src/kml.ixx
         src/png.ixx
 )
