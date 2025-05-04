@@ -12,7 +12,11 @@ import :util.reader;
 
 export namespace qct::palette {
 /**
- *
+ * +--------+--------------+------------------------------+
+ * | Offset | Size (Bytes) | Content                      |
+ * +--------+--------------+------------------------------+
+ * | 0x01A0 | 256 x 4      | Palette - 128 of 256 Colours |
+ * +--------+--------------+------------------------------+
  */
 struct Palette final {
   static constexpr std::int32_t BYTE_OFFSET{0x01A0};

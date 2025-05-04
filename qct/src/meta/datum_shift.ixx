@@ -9,7 +9,12 @@ import :util.reader;
 
 export namespace qct::meta {
 /**
- *
+ * +--------+-----------+-------------------+
+ * | Offset | Data Type | Content           |
+ * +--------+-----------+-------------------+
+ * | 0x00   | Double    | Datum Shift North |
+ * | 0x08   | Double    | Datum Shift East  |
+ * +--------+-----------+-------------------+
  */
 struct DatumShift final {
   double north{0};

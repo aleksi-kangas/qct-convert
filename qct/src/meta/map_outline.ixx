@@ -10,7 +10,13 @@ import :util.reader;
 
 export namespace qct::meta {
 /**
- *
+ * +--------+-----------+-----------+
+ * | Offset | Data Type | Content   |
+ * +--------+-----------+-----------+
+ * | 0x00   | Double    | Latitude  |
+ * | 0x08   | Double    | Longitude |
+ * | ...    | ...       | ...       |
+ * +--------+-----------+-----------+
  */
 struct MapOutline final {
   struct Point final {

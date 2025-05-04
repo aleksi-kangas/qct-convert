@@ -63,7 +63,8 @@ std::vector<double> readDoubles(std::ifstream& file, std::int32_t byte_offset, s
 std::string readString(std::ifstream& file, std::int32_t byte_offset);
 
 /**
- * Reads a null-terminated string by first reading the string pointer from the given byte offset, and then reading the string from the pointed byte offset.
+ * Reads a null-terminated string by first reading the string pointer from the given byte offset,
+ * and then reading the string from the pointed byte offset.
  * @param file to read from
  * @param pointer_byte_offset byte offset of the pointer to read from
  * @return read string

@@ -11,7 +11,18 @@ import :util.reader;
 
 export namespace qct::meta {
 /**
- *
+ * +--------+-------------------+---------------------------------------------------+
+ * | Offset | Data Type         | Content                                           |
+ * +--------+-------------------+---------------------------------------------------+
+ * | 0x00   | Pointer to String | Map Type                                          |
+ * | 0x04   | Pointer to Array  | Datum Shift (see section 6.2.3)                   |
+ * | 0x08   | Pointer to String | Disk Name                                         |
+ * | 0x0C   | Integer           | Reserved, set to 0                                |
+ * | 0x10   | Integer           | Reserved, set to 0                                |
+ * | 0x14   | Pointer to Struct | License Information (Optional, see section 6.2.4) |
+ * | 0x18   | Pointer to String | Associated Data                                   |
+ * | 0x1C   | Pointer to Struct | Digital Map Shop (Optional, see section 6.2.5)    |
+ * +--------+-------------------+---------------------------------------------------+
  */
 struct ExtendedData final {
   std::string map_type{};
