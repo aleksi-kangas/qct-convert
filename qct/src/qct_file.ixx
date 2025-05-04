@@ -9,7 +9,6 @@ module;
 export module qct:file;
 
 import :georef;
-import :image;
 import :image.index;
 import :palette;
 import :meta;

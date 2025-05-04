@@ -5,25 +5,18 @@ module;
 #include <fstream>
 #include <vector>
 
-export module qct:image.huffman;
+export module qct:image.decode.huffman;
 
 import :common.exception;
-import :image;
+import :image.decoder;
+import :image.tile;
 import :palette;
-import :palette.sub;
 import :util.reader;
 
+namespace qct::image::decode {
 /**
- * Decode a huffman-encoded image tile.
- * @param file to read from
- * @param image_tile_byte_offset byte offset of the image tile
- * @param palette the palette
- * @return decoded image tile bytes
+ * Huffman code book.
  */
-namespace qct::image::huffman {
-export tile_bytes_2D_t decode(std::ifstream& file, std::int32_t image_tile_byte_offset,
-                              const palette::Palette& palette);
-
 class HuffmanCodeBook {
  public:
   [[nodiscard]] bool isColor() const;
@@ -55,53 +48,20 @@ class HuffmanCodeBook {
   [[nodiscard]] std::int32_t nearBranchJumpSize(std::int32_t node) const;
 };
 
-}  // namespace qct::image::huffman
-
-namespace qct::image::huffman {
-tile_bytes_2D_t decode(std::ifstream& file, const std::int32_t image_tile_byte_offset,
-                       const palette::Palette& palette) {
-  tile_bytes_2D_t tile{};
-  std::int32_t current_byte_offset{image_tile_byte_offset + 1};
-  auto tree = HuffmanCodeBook::parse(file, current_byte_offset);
-  if (tree.size() == 1) {
-    const auto [red, green, blue] = tree.getColor(palette, 0);
-    for (std::int32_t pixel_index = 0; pixel_index < TILE_PIXEL_COUNT; ++pixel_index) {
-      const std::int32_t y = pixel_index * palette::COLOR_CHANNELS / TILE_ROW_BYTE_COUNT;
-      const std::int32_t x = pixel_index * palette::COLOR_CHANNELS % TILE_ROW_BYTE_COUNT;
-      tile[y][x + 0] = red;
-      tile[y][x + 1] = green;
-      tile[y][x + 2] = blue;
-    }
-    return tile;
-  }
-  std::uint8_t current_byte = util::readByte(file, current_byte_offset++);
-  std::int32_t bit_count{8};
-  std::int32_t pixel_index{0};
-  tree.resetPointer();
-  while (pixel_index < TILE_PIXEL_COUNT) {
-    if (tree.isColor()) {
-      const std::int32_t y = pixel_index * palette::COLOR_CHANNELS / TILE_ROW_BYTE_COUNT;
-      const std::int32_t x = pixel_index * palette::COLOR_CHANNELS % TILE_ROW_BYTE_COUNT;
-      const auto [red, green, blue] = tree.getColor(palette);
-      tile[y][x + 0] = red;
-      tile[y][x + 1] = green;
-      tile[y][x + 2] = blue;
-      ++pixel_index;
-      tree.resetPointer();
-      continue;
-    }
-    const bool bit = current_byte & 1;
-    tree.step(bit);
-
-    current_byte >>= 1;
-    --bit_count;
-    if (bit_count == 0) {
-      current_byte = util::readByte(file, current_byte_offset++);
-      bit_count = 8;
-    }
-  }
-  return tile;
-}
+/**
+ * A decoder for image tiles using Huffman Coding.
+ */
+class HuffmanImageTileDecoder final : public AbstractImageTileDecoder<HuffmanImageTileDecoder> {
+ public:
+  explicit HuffmanImageTileDecoder(const palette::Palette& palette) : AbstractImageTileDecoder{palette} {}
+  /**
+   * Decode bytes of an image tile using Huffman Coding.
+   * @param file to read from
+   * @param image_tile_byte_offset the byte offset of the tile in the image file
+   * @return the tile bytes
+   */
+  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file, std::int32_t image_tile_byte_offset) const;
+};
 
 bool HuffmanCodeBook::isColor() const {
   return isColor(pointer_);
@@ -216,5 +176,49 @@ std::int32_t HuffmanCodeBook::farBranchJumpSize(const std::int32_t node) const {
 std::int32_t HuffmanCodeBook::nearBranchJumpSize(const std::int32_t node) const {
   return 257 - static_cast<std::int32_t>(bytes_[node]);
 }
+ImageTile::bytes_2d_t HuffmanImageTileDecoder::decodeTileBytes(std::ifstream& file,
+                                                               const std::int32_t image_tile_byte_offset) const {
+  ImageTile::bytes_2d_t tile{};
+  std::int32_t current_byte_offset{image_tile_byte_offset + 1};
+  auto tree = HuffmanCodeBook::parse(file, current_byte_offset);
+  if (tree.size() == 1) {
+    const auto [red, green, blue] = tree.getColor(palette, 0);
+    for (std::int32_t pixel_index = 0; pixel_index < ImageTile::PIXEL_COUNT; ++pixel_index) {
+      const std::int32_t y = pixel_index * palette::COLOR_CHANNELS / ImageTile::ROW_BYTE_COUNT;
+      const std::int32_t x = pixel_index * palette::COLOR_CHANNELS % ImageTile::ROW_BYTE_COUNT;
+      tile[y][x + 0] = red;
+      tile[y][x + 1] = green;
+      tile[y][x + 2] = blue;
+    }
+    return tile;
+  }
+  std::uint8_t current_byte = util::readByte(file, current_byte_offset++);
+  std::int32_t bit_count{8};
+  std::int32_t pixel_index{0};
+  tree.resetPointer();
+  while (pixel_index < ImageTile::PIXEL_COUNT) {
+    if (tree.isColor()) {
+      const std::int32_t y = pixel_index * palette::COLOR_CHANNELS / ImageTile::ROW_BYTE_COUNT;
+      const std::int32_t x = pixel_index * palette::COLOR_CHANNELS % ImageTile::ROW_BYTE_COUNT;
+      const auto [red, green, blue] = tree.getColor(palette);
+      tile[y][x + 0] = red;
+      tile[y][x + 1] = green;
+      tile[y][x + 2] = blue;
+      ++pixel_index;
+      tree.resetPointer();
+      continue;
+    }
+    const bool bit = current_byte & 1;
+    tree.step(bit);
 
-}  // namespace qct::image::huffman
+    current_byte >>= 1;
+    --bit_count;
+    if (bit_count == 0) {
+      current_byte = util::readByte(file, current_byte_offset++);
+      bit_count = 8;
+    }
+  }
+  return tile;
+}
+
+}  // namespace qct::image::decode

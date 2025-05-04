@@ -14,12 +14,13 @@ target_sources(${PROJECT_NAME}
         src/qct_file.ixx
 
         # image
-        src/image/image.ixx
-        src/image/decode.ixx
-        src/image/huffman.ixx
+        src/image/decode/decode.ixx
+        src/image/decode/decoder.ixx
+        src/image/decode/huffman.ixx
+        src/image/decode/palette.ixx
+        src/image/decode/pp.ixx
+        src/image/decode/rle.ixx
         src/image/index.ixx
-        src/image/pp.ixx
-        src/image/rle.ixx
         src/image/tile.ixx
 
         # common
@@ -41,7 +42,6 @@ target_sources(${PROJECT_NAME}
         # palette
         src/palette/color.ixx
         src/palette/palette.ixx
-        src/palette/sub_palette.ixx
 
         # util
         src/util/reader.ixx

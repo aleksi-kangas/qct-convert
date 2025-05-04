@@ -3,34 +3,36 @@ module;
 #include <array>
 #include <cstdint>
 #include <fstream>
-#include <iostream>
-#include <ranges>
-#include <span>
 
 export module qct:image.tile;
 
-import :common.exception;
-import :image;
+import :palette;
 import :util.reader;
 
-export namespace qct::image {
+namespace qct::image {
 /**
- * Represents a 64 x 64 tile of the image. Tiles of the image may be encoded with different algorithms for efficiency purposes.
+ * Represents a 64 x 64 tile of the image. Tiles may be encoded with different algorithms for efficiency purposes.
  */
 struct ImageTile final {
+  static constexpr std::int32_t HEIGHT = 64;
+  static constexpr std::int32_t WIDTH = 64;
+  static constexpr std::int32_t PIXEL_COUNT = HEIGHT * WIDTH;
+  static constexpr std::int32_t BYTE_COUNT = PIXEL_COUNT * palette::COLOR_CHANNELS;
+  static constexpr std::int32_t ROW_BYTE_COUNT = WIDTH * palette::COLOR_CHANNELS;
+
+  using row_bytes_t = std::array<std::uint8_t, ROW_BYTE_COUNT>;
+  using bytes_2d_t = std::array<row_bytes_t, HEIGHT>;
+
   enum class Encoding {
     HUFFMAN_CODING,
     PIXEL_PACKING,
-    RUN_LENGTH_CODING
+    RUN_LENGTH_ENCODING
   };
 
   std::int32_t y{};
   std::int32_t x{};
   Encoding encoding{};
-  tile_bytes_view_t bytes{};
-
-  ImageTile(const std::int32_t y, const std::int32_t x, const Encoding encoding, const tile_bytes_view_t bytes)
-      : y{y}, x{x}, encoding{encoding}, bytes{bytes} {}
+  bytes_2d_t bytes_2d{};
 
   /**
    * Determine the encoding of an image tile at the given byte offset.
@@ -49,7 +51,7 @@ ImageTile::Encoding ImageTile::encodingOf(std::ifstream& file, const std::int32_
     return Encoding::HUFFMAN_CODING;
   if (first_byte > 127)
     return Encoding::PIXEL_PACKING;
-  return Encoding::RUN_LENGTH_CODING;
+  return Encoding::RUN_LENGTH_ENCODING;
 }
 
 }  // namespace qct::image

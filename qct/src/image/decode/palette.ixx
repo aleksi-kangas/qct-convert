@@ -7,14 +7,13 @@ module;
 #include <stdexcept>
 #include <vector>
 
-export module qct:palette.sub;
+export module qct:image.decode.palette;
 
-import :palette.color;
 import :util.reader;
 
-export namespace qct::palette {
+export namespace qct::image::decode {
 /**
- *
+ * A subset of the color palette used to define colors in a single tile for efficiency reasons.
  */
 struct SubPalette final {
   enum class SizeType {
@@ -31,9 +30,7 @@ struct SubPalette final {
 
   static SubPalette parse(std::ifstream& file, std::int32_t byte_offset, SizeType size_type);
 };
-}  // namespace qct::palette
 
-namespace qct::palette {
 SubPalette SubPalette::parse(std::ifstream& file, const std::int32_t byte_offset, const SizeType size_type) {
   std::int32_t size{};
   switch (size_type) {
@@ -44,7 +41,7 @@ SubPalette SubPalette::parse(std::ifstream& file, const std::int32_t byte_offset
       size = 256 - static_cast<std::int32_t>(util::readByte(file, byte_offset));
     } break;
     default:
-      throw std::logic_error("qct::color::SubPalette::parse: unknown qct::color::SubPalette::SizeType");
+      throw std::logic_error{"qct::image::decode::SubPalette::parse: unknown qct::image::decode::SubPalette::SizeType"};
   }
   std::vector palette_indices(size, 0);
   const std::vector<std::uint8_t> bytes = util::readBytes(file, byte_offset + 0x01, size);
@@ -53,4 +50,4 @@ SubPalette SubPalette::parse(std::ifstream& file, const std::int32_t byte_offset
   return {.size = size, .palette_indices = palette_indices};
 }
 
-}  // namespace qct::palette
+}  // namespace qct::image::decode

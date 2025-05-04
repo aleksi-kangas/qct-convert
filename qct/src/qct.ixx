@@ -9,12 +9,13 @@ export import :georef.coef;
 export import :georef.coordinates;
 
 // image
-export import :image;
 export import :image.decode;
-export import :image.huffman;
+export import :image.decoder;
+export import :image.decode.huffman;
+export import :image.decode.palette;
+export import :image.decode.pp;
+export import :image.decode.rle;
 export import :image.index;
-export import :image.pp;
-export import :image.rle;
 export import :image.tile;
 
 // metadata
@@ -28,7 +29,6 @@ export import :meta.version;
 // palette
 export import :palette;
 export import :palette.color;
-export import :palette.sub;
 
 //  util
 export import :util.reader;
