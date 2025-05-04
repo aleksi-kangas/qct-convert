@@ -9,7 +9,7 @@ enable_testing()
 find_package(GTest CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME} test.cpp
-    geo/poly_test.cpp
+        georef/georef_test.cpp
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE libqct GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
 target_compile_options(${PROJECT_NAME} PRIVATE

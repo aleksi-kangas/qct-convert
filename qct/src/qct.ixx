@@ -5,7 +5,8 @@ export import :file;
 export import :common.exception;
 
 // georef
-export import :georef.coef;
+export import :georef;
+export import :georef.coefficients;
 export import :georef.coordinates;
 
 // image

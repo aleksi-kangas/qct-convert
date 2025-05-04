@@ -5,8 +5,9 @@ module;
 
 export module qct:georef;
 
-import :georef.coef;
+import :georef.coefficients;
 import :georef.coordinates;
+import :meta.datum;
 
 namespace qct::georef {
 /**
