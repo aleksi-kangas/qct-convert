@@ -21,6 +21,9 @@ jobs:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
         build_type: [ release ]
 
+    env:
+      CXX: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') && 'clang++' || '' }}
+
 #    env:
 #      _VCPKG_: ${{ github.workspace }}/vcpkg
 #      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg/bincache
