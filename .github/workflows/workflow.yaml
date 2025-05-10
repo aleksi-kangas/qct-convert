@@ -39,6 +39,12 @@ jobs:
       - name: "Get CMake"
         uses: lukka/get-cmake@latest
 
+      - name: "Install LLVM and Clang"
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: "20.1.4"
+
       - name: "Setup VCPKG"
         uses: lukka/run-vcpkg@v11
         with:
