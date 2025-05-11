@@ -7,6 +7,7 @@ module;
 export module qct:image.tile;
 
 import :palette;
+import :palette.color;
 import :util.reader;
 
 namespace qct::image {
