@@ -77,7 +77,9 @@ jobs:
       - name: Package .zip (MacOS & Ubuntu)
         if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
         run: |
-          zip qct-convert_${{ matrix.os-short }}_${{ matrix.architecture }}.zip ${{ github.workspace }}/build/release/qct-convert
+          cd ${{ github.workspace }}/build/release/
+          zip ${{ github.workspace }}/qct-convert_${{ matrix.os-short }}_${{ matrix.architecture }}.zip qct-convert
+          cd ${{ github.workspace }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
