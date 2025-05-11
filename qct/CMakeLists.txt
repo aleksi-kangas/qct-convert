@@ -49,8 +49,7 @@ target_sources(${PROJECT_NAME}
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class>
-        $<$<CXX_COMPILER_ID:GNU>:-Wall>)
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class>)
 
 add_subdirectory(test)
 
