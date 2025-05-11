@@ -4,6 +4,7 @@ module;
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <vector>
 
 export module qct:palette;
 
