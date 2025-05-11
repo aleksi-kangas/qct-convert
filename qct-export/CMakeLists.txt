@@ -21,7 +21,7 @@ target_sources(${PROJECT_NAME}
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>
-        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class -msse4.1 -mpclmul>
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class>
         $<$<CXX_COMPILER_ID:GNU>:-Wall -msse4.1 -mpclmul>)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PRIVATE libqct)
