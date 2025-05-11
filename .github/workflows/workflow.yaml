@@ -23,19 +23,15 @@ jobs:
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v4
-      - name: "Install Clang on Ubuntu"
+      - name: "Install GCC on Ubuntu"
         if: matrix.os == 'ubuntu-latest'
         run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 20
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
-          echo "CC=/usr/lib/llvm-20/bin/clang" >> $GITHUB_ENV
-          echo "CXX=/usr/lib/llvm-20/bin/clang++" >> $GITHUB_ENV
-          echo "/usr/lib/llvm-20/bin" >> $GITHUB_PATH
-          echo "CXXFLAGS=-mpclmul" >> $GITHUB_ENV
-          echo "LDFLAGS=-L/usr/lib/llvm-20/lib" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install -y g++-15
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 100
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100
+          echo "CC=/usr/bin/gcc" >> $GITHUB_ENV
+          echo "CXX=/usr/bin/g++" >> $GITHUB_ENV
 
       - name: "Install Clang on macOS"
         if: matrix.os == 'macos-latest'
