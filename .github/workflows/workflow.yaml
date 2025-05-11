@@ -63,9 +63,9 @@ jobs:
         uses: actions/upload-artifact@v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: windows-binary
+          name: ${{ matrix.os }}-binary
           path: |
-            ${{ github.workspace }}/build/release/Release/qct-convert.exe
+            {{ github.workspace }}/build/release/qct-convert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
 
   release:
     name: Create GitHub Release
@@ -74,10 +74,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - name: Download artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: windows-binary
           path: ./artifacts
 
       - name: Create Release
