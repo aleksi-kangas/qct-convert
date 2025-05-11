@@ -31,7 +31,7 @@ by *Craig Shelley*.
     - [x] Export map to [.PNG]() using [fpng](https://github.com/richgel999/fpng)
     - [ ] Export to GeoTIFF
 - **Other**
-    - [ ] Precompiled binaries
+    - [x] Precompiled binaries
     - [ ] QCT3-file decoding
         - *Note:* QCT3 files are not supported, as they may include encrypted data for Digital Rights Management (DRM).
           I may add support for these in the future, for the unencrypted portion that is.
@@ -48,8 +48,13 @@ export options are specified, the tool decodes the file and prints its metadata.
 - `--export-kml-path <path>`: Export map boundaries to a .KML file
 - `--export-png-path <path>`: Export map image to a .PNG file
 
+On Windows:
 ```cmd
-qct-convert.exe <path/to/map.qct> --export-kml-path <path/to/map.kml> --export-png-path <path/to/map.png> 
+qct-convert.exe <path\to\map.qct> --export-kml-path <path\to\map.kml> --export-png-path <path\to\map.png> 
+```
+On Linux/macOS:
+```bash
+qct-convert <path/to/map.qct> --export-kml-path <path/to/map.kml> --export-png-path <path/to/map.png>
 ```
 
 ##### Acknowledgements
