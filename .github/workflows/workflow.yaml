@@ -19,6 +19,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
+        include:
+          - os: windows-latest
+            os-short: windows
+            architecture: x64
+          - os: ubuntu-latest
+            os-short: linux
+            architecture: x64
+          - os: macos-latest
+            os-short: macos
+            architecture: arm64
 
     steps:
       - name: "Checkout repository"
@@ -59,14 +69,18 @@ jobs:
           configurePreset: release
           buildPreset: release
 
+      - name: Package .zip
+        run: |
+          zip qct-convert_${{ matrix.os-short }}_${{ matrix.architecture }}.zip ${{ github.workspace }}/build/release/qct-convert${{ matrix.os-short == 'windows' && '.exe' || '' }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: ${{ matrix.os }}-binary
+          name: ${{ matrix.os-short }}
           if-no-files-found: error
           path: |
-            ${{ github.workspace }}/build/release/qct-convert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+            ${{ github.workspace }}/*.zip
 
   release:
     name: Create GitHub Release
@@ -85,7 +99,8 @@ jobs:
         with:
           draft: true
           fail_on_unmatched_files: true
-          files: ./artifacts/**/*
+          files: |
+            artifacts/**/**/*.zip
           tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
