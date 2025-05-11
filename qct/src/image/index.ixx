@@ -18,6 +18,7 @@ import :image.decode;
 import :image.tile;
 import :meta;
 import :palette;
+import :palette.color;
 import :util.reader;
 
 export namespace qct::image {
