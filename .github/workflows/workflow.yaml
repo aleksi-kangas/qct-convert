@@ -43,7 +43,7 @@ jobs:
           echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
           # SDKROOT is needed to locate the required headers...
           echo "SDKROOT=$(xcrun --show-sdk-path)" >> $GITHUB_ENV
-          echo "CXXFLAGS=-isysroot $(xcrun --show-sdk-path) -msse4.1" >> $GITHUB_ENV
+          echo "CXXFLAGS=-isysroot $(xcrun --show-sdk-path)" >> $GITHUB_ENV
 
       - name: "Get CMake"
         uses: lukka/get-cmake@latest
