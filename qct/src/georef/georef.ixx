@@ -1,6 +1,7 @@
 module;
 
 #include <cmath>
+#include <filesystem>
 #include <fstream>
 
 export module qct:georef;
