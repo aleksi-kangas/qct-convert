@@ -31,6 +31,9 @@ jobs:
           sudo ./llvm.sh 20
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
+          echo "CC=/usr/lib/llvm-20/bin/clang" >> $GITHUB_ENV
+          echo "CXX=/usr/lib/llvm-20/bin/clang++" >> $GITHUB_ENV
+          echo "/usr/lib/llvm-20/bin" >> $GITHUB_PATH
 
       - name: "Install Clang on macOS"
         if: matrix.os == 'macos-latest'
