@@ -64,8 +64,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: ${{ matrix.os }}-binary
+          if-no-files-found: error
           path: |
-            {{ github.workspace }}/build/release/qct-convert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+            ${{ github.workspace }}/build/release/qct-convert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
 
   release:
     name: Create GitHub Release
