@@ -89,7 +89,12 @@ std::vector<std::uint8_t> ImageIndex::channelBytes(const std::int32_t channel_in
                             std::views::transform([this, channel_index](auto idx) -> const std::uint8_t& {
                               return image_bytes[idx * 3 + channel_index];
                             });
-  return std::ranges::to<std::vector<std::uint8_t>>(channel_view);
+  // TODO: Replace with std::ranges::to
+  std::vector<std::uint8_t> result;
+  for (const auto& value : channel_view) {
+    result.push_back(value);
+  }
+  return result;
 }
 
 ImageIndex ImageIndex::parse(const std::filesystem::path& filepath, const meta::Metadata& metadata,
