@@ -11,6 +11,7 @@ import :common.exception;
 import :image.decoder;
 import :image.tile;
 import :palette;
+import :palette.color;
 import :util.reader;
 
 namespace qct::image::decode {
