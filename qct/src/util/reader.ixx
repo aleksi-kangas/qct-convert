@@ -70,14 +70,12 @@ std::string readString(std::ifstream& file, std::int32_t byte_offset);
  * @return read string
  */
 std::string readStringFromPointer(std::ifstream& file, std::int32_t pointer_byte_offset);
-}  // namespace qct::util
 
-namespace qct::util {
-std::uint8_t util::readByte(std::ifstream& file, const std::int32_t byte_offset) {
+std::uint8_t readByte(std::ifstream& file, const std::int32_t byte_offset) {
   return readBytes(file, byte_offset, 1)[0];
 }
 
-std::vector<std::uint8_t> util::readBytes(std::ifstream& file, const std::int32_t byte_offset,
+std::vector<std::uint8_t> readBytes(std::ifstream& file, const std::int32_t byte_offset,
                                           const std::int32_t count) {
   file.seekg(byte_offset);
   if (!file.good()) {
@@ -91,7 +89,7 @@ std::vector<std::uint8_t> util::readBytes(std::ifstream& file, const std::int32_
   return bytes;
 }
 
-std::int32_t util::readInt(std::ifstream& file, const std::int32_t byte_offset) {
+std::int32_t readInt(std::ifstream& file, const std::int32_t byte_offset) {
   file.seekg(byte_offset);
   if (!file.good()) {
     throw common::QctException{std::format("Failed to seek to offset={}", byte_offset)};
@@ -105,7 +103,7 @@ std::int32_t util::readInt(std::ifstream& file, const std::int32_t byte_offset) 
          static_cast<std::int32_t>(bytes[2]) << 16 | static_cast<std::int32_t>(bytes[3]) << 24;
 }
 
-double util::readDouble(std::ifstream& file, const std::int32_t byte_offset) {
+double readDouble(std::ifstream& file, const std::int32_t byte_offset) {
   file.seekg(byte_offset);
   if (!file.good()) {
     throw common::QctException{std::format("Failed to seek to offset={}", byte_offset)};
@@ -118,7 +116,7 @@ double util::readDouble(std::ifstream& file, const std::int32_t byte_offset) {
   return value;
 }
 
-std::vector<double> util::readDoubles(std::ifstream& file, const std::int32_t byte_offset, const std::int32_t count) {
+std::vector<double> readDoubles(std::ifstream& file, const std::int32_t byte_offset, const std::int32_t count) {
   std::vector<double> doubles(count, 0);
   for (std::int32_t i = 0; i < count; ++i) {
     doubles[i] = readDouble(file, byte_offset + i * 0x08);
@@ -126,7 +124,7 @@ std::vector<double> util::readDoubles(std::ifstream& file, const std::int32_t by
   return doubles;
 }
 
-std::string util::readString(std::ifstream& file, const std::int32_t byte_offset) {
+std::string readString(std::ifstream& file, const std::int32_t byte_offset) {
   file.seekg(byte_offset);
   if (!file.good()) {
     throw common::QctException{std::format("Failed to seek to offset={}", byte_offset)};
@@ -145,7 +143,7 @@ std::string util::readString(std::ifstream& file, const std::int32_t byte_offset
   return result;
 }
 
-std::string util::readStringFromPointer(std::ifstream& file, const std::int32_t pointer_byte_offset) {
+std::string readStringFromPointer(std::ifstream& file, const std::int32_t pointer_byte_offset) {
   const std::int32_t byteOffset = readInt(file, pointer_byte_offset);
   return byteOffset != 0 ? readString(file, byteOffset) : "";
 }
