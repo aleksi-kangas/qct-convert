@@ -35,8 +35,10 @@ jobs:
       - name: "Install Clang on macOS"
         if: matrix.os == 'macos-latest'
         run: |
-          brew install llvm@20
-          echo "/opt/homebrew/opt/llvm@20/bin" >> $GITHUB_PATH
+          brew install llvm
+          echo "CC=/opt/homebrew/opt/llvm/bin/clang" >> $GITHUB_ENV
+          echo "CXX=/opt/homebrew/opt/llvm/bin/clang++" >> $GITHUB_ENV
+          echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
 
       - name: "Get CMake"
         uses: lukka/get-cmake@latest
