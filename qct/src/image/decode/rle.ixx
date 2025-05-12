@@ -51,10 +51,14 @@ ImageTile::bytes_2d_t RLEImageTileDecoder::decodeTileBytes(std::ifstream& file,
   const auto sub_palette = SubPalette::parse(file, image_tile_byte_offset, SubPalette::SizeType::NORMAL);
   const std::int32_t pixel_data_byte_offset = image_tile_byte_offset + 0x01 + sub_palette.size;
   ImageTile::bytes_2d_t tile{};
-  std::int32_t current_tile_byte_offset = pixel_data_byte_offset;
+  // In order to avoid reading one byte at a time from the file,
+  // read bytes into a buffer assuming the worst case of one byte per pixel,
+  // which practically should never occur (64 x 64 = 4096 bytes).
+  const std::vector<std::uint8_t> bytes = util::readBytesSafe(file, pixel_data_byte_offset, ImageTile::PIXEL_COUNT);
+  std::size_t byte_index{0};
   std::int32_t pixel_count = 0;
   while (pixel_count < ImageTile::PIXEL_COUNT) {
-    const std::uint8_t rle_byte = util::readByte(file, current_tile_byte_offset++);
+    const std::uint8_t rle_byte = bytes[byte_index++];
     const auto [palette_index, run_length] = decodeRleByte(rle_byte, sub_palette);
     const auto [red, green, blue] = palette.colors[palette_index];
     for (std::int32_t i = 0; i < run_length; ++i) {
