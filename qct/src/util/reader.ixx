@@ -103,9 +103,9 @@ std::vector<std::uint8_t> readBytesSafe(std::ifstream& file, const std::int32_t 
   if (!file.good()) {
     throw common::QctException{std::format("Failed to seek to offset={}", byte_offset)};
   }
-  std::vector<std::uint8_t> bytes{};
-  bytes.reserve(count);
+  std::vector<std::uint8_t> bytes(count);
   file.read(reinterpret_cast<char*>(bytes.data()), count);
+  bytes.resize(file.gcount());
   return bytes;
 }
 
