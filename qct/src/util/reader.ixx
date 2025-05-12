@@ -30,6 +30,15 @@ std::uint8_t readByte(std::ifstream& file, std::int32_t byte_offset);
 std::vector<std::uint8_t> readBytes(std::ifstream& file, std::int32_t byte_offset, std::int32_t count);
 
 /**
+ * Reads multiple bytes from the given byte offset, until EOF or byte count met.
+ * @param file to read from
+ * @param byte_offset byte offset to read from
+ * @param count the amount of bytes to read (or EOF, whichever is first)
+ * @return read bytes
+ */
+std::vector<std::uint8_t> readBytesSafe(std::ifstream& file, std::int32_t byte_offset, std::int32_t count);
+
+/**
  * Reads an integer stored as little-endian from the given byte offset.
  * @param file to read from
  * @param byte_offset byte offset to read from
@@ -86,6 +95,17 @@ std::vector<std::uint8_t> readBytes(std::ifstream& file, const std::int32_t byte
   if (file.gcount() != count) {
     throw common::QctException{std::format("Failed to read n={} bytes at offset={}", count, byte_offset)};
   }
+  return bytes;
+}
+
+std::vector<std::uint8_t> readBytesSafe(std::ifstream& file, const std::int32_t byte_offset, const std::int32_t count) {
+  file.seekg(byte_offset);
+  if (!file.good()) {
+    throw common::QctException{std::format("Failed to seek to offset={}", byte_offset)};
+  }
+  std::vector<std::uint8_t> bytes{};
+  bytes.reserve(count);
+  file.read(reinterpret_cast<char*>(bytes.data()), count);
   return bytes;
 }
 
