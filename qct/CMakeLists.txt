@@ -44,6 +44,7 @@ target_sources(${PROJECT_NAME}
         src/palette/palette.ixx
 
         # util
+        src/util/buffer.ixx
         src/util/reader.ixx
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)

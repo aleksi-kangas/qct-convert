@@ -1,5 +1,6 @@
 module;
 
+#include <complex>
 #include <cstdint>
 #include <format>
 #include <fstream>
@@ -12,6 +13,7 @@ import :image.decoder;
 import :image.tile;
 import :palette;
 import :palette.color;
+import :util.buffer;
 import :util.reader;
 
 namespace qct::image::decode {
@@ -39,7 +41,7 @@ class HuffmanCodeBook {
   void resetPointer();
   void step(bool bit);
 
-  static HuffmanCodeBook parse(std::ifstream& file, std::int32_t& tree_start_byte_offset);
+  static HuffmanCodeBook parse(util::DynamicByteBuffer& dynamic_byte_buffer);
 
  private:
   std::vector<std::uint8_t> bytes_{};
@@ -148,16 +150,16 @@ void HuffmanCodeBook::step(const bool bit) {
   }
 }
 
-HuffmanCodeBook HuffmanCodeBook::parse(std::ifstream& file, std::int32_t& tree_start_byte_offset) {
+HuffmanCodeBook HuffmanCodeBook::parse(util::DynamicByteBuffer& dynamic_byte_buffer) {
   HuffmanCodeBook tree{};
   tree.bytes_.reserve(256);
   std::int32_t color_count{0};
   std::int32_t branch_count{0};
   while (color_count <= branch_count) {
-    tree.bytes_.push_back(util::readByte(file, tree_start_byte_offset++));
+    tree.bytes_.push_back(dynamic_byte_buffer.nextByte());
     if (tree.isFarBranch(tree.size() - 1)) {
-      tree.bytes_.push_back(util::readByte(file, tree_start_byte_offset++));
-      tree.bytes_.push_back(util::readByte(file, tree_start_byte_offset++));
+      tree.bytes_.push_back(dynamic_byte_buffer.nextByte());
+      tree.bytes_.push_back(dynamic_byte_buffer.nextByte());
       ++branch_count;
     } else if (tree.isNearBranch(tree.size() - 1)) {
       ++branch_count;
@@ -180,8 +182,8 @@ std::int32_t HuffmanCodeBook::nearBranchJumpSize(const std::int32_t node) const 
 ImageTile::bytes_2d_t HuffmanImageTileDecoder::decodeTileBytes(std::ifstream& file,
                                                                const std::int32_t image_tile_byte_offset) const {
   ImageTile::bytes_2d_t tile{};
-  std::int32_t current_byte_offset{image_tile_byte_offset + 1};
-  auto tree = HuffmanCodeBook::parse(file, current_byte_offset);
+  util::DynamicByteBuffer dynamic_byte_buffer{file, image_tile_byte_offset + 1, 4096};
+  auto tree = HuffmanCodeBook::parse(dynamic_byte_buffer);
   if (tree.size() == 1) {
     const auto [red, green, blue] = tree.getColor(palette, 0);
     for (std::int32_t pixel_index = 0; pixel_index < ImageTile::PIXEL_COUNT; ++pixel_index) {
@@ -193,7 +195,7 @@ ImageTile::bytes_2d_t HuffmanImageTileDecoder::decodeTileBytes(std::ifstream& fi
     }
     return tile;
   }
-  std::uint8_t current_byte = util::readByte(file, current_byte_offset++);
+  std::uint8_t current_byte = dynamic_byte_buffer.nextByte();
   std::int32_t bit_count{8};
   std::int32_t pixel_index{0};
   tree.resetPointer();
@@ -215,7 +217,7 @@ ImageTile::bytes_2d_t HuffmanImageTileDecoder::decodeTileBytes(std::ifstream& fi
     current_byte >>= 1;
     --bit_count;
     if (bit_count == 0) {
-      current_byte = util::readByte(file, current_byte_offset++);
+      current_byte = dynamic_byte_buffer.nextByte();
       bit_count = 8;
     }
   }

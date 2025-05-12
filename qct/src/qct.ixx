@@ -32,4 +32,5 @@ export import :palette;
 export import :palette.color;
 
 //  util
+export import :util.buffer;
 export import :util.reader;
