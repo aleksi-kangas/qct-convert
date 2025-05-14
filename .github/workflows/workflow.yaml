@@ -47,7 +47,7 @@ jobs:
       - name: "Install Clang on macOS"
         if: matrix.os == 'macos-latest'
         run: |
-          brew install autoconf automake llvm
+          brew install autoconf automake llvm ninja
           echo "CC=/opt/homebrew/opt/llvm/bin/clang" >> $GITHUB_ENV
           echo "CXX=/opt/homebrew/opt/llvm/bin/clang++" >> $GITHUB_ENV
           echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
