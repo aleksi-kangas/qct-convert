@@ -2,6 +2,7 @@
 #include <fstream>
 #include <future>
 #include <iostream>
+#include <ranges>
 
 #include "CLI11.hpp"
 
@@ -14,9 +15,11 @@ int main(const int argc, char** argv) {
 
   std::filesystem::path qct_file_path{};
   std::filesystem::path kml_export_file_path{};
+  std::filesystem::path geotiff_export_file_path{};
   std::filesystem::path png_export_file_path{};
   app.add_option("qct-file", qct_file_path, "Path to the .qct file")->required();
   app.add_option("--export-kml-path", kml_export_file_path, "Path to optional .kml export");
+  app.add_option("--export-geotiff-path", geotiff_export_file_path, "Path to optional GeoTIFF (.tiff) export");
   app.add_option("--export-png-path", png_export_file_path, "Path to optional .png export");
   CLI11_PARSE(app, argc, argv);
 
@@ -25,12 +28,17 @@ int main(const int argc, char** argv) {
       std::ifstream file{qct_file_path, std::ios::binary};
       try {
         const qct::QctFile qct_file = qct::QctFile::parse(qct_file_path);
+        std::vector<std::future<void>> export_futures{};
+        if (!geotiff_export_file_path.empty()) {
+          export_futures.push_back(std::async(std::launch::async, qct::ex::geotiff::exportGeoTiff, geotiff_export_file_path, qct_file));
+        }
         if (!kml_export_file_path.empty()) {
-          qct::ex::kml::exportKml(kml_export_file_path, qct_file);
+          export_futures.push_back(std::async(std::launch::async, qct::ex::kml::exportKml, kml_export_file_path, qct_file));
         }
         if (!png_export_file_path.empty()) {
-          qct::ex::png::exportPng(png_export_file_path, qct_file);
+          export_futures.push_back(std::async(std::launch::async, qct::ex::png::exportPng, png_export_file_path, qct_file));
         }
+        std::ranges::for_each(export_futures, [](auto& future) { future.wait(); });
       } catch (const qct::common::QctException& e) {
         std::cerr << e.what() << std::endl;
       }
