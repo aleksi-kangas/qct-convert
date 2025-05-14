@@ -4,6 +4,8 @@ project(qct-convert LANGUAGES CXX VERSION 0.0.1)
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 set(CMAKE_CXX_STANDARD 23)
 
+enable_testing()
+
 add_subdirectory(qct)
 add_subdirectory(qct-export)
 

@@ -52,5 +52,6 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>
         $<$<CXX_COMPILER_ID:Clang>:-Wall -Wno-elaborated-enum-class>)
 
+enable_testing()
 add_subdirectory(test)
 

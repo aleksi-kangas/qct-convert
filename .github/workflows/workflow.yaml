@@ -70,7 +70,7 @@ jobs:
           buildPreset: release
 
       - name: Run Tests
-        run: ctest --preset release --output-on-failure
+        run: ctest --output-on-failure
         working-directory: ${{ github.workspace }}/build/release
 
       - name: Package .zip (Windows
