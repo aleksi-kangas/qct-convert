@@ -1,6 +1,7 @@
 # QCT Convert
 
 [![Build](https://github.com/aleksi-kangas/qct-convert/actions/workflows/workflow.yaml/badge.svg)](https://github.com/aleksi-kangas/qct-convert/actions/workflows/workflow.yaml)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/aleksi-kangas/qct-convert)
 
 > A C++ implementation of the [(unofficial) Quick Chart (.QCT)
 > File Format Specification (v1.03)](https://www.etheus.net/Quick_Chart_File_Format) offering decoding of `.qct` map files
