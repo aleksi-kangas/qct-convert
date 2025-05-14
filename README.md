@@ -4,12 +4,13 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/aleksi-kangas/qct-convert)
 
 > A C++ implementation of the [(unofficial) Quick Chart (.QCT)
-> File Format Specification (v1.03)](https://www.etheus.net/Quick_Chart_File_Format) offering decoding of `.qct` map files
+> File Format Specification (v1.03)](https://www.etheus.net/Quick_Chart_File_Format) offering decoding of `.qct` map
+> files
 > and export to various formats
 
 ![](map.png)
 *A small sample of a `.png` file exported from a `.qct` file, depicting the famous Ben Nevis, the highest point in the
-UK.*
+UK. All rights reserved by Ordnance Survey.*
 
 ## Motivation
 
@@ -27,12 +28,13 @@ by *Craig Shelley*.
     - [x] Decoding of [Run-Length-Encoded (RLE)](http://en.wikipedia.org/wiki/Run-length_encoding) tiles
     - [ ] Decoding of *Pixel-Packed* tiles
         - *Note:* Not implemented, as I have yet to I have yet to come across any `.qct` file with _Pixel-Packed_ tiles.
+          Feel free to open an issue with a sample `.qct` file for implementation and testing purposes.
 - **Export Formats**
     - [x] Export map boundaries to [`.kml`](https://en.wikipedia.org/wiki/Keyhole_Markup_Language)
-    - [x] Export map to `.png` using [fpng](https://github.com/richgel999/fpng)
-    - [ ] Export to GeoTIFF
+    - [x] Export map to `.png`using [fpng](https://github.com/richgel999/fpng)
+    - [x] Export to GeoTIFF using [GDAL](https://www.gdal.org/)
 - **Other**
-    - [x] Precompiled binaries
+    - [x] Precompiled binaries for Windows, Linux, and macOS
     - [ ] QCT3-file decoding
         - *Note:* QCT3 files are not supported, as they may include encrypted data for Digital Rights Management (DRM).
           I may add support for these in the future, for the unencrypted portion that is.
@@ -47,15 +49,19 @@ export options are specified, the tool decodes the file and prints its metadata.
 
 - `<path/to/map.qct>`: Path to the input `.qct` file (required)
 - `--export-kml-path <path>`: Export map boundaries to a `.kml` file
+- `--export-geotiff-path <path>`: Export georeferenced map to a `.tiff` (GeoTIFF) file
 - `--export-png-path <path>`: Export map image to a `.png` file
 
 On Windows:
+
 ```cmd
-qct-convert.exe <path\to\map.qct> --export-kml-path <path\to\map.kml> --export-png-path <path\to\map.png> 
+qct-convert.exe <path\to\map.qct> --export-kml-path <path\to\map.kml> --export-geotiff-path <path\to\map.tiff> --export-png-path <path\to\map.png> 
 ```
+
 On Linux/macOS:
+
 ```bash
-qct-convert <path/to/map.qct> --export-kml-path <path/to/map.kml> --export-png-path <path/to/map.png>
+qct-convert <path/to/map.qct> --export-kml-path <path/to/map.kml> --export-geotiff-path <path/to/map.tiff> --export-png-path <path/to/map.png>
 ```
 
 ##### Acknowledgements
