@@ -51,6 +51,7 @@ jobs:
           echo "CC=/opt/homebrew/opt/llvm/bin/clang" >> $GITHUB_ENV
           echo "CXX=/opt/homebrew/opt/llvm/bin/clang++" >> $GITHUB_ENV
           echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
+          echo "/opt/homebrew/opt/ninja/bin" >> $GITHUB_PATH
           # SDKROOT is needed to locate the required headers...
           echo "SDKROOT=$(xcrun --show-sdk-path)" >> $GITHUB_ENV
           echo "CXXFLAGS=-isysroot $(xcrun --show-sdk-path)" >> $GITHUB_ENV
