@@ -56,7 +56,7 @@ jobs:
           echo "CXXFLAGS=-isysroot $(xcrun --show-sdk-path)" >> $GITHUB_ENV
 
       - name: "Get CMake"
-        uses: lukka/get-cmake@latest
+        uses: lukka/get-cmake@v3.31.6
 
       - name: "Setup VCPKG"
         uses: lukka/run-vcpkg@v11
