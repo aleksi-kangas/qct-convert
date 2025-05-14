@@ -69,6 +69,10 @@ jobs:
           configurePreset: release
           buildPreset: release
 
+      - name: Run Tests
+        run: ctest --preset release --output-on-failure
+        working-directory: ${{ github.workspace }}/build/release
+
       - name: Package .zip (Windows
         if: matrix.os == 'windows-latest'
         run: |
