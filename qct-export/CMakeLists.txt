@@ -26,6 +26,7 @@ target_sources(${PROJECT_NAME}
         src/qctexport.ixx
 
         src/exception.ixx
+        src/exporter.ixx
         src/geotiff.ixx
         src/kml.ixx
         src/png.ixx
