@@ -19,21 +19,6 @@ export using ImageTileDecoder =
     std::variant<HuffmanImageTileDecoder, PixelPackingImageTileDecoder, RLEImageTileDecoder>;
 
 /**
- * A helper template for using std::visit with a std::variant.
- * @tparam Ts the types of the variant
- */
-export template <class... Ts>
-struct Overloaded : Ts... {
-  using Ts::operator()...;
-};
-/**
- * A helper template for using std::visit with a std::variant.
- * @tparam Ts the types of the variant
- */
-export template <class... Ts>
-Overloaded(Ts...) -> Overloaded<Ts...>;
-
-/**
  * Make an image tile decoder for the given encoding and palette.
  * @param encoding the encoding of the image tile
  * @param palette the palette of the image tile

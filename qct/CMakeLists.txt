@@ -13,6 +13,10 @@ target_sources(${PROJECT_NAME}
         src/qct.ixx
         src/qct_file.ixx
 
+        # common
+        src/common/crtp.ixx
+        src/common/exception.ixx
+
         # image
         src/image/decode/decode.ixx
         src/image/decode/decoder.ixx
@@ -22,9 +26,6 @@ target_sources(${PROJECT_NAME}
         src/image/decode/rle.ixx
         src/image/index.ixx
         src/image/tile.ixx
-
-        # common
-        src/common/exception.ixx
 
         # georef
         src/georef/coefficients.ixx

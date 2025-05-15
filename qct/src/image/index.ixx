@@ -14,6 +14,7 @@ module;
 
 export module qct:image.index;
 
+import :common.crtp;
 import :image.decode;
 import :image.tile;
 import :meta;
@@ -123,7 +124,7 @@ std::future<void> ImageIndex::parseImageTileAsync(ImageTileParseTask&& task, std
             readImageTilePointer(file, t.metadata.width_tiles, t.y_tile, t.x_tile);
         const ImageTile::Encoding tile_encoding = ImageTile::encodingOf(file, image_tile_byte_offset);
         const auto image_tile_decoder = decode::makeImageTileDecoder(tile_encoding, t.palette);
-        std::visit(decode::Overloaded{[&](auto& decoder) {
+        std::visit(common::crtp::Overloaded{[&](auto& decoder) {
                      const ImageTile::bytes_2d_t tile_bytes_2d = decoder.decodeTile(file, image_tile_byte_offset);
                      copyTileToImage(t.y_tile, t.x_tile, tile_bytes_2d,
                                      t.metadata.width_tiles * ImageTile::ROW_BYTE_COUNT, image_bytes);
