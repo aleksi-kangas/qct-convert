@@ -95,7 +95,7 @@ void GeoTiffExporter::setProjContextSearchPaths() {
 }
 
 void GeoTiffExporter::setGeoTransform(const QctFile& qct_file, GDALDataset& gdal_dataset) const {
-  constexpr std::int32_t grid_size = 100;
+  constexpr std::int32_t grid_size = 5;
   const auto datum_shift = qct_file.metadata.extended_data.datum_shift;
   std::vector<GDAL_GCP> ground_control_points{};
   ground_control_points.reserve(grid_size * grid_size);
