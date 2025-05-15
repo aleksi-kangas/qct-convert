@@ -6,6 +6,8 @@ module;
 
 export module qctexport;
 
+import qct;
+
 export import :exception;
 export import :geotiff;
 export import :kml;
