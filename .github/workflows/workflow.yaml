@@ -41,8 +41,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: vcpkg-${{ matrix.triplet }}-
+          key: vcpkg-${{ matrix.os-short }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ matrix.os-short }}-
 
       - name: "Install Clang on Ubuntu"
         if: matrix.os == 'ubuntu-latest'
@@ -99,7 +99,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-${{ matrix.os-short }}-${{ hashFiles('vcpkg.json') }}
 
       - name: "Upload artifact"
         uses: actions/upload-artifact@v4
