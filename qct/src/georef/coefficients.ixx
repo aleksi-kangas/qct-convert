@@ -1,8 +1,10 @@
 module;
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <ranges>
 #include <vector>
 
 export module qct:georef.coefficients;
@@ -80,6 +82,8 @@ export struct GeorefCoefficients final {
   double lon_xyy;
   double lon_yyy;
 
+  [[nodiscard]] bool anyNonZeroLonLatSecondOrThirdOrderTerms() const;
+
   static GeorefCoefficients parse(const std::filesystem::path& filepath);
 
   friend std::ostream& operator<<(std::ostream& os, const GeorefCoefficients& georef_coefficients) {
@@ -106,6 +110,13 @@ export struct GeorefCoefficients final {
     return os;
   }
 };
+
+bool GeorefCoefficients::anyNonZeroLonLatSecondOrThirdOrderTerms() const {
+  const std::array terms = {lat_xx, lat_xy, lat_yy, lat_xxx, lat_xxy, lat_xyy, lat_yyy,
+                            lon_xx, lon_xy, lon_yy, lon_xxx, lon_xxy, lon_xyy, lon_yyy};
+  constexpr double epsilon = 1e-12;
+  return std::ranges::any_of(terms, [](const double coefficient) { return std::abs(coefficient) > epsilon; });
+}
 
 GeorefCoefficients GeorefCoefficients::parse(const std::filesystem::path& filepath) {
   std::ifstream file{filepath, std::ios::binary};

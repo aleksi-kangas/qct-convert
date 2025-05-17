@@ -1,8 +1,9 @@
 module;
 
 #include <filesystem>
+#include <iostream>
+#include <memory>
 #include <stdexcept>
-#include <variant>
 
 export module qctexport;
 
@@ -14,33 +15,36 @@ export import :kml;
 export import :png;
 
 namespace qct::ex {
-export enum class ExportFormat {
-  GeoTIFF,
-  KML,
-  PNG
-};
+/**
+ * Construct an exporter given the options.
+ * @tparam O export options type
+ * @return an exporter
+ */
+export template <typename O>
+std::unique_ptr<QctExporter<O>> makeExporter() {
+  if constexpr (std::is_same_v<O, KmlExportOptions>) {
+    return std::make_unique<KmlExporter>();
+  } else if constexpr (std::is_same_v<O, GeoTiffExportOptions>) {
+    return std::make_unique<GeoTiffExporter>();
+  } else if constexpr (std::is_same_v<O, PngExportOptions>) {
+    return std::make_unique<PngExporter>();
+  }
+  throw std::logic_error{"Unknown ExportOptions"};
+}
 
-export using QctExporter = std::variant<GeoTiffExporter, KmlExporter, PngExporter>;
-
-export QctExporter makeExporter(ExportFormat export_format) {
-  switch (export_format) {
-    case ExportFormat::GeoTIFF:
-      return GeoTiffExporter{};
-    case ExportFormat::KML:
-      return KmlExporter{};
-    case ExportFormat::PNG:
-      return PngExporter{};
-    default:
-      throw std::logic_error{"Unknown export format"};
+/**
+ * Export the given QCT file using the given export options.
+ * @tparam O export options type
+ * @param qct_file the QCT file to be exported
+ * @param export_options the export options
+ */
+export template <typename O>
+void exportToFormat(const QctFile& qct_file, const O& export_options) {
+  const std::unique_ptr<QctExporter<O>> exporter = makeExporter<O>();
+  try {
+    exporter->exportTo(qct_file, export_options);
+  } catch (const QctExportException& e) {
+    std::cerr << e.what() << std::endl;
   }
 }
-
-export void exportTo(const QctFile& qct_file, const std::filesystem::path& path, ExportFormat export_format) {
-  const QctExporter exporter = makeExporter(export_format);
-  std::visit(common::crtp::Overloaded{[&](auto& e) {
-               e.exportTo(qct_file, path);
-             }},
-             exporter);
-}
-
 }  // namespace qct::ex

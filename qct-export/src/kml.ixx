@@ -11,23 +11,33 @@ import :exception;
 import :exporter;
 
 namespace qct::ex {
-class KmlExporter final : public AbstractExporter<KmlExporter> {
- public:
+/**
+ * Options for exporting a QCT file to a PNG file.
+ */
+export struct KmlExportOptions final : ExportOptions {
+  explicit KmlExportOptions(const std::filesystem::path& path, const bool overwrite) : ExportOptions{path, overwrite} {}
+};
+
+/**
+ * Exporter for KML files.
+ */
+class KmlExporter final : public QctExporter<KmlExportOptions> {
+ protected:
   /**
    * Export the given QCT file to the specified path as a KML file.
    *
    * @param qct_file The QCT file to export.
-   * @param path The path where the exported KML file should be saved.
+   * @param options The export options for the KML export.
    */
-  void exportTo(const QctFile& qct_file, const std::filesystem::path& path) const;
+  void exportToImpl(const QctFile& qct_file, const KmlExportOptions& options) const override;
 };
 
-void KmlExporter::exportTo(const QctFile& qct_file, const std::filesystem::path& path) const {
+void KmlExporter::exportToImpl(const QctFile& qct_file, const KmlExportOptions& options) const {
   const auto& [points] = qct_file.metadata.map_outline;
   if (points.empty()) {
     throw QctExportException{"No points provided for .kml export"};
   }
-  std::ofstream file{path};
+  std::ofstream file{options.path};
   file << R"(<?xml version="1.0" encoding="UTF-8"?>)" << "\n"
        << "<kml xmlns=\"http://www.opengis.net/kml/2.2\">" << "\n"
        << "  <Document>" << "\n"

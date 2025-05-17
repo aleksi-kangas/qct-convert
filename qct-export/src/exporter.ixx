@@ -1,38 +1,52 @@
 module;
 
-#include <concepts>
 #include <filesystem>
+#include <format>
+#include <iostream>
+#include <utility>
 
 export module qctexport:exporter;
 
 import qct;
 
-namespace qct::ex {
-template <class C>
-class AbstractExporter;
+import :exception;
 
-template <typename T>
-concept Exporter = requires(T t) {
-  {
-    t.exportTo(std::declval<const QctFile&>(), std::declval<const std::filesystem::path&>())
-  } -> std::same_as<void>;
-  requires std::derived_from<T, AbstractExporter<T>>;
+namespace qct::ex {
+/**
+ * The base export options.
+ */
+struct ExportOptions {
+  virtual ~ExportOptions() = default;
+  std::filesystem::path path{};
+  bool overwrite{true};
+
+ protected:
+  explicit ExportOptions(std::filesystem::path path, const bool overwrite = true)
+      : path{std::move(path)}, overwrite{overwrite} {}
 };
 
-template <class C>
-class AbstractExporter {
+/**
+ * A base class for QCT exporters.
+ * @tparam O the export options type
+ */
+template <typename O>
+class QctExporter {
  public:
-  virtual ~AbstractExporter() = default;
+  virtual ~QctExporter() = default;
 
-  void exportTo(const QctFile& file, const std::filesystem::path& path) const {
-    static_assert(Exporter<C>, "C must be a concrete class type that implements Exporter.");
-    underlying().exportTo(file, path);
+  void exportTo(const QctFile& qct_file, const O& options) const {
+    checkOverwrite(options);
+    exportToImpl(qct_file, options);
   }
 
-private:
-  friend C;
+ protected:
+  virtual void exportToImpl(const QctFile&, const O& options) const = 0;
 
-  [[nodiscard]] C& underlying() { return static_cast<C&>(*this); }
-  [[nodiscard]] const C& underlying() const { return static_cast<const C&>(*this); }
+  static void checkOverwrite(const O& options) {
+    if (!options.overwrite && std::filesystem::exists(options.path)) {
+      throw QctExportException{
+          std::format("File {} already exists, and overwrite is disabled.", options.path.string())};
+    }
+  }
 };
 }  // namespace qct::ex
