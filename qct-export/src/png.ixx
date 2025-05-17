@@ -1,7 +1,6 @@
 module;
 
 #include <filesystem>
-#include <format>
 #include <mutex>
 
 #include "fpng.h"
