@@ -200,9 +200,11 @@ void GeoTiffExporter::setProjection(GDALDataset& gdal_dataset) {
 void GeoTiffExporter::writeRasterBands(const QctFile& qct_file, GDALDataset& gdal_dataset) {
   for (std::int32_t channel_index = 0; channel_index < palette::COLOR_CHANNELS; ++channel_index) {
     auto band_bytes = qct_file.image_index.channelBytes(channel_index);
-    GDALRasterBand* gdal_raster_band = gdal_dataset.GetRasterBand(channel_index + 1);  // [1, n]
-    gdal_raster_band->RasterIO(GF_Write, 0, 0, qct_file.width(), qct_file.height(), band_bytes.data(), qct_file.width(),
-                               qct_file.height(), GDT_Byte, 0, 0);
+    if (GDALRasterBand* gdal_raster_band = gdal_dataset.GetRasterBand(channel_index + 1);
+        gdal_raster_band->RasterIO(GF_Write, 0, 0, qct_file.width(), qct_file.height(), band_bytes.data(),
+                                   qct_file.width(), qct_file.height(), GDT_Byte, 0, 0) != CE_None) {
+      throw QctExportException{"Error writing raster data."};
+    }
   }
 }
 
