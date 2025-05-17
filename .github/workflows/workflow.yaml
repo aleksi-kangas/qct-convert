@@ -48,7 +48,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 19
+          sudo apt-get install -y libpthread-stubs0-dev clang-19
           echo "CC=/usr/bin/clang-19" >> $GITHUB_ENV
           echo "CXX=/usr/bin/clang++-19" >> $GITHUB_ENV
           echo "/usr/bin" >> $GITHUB_PATH
