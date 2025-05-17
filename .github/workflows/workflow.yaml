@@ -30,9 +30,19 @@ jobs:
             os-short: macos
             architecture: arm64
 
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg_cache,readwrite
+
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v4
+
+      - name: "Restore VCPKG cache"
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/vcpkg_cache
+          key: vcpkg-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ matrix.triplet }}-
 
       - name: "Install Clang on Ubuntu"
         if: matrix.os == 'ubuntu-latest'
@@ -63,29 +73,35 @@ jobs:
         with:
           vcpkgConfigurationJsonGlob: '**/vcpkg-configuration.json'
 
-      - name: Run CMake
+      - name: "Run CMake"
         uses: lukka/run-cmake@v10
         with:
           configurePreset: release
           buildPreset: release
 
-      - name: Run Tests
+      - name: "Run Tests"
         run: ctest --output-on-failure
         working-directory: ${{ github.workspace }}/build/release
 
-      - name: Package .zip (Windows
+      - name: "Package .zip (Windows)"
         if: matrix.os == 'windows-latest'
         run: |
           Compress-Archive -Path "${{ github.workspace }}\build\release\qct-convert.exe" -DestinationPath "qct-convert_windows_x64.zip"
 
-      - name: Package .zip (MacOS & Ubuntu)
+      - name: "Package .zip (MacOS & Ubuntu)"
         if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
         run: |
           cd ${{ github.workspace }}/build/release/
           zip ${{ github.workspace }}/qct-convert_${{ matrix.os-short }}_${{ matrix.architecture }}.zip qct-convert
           cd ${{ github.workspace }}
 
-      - name: Upload artifact
+      - name: "Save VCPKG cache"
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/vcpkg_cache
+          key: vcpkg-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+
+      - name: "Upload artifact"
         uses: actions/upload-artifact@v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
@@ -95,18 +111,18 @@ jobs:
             ${{ github.workspace }}/*.zip
 
   release:
-    name: Create GitHub Release
+    name: "Create GitHub Release"
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - name: Download artifacts
+      - name: "Download artifacts"
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
 
-      - name: Create Release
+      - name: "Create Release"
         uses: softprops/action-gh-release@v2
         with:
           draft: true
