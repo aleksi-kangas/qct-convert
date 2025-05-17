@@ -48,9 +48,33 @@ export options are specified, the tool decodes the file and prints its metadata.
 ### CLI
 
 - `<path/to/map.qct>`: Path to the input `.qct` file (required)
+- `--no-overwrite`: To prevent overwriting existing files (default is false)
+
+#### Export Formats
+
+##### KML
+
 - `--export-kml-path <path>`: Export map boundaries to a `.kml` file
+
+##### GeoTIFF
+
 - `--export-geotiff-path <path>`: Export georeferenced map to a `.tiff` (GeoTIFF) file
+- `--geotiff-georef-method`: Specify the georeferencing method for GeoTIFF export:
+    - `auto`: Automatically determine the most suitable georeferencing method. This is the default method.
+    - `gcp`: Use GCPs (Ground Control Points) for georeferencing. This uses all the georeferencing coefficients (incl.
+      higher order) from the `.qct` file, yielding a more accurate result, when the higher order coefficients are
+      non-zero. Note, not all GIS software support this method and that
+      additional [gdalwarp](https://gdal.org/en/stable/programs/gdalwarp.html) may be required for GIS software
+      compatibility.
+    - `linear`: [GDAL GeoTransform](https://gdal.org/en/stable/tutorials/geotransforms_tut.html) using constant and
+      first order polynomial coefficients. If the higher order georeferencing coefficients in the `.qct` file are zero,
+      this method is sufficient and recommended, as a wide range of GIS software support this method.
+
+##### PNG
+
 - `--export-png-path <path>`: Export map image to a `.png` file
+
+You can use the `--export-kml` flag to export map boundaries to a `.kml` file.
 
 On Windows:
 
