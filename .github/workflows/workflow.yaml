@@ -48,9 +48,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-19 lld llvm-dev
-          echo "CC=/usr/bin/clang-19" >> $GITHUB_ENV
-          echo "CXX=/usr/bin/clang++-19" >> $GITHUB_ENV
+          sudo apt-get install -y clang lld llvm-dev
+          echo "CC=/usr/bin/clang" >> $GITHUB_ENV
+          echo "CXX=/usr/bin/clang++" >> $GITHUB_ENV
           echo "/usr/bin" >> $GITHUB_PATH
           echo "CXXFLAGS=-mpclmul -msse4.1" >> $GITHUB_ENV
 
