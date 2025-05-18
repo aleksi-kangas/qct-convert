@@ -16,8 +16,10 @@ namespace qct::image::decode {
 class PixelPackingImageTileDecoder final : public AbstractImageTileDecoder<PixelPackingImageTileDecoder> {
  public:
   explicit PixelPackingImageTileDecoder(const palette::Palette& palette) : AbstractImageTileDecoder{palette} {}
+  ~PixelPackingImageTileDecoder() override = default;
 
-  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file, const std::int32_t image_tile_byte_offset) const {
+  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file,
+                                                      const std::int32_t image_tile_byte_offset) const {
     // TODO
     return {};
   }

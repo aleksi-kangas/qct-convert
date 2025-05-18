@@ -23,10 +23,10 @@ namespace qct::ex {
  */
 export template <typename O>
 std::unique_ptr<QctExporter<O>> makeExporter() {
-  if constexpr (std::is_same_v<O, KmlExportOptions>) {
-    return std::make_unique<KmlExporter>();
-  } else if constexpr (std::is_same_v<O, GeoTiffExportOptions>) {
+  if constexpr (std::is_same_v<O, GeoTiffExportOptions>) {
     return std::make_unique<GeoTiffExporter>();
+  } else if constexpr (std::is_same_v<O, KmlExportOptions>) {
+    return std::make_unique<KmlExporter>();
   } else if constexpr (std::is_same_v<O, PngExportOptions>) {
     return std::make_unique<PngExporter>();
   }

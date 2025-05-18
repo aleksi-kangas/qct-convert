@@ -57,6 +57,8 @@ class HuffmanCodeBook {
 class HuffmanImageTileDecoder final : public AbstractImageTileDecoder<HuffmanImageTileDecoder> {
  public:
   explicit HuffmanImageTileDecoder(const palette::Palette& palette) : AbstractImageTileDecoder{palette} {}
+  ~HuffmanImageTileDecoder() override = default;
+
   /**
    * Decode bytes of an image tile using Huffman Coding.
    * @param file to read from

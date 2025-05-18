@@ -61,6 +61,7 @@ export struct GeoTiffExportOptions final : ExportOptions {
 class GeoTiffExporter final : public QctExporter<GeoTiffExportOptions> {
  public:
   GeoTiffExporter();
+  ~GeoTiffExporter() override = default;
 
  protected:
   /**

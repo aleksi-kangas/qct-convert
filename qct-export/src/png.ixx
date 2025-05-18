@@ -23,9 +23,10 @@ export struct PngExportOptions final : ExportOptions {
 /**
  * Exporter for PNG files.
  */
-class PngExporter final : public QctExporter<PngExportOptions> {
+export class PngExporter final : public QctExporter<PngExportOptions> {
  public:
   PngExporter();
+  ~PngExporter() override = default;
 
  protected:
   /**

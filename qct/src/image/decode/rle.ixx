@@ -27,6 +27,7 @@ struct DecodedRleByte {
 class RLEImageTileDecoder final : public AbstractImageTileDecoder<RLEImageTileDecoder> {
  public:
   explicit RLEImageTileDecoder(const palette::Palette& palette) : AbstractImageTileDecoder{palette} {}
+  ~RLEImageTileDecoder() override = default;
 
   /**
    * Decode bytes of an image tile using Run Length Encoding (RLE).

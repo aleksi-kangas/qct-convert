@@ -21,7 +21,10 @@ export struct KmlExportOptions final : ExportOptions {
 /**
  * Exporter for KML files.
  */
-class KmlExporter final : public QctExporter<KmlExportOptions> {
+export class KmlExporter final : public QctExporter<KmlExportOptions> {
+ public:
+  ~KmlExporter() override = default;
+
  protected:
   /**
    * Export the given QCT file to the specified path as a KML file.
