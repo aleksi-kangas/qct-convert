@@ -6,6 +6,7 @@ module;
 export module qct:image.decode.pp;
 
 import :image.decoder;
+import :image.tile;
 import :palette;
 import :util.reader;
 
