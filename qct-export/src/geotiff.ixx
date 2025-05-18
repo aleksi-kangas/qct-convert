@@ -20,11 +20,11 @@ import qct;
 import :exception;
 import :exporter;
 
-namespace qct::ex {
+export namespace qct::ex {
 /**
  * Options for exporting a QCT file to a GeoTIFF file.
  */
-export struct GeoTiffExportOptions final : ExportOptions {
+struct GeoTiffExportOptions final : ExportOptions {
   enum class GeorefMethod {
     /**
      * Automatically try to determine the better georeferencing method (GCP vs Linear Affine).

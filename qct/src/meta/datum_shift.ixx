@@ -27,9 +27,7 @@ struct DatumShift final {
     return os;
   }
 };
-}  // namespace qct::meta
 
-namespace qct::meta {
 DatumShift DatumShift::parse(std::ifstream& file, const std::int32_t pointer_byte_offset) {
   const std::int32_t byte_offset = util::readInt(file, pointer_byte_offset);
   return {.north = util::readDouble(file, byte_offset + 0x00), .east = util::readDouble(file, byte_offset + 0x08)};

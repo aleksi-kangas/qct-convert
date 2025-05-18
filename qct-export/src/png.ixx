@@ -12,18 +12,18 @@ import qct;
 import :exception;
 import :exporter;
 
-namespace qct::ex {
+export namespace qct::ex {
 /**
  * Options for exporting a QCT file to a PNG file.
  */
-export struct PngExportOptions final : ExportOptions {
+struct PngExportOptions final : ExportOptions {
   explicit PngExportOptions(const std::filesystem::path& path, const bool overwrite) : ExportOptions{path, overwrite} {}
 };
 
 /**
  * Exporter for PNG files.
  */
-export class PngExporter final : public QctExporter<PngExportOptions> {
+class PngExporter final : public QctExporter<PngExportOptions> {
  public:
   PngExporter();
   ~PngExporter() override = default;

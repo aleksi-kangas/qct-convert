@@ -1,10 +1,10 @@
 export module qct:georef.coordinates;
 
-namespace qct::georef {
+export namespace qct::georef {
 /**
  * WGS-84 coordinates.
  */
-export struct Wgs84Coordinates final {
+struct Wgs84Coordinates final {
   double longitude{};
   double latitude{};
 };
@@ -12,7 +12,7 @@ export struct Wgs84Coordinates final {
 /**
  * Image coordinates.
  */
-export struct ImageCoordinates final {
+struct ImageCoordinates final {
   double x{};
   double y{};
 };

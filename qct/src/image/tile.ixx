@@ -10,7 +10,7 @@ import :palette;
 import :palette.color;
 import :util.reader;
 
-namespace qct::image {
+export namespace qct::image {
 /**
  * Represents a 64 x 64 tile of the image. Tiles may be encoded with different algorithms for efficiency purposes.
  */
@@ -43,9 +43,7 @@ struct ImageTile final {
    */
   static Encoding encodingOf(std::ifstream& file, std::int32_t image_tile_byte_offset);
 };
-}  // namespace qct::image
 
-namespace qct::image {
 ImageTile::Encoding ImageTile::encodingOf(std::ifstream& file, const std::int32_t image_tile_byte_offset) {
   const std::uint8_t first_byte = util::readByte(file, image_tile_byte_offset);
   if (first_byte == 0 || first_byte == 255)

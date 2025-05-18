@@ -9,7 +9,7 @@ import :image.decoder;
 import :palette;
 import :util.reader;
 
-namespace qct::image::decode {
+export namespace qct::image::decode {
 /**
  * A decoder for image tiles using Pixel Packing. NOTE: This decoder has not been implemented yet.
  */

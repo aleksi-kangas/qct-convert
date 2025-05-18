@@ -2,12 +2,12 @@ module;
 
 export module qct:common.crtp;
 
-namespace qct::common::crtp {
+export namespace qct::common::crtp {
 /**
  * A helper template for using std::visit with a std::variant.
  * @tparam Ts the types of the variant
  */
-export template <class... Ts>
+template <class... Ts>
 struct Overloaded : Ts... {
   using Ts::operator()...;
 };
@@ -16,6 +16,6 @@ struct Overloaded : Ts... {
  * A helper template for using std::visit with a std::variant.
  * @tparam Ts the types of the variant
  */
-export template <class... Ts>
+template <class... Ts>
 Overloaded(Ts...) -> Overloaded<Ts...>;
 }  // namespace qct::common::crtp

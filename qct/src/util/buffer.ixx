@@ -9,8 +9,8 @@ export module qct:util.buffer;
 import :common.exception;
 import :util.reader;
 
-namespace qct::util {
-export class DynamicByteBuffer {
+export namespace qct::util {
+class DynamicByteBuffer {
  public:
   explicit DynamicByteBuffer(std::ifstream& file, std::int32_t byte_offset, std::int32_t initial_byte_count);
 

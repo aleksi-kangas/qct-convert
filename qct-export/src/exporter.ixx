@@ -11,7 +11,7 @@ import qct;
 
 import :exception;
 
-namespace qct::ex {
+export namespace qct::ex {
 /**
  * The base export options.
  */

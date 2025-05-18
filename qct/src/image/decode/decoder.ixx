@@ -10,7 +10,7 @@ export module qct:image.decoder;
 import :image.tile;
 import :palette;
 
-namespace qct::image::decode {
+export namespace qct::image::decode {
 /**
  * An abstract image tile decoder using CRTP.
  * @tparam C the concrete class type

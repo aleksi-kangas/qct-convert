@@ -111,9 +111,7 @@ struct Metadata final {
     return os;
   }
 };
-}  // namespace qct::meta
 
-namespace qct::meta {
 Metadata Metadata::parse(const std::filesystem::path& filepath) {
   std::ifstream file{filepath, std::ios::binary};
   Metadata metadata{};

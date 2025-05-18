@@ -15,13 +15,13 @@ export import :geotiff;
 export import :kml;
 export import :png;
 
-namespace qct::ex {
+export namespace qct::ex {
 /**
  * Construct an exporter given the options.
  * @tparam O export options type
  * @return an exporter
  */
-export template <typename O>
+template <typename O>
 std::unique_ptr<QctExporter<O>> makeExporter() {
   if constexpr (std::is_same_v<O, GeoTiffExportOptions>) {
     return std::make_unique<GeoTiffExporter>();
@@ -39,7 +39,7 @@ std::unique_ptr<QctExporter<O>> makeExporter() {
  * @param qct_file the QCT file to be exported
  * @param export_options the export options
  */
-export template <typename O>
+template <typename O>
 void exportToFormat(const QctFile& qct_file, const O& export_options) {
   const std::unique_ptr<QctExporter<O>> exporter = makeExporter<O>();
   try {

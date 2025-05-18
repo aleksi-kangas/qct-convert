@@ -16,7 +16,7 @@ import :palette.color;
 import :util.buffer;
 import :util.reader;
 
-namespace qct::image::decode {
+export namespace qct::image::decode {
 /**
  * Huffman code book.
  */

@@ -40,9 +40,7 @@ struct Palette final {
     return os;
   }
 };
-}  // namespace qct::palette
 
-namespace qct::palette {
 Palette Palette::parse(const std::filesystem::path& filepath) {
   std::ifstream file{filepath, std::ios::binary};
   std::array<Color, COLOR_COUNT> colors{};

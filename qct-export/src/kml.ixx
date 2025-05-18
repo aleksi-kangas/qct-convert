@@ -10,18 +10,18 @@ import qct;
 import :exception;
 import :exporter;
 
-namespace qct::ex {
+export namespace qct::ex {
 /**
  * Options for exporting a QCT file to a PNG file.
  */
-export struct KmlExportOptions final : ExportOptions {
+struct KmlExportOptions final : ExportOptions {
   explicit KmlExportOptions(const std::filesystem::path& path, const bool overwrite) : ExportOptions{path, overwrite} {}
 };
 
 /**
  * Exporter for KML files.
  */
-export class KmlExporter final : public QctExporter<KmlExportOptions> {
+class KmlExporter final : public QctExporter<KmlExportOptions> {
  public:
   ~KmlExporter() override = default;
 

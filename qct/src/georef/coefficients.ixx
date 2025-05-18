@@ -13,7 +13,7 @@ export module qct:georef.coefficients;
 import :georef.coordinates;
 import :util.reader;
 
-namespace qct::georef {
+export namespace qct::georef {
 /**
  * +--------+--------------+----------------------------------------------------+
  * | Offset | Size (Bytes) | Content                                            |
@@ -36,7 +36,7 @@ namespace qct::georef {
  * | 0x48       | easXXX            | norXXX            | latYYY            | lonYYY            |
  * +------------+-------------------+-------------------+-------------------+-------------------+
  */
-export struct GeorefCoefficients final {
+struct GeorefCoefficients final {
   static constexpr std::int32_t BYTE_OFFSET{0x0060};
 
   double eas;

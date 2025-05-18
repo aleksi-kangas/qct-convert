@@ -10,11 +10,11 @@ import :georef.coefficients;
 import :georef.coordinates;
 import :meta.datum;
 
-namespace qct::georef {
+export namespace qct::georef {
 /**
  * Georeferencing information about the .QCT map file.
  */
-export struct Georef {
+struct Georef {
   GeorefCoefficients coefficients;
 
   /**
@@ -36,9 +36,7 @@ export struct Georef {
 
   static Georef parse(const std::filesystem::path& filepath);
 };
-}  // namespace qct::georef
 
-namespace qct::georef {
 Wgs84Coordinates Georef::toWgs84Coordinates(const ImageCoordinates& image_coordinates,
                                             const meta::DatumShift& datum_shift) const {
   // clang-format off

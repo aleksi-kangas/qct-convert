@@ -42,9 +42,7 @@ struct MapOutline final {
     return os;
   }
 };
-}  // namespace qct::meta
 
-namespace qct::meta {
 MapOutline::Point MapOutline::Point::parse(std::ifstream& file, const std::int32_t byteOffset) {
   return {util::readDouble(file, byteOffset + 0x00), util::readDouble(file, byteOffset + 0x08)};
 }

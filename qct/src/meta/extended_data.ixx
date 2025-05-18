@@ -41,9 +41,7 @@ struct ExtendedData final {
     return os;
   }
 };
-}  // namespace qct::meta
 
-namespace qct::meta {
 ExtendedData ExtendedData::parse(std::ifstream& file, const std::int32_t pointer_byte_offset) {
   const std::int32_t byte_offset = util::readInt(file, pointer_byte_offset);
   return {.map_type = util::readStringFromPointer(file, byte_offset + 0x00),

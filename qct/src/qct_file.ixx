@@ -15,7 +15,7 @@ import :meta;
 
 export namespace qct {
 /**
- *
+ * The QCT-file.
  */
 struct QctFile final {
   meta::Metadata metadata{};
@@ -28,9 +28,7 @@ struct QctFile final {
 
   static QctFile parse(const std::filesystem::path& filepath);
 };
-}  // namespace qct
 
-namespace qct {
 QctFile QctFile::parse(const std::filesystem::path& filepath) {
   auto metadata_future = std::async(std::launch::async, meta::Metadata::parse, filepath);
   auto georef_future = std::async(std::launch::async, georef::Georef::parse, filepath);
