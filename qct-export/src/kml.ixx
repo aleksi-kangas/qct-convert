@@ -21,21 +21,20 @@ struct KmlExportOptions final : ExportOptions {
 /**
  * Exporter for KML files.
  */
-class KmlExporter final : public QctExporter<KmlExportOptions> {
+class KmlExporter final : public AbstractExporter<KmlExporter, KmlExportOptions> {
  public:
   ~KmlExporter() override = default;
 
- protected:
   /**
    * Export the given QCT file to the specified path as a KML file.
    *
    * @param qct_file The QCT file to export.
    * @param options The export options for the KML export.
    */
-  void exportToImpl(const QctFile& qct_file, const KmlExportOptions& options) const override;
+  void exportTo(const QctFile& qct_file, const KmlExportOptions& options) const;
 };
 
-void KmlExporter::exportToImpl(const QctFile& qct_file, const KmlExportOptions& options) const {
+void KmlExporter::exportTo(const QctFile& qct_file, const KmlExportOptions& options) const {
   const auto& [points] = qct_file.metadata.map_outline;
   if (points.empty()) {
     throw QctExportException{"No points provided for .kml export"};

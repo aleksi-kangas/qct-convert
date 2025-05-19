@@ -58,19 +58,18 @@ struct GeoTiffExportOptions final : ExportOptions {
 /**
  * Exporter for GeoTIFF files.
  */
-class GeoTiffExporter final : public QctExporter<GeoTiffExportOptions> {
+class GeoTiffExporter final : public AbstractExporter<GeoTiffExporter, GeoTiffExportOptions> {
  public:
   GeoTiffExporter();
   ~GeoTiffExporter() override = default;
 
- protected:
   /**
    * Export the given QCT file to the specified path as a GeoTIFF file.
    *
    * @param qct_file The QCT file to export.
    * @param options The export options for the GeoTIFF file.
    */
-  void exportToImpl(const QctFile& qct_file, const GeoTiffExportOptions& options) const override;
+  void exportTo(const QctFile& qct_file, const GeoTiffExportOptions& options) const;
 
  private:
   static constexpr std::int32_t EPSG_4326_WGS84{4326};
@@ -111,7 +110,7 @@ GeoTiffExporter::GeoTiffExporter() {
   std::call_once(once_flag_, setProjContextSearchPaths);
 }
 
-void GeoTiffExporter::exportToImpl(const QctFile& qct_file, const GeoTiffExportOptions& options) const {
+void GeoTiffExporter::exportTo(const QctFile& qct_file, const GeoTiffExportOptions& options) const {
   constexpr auto driver_name{"GTiff"};
   GDALAllRegister();
   GDALDriver* gdal_driver = GetGDALDriverManager()->GetDriverByName(driver_name);

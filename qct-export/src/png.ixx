@@ -23,19 +23,18 @@ struct PngExportOptions final : ExportOptions {
 /**
  * Exporter for PNG files.
  */
-class PngExporter final : public QctExporter<PngExportOptions> {
+class PngExporter final : public AbstractExporter<PngExporter, PngExportOptions> {
  public:
   PngExporter();
   ~PngExporter() override = default;
 
- protected:
   /**
    * Export the given QCT file to the specified path as a PNG file.
    *
    * @param qct_file The QCT file to export.
    * @param options The export options for the PNG export.
    */
-  void exportToImpl(const QctFile& qct_file, const PngExportOptions& options) const override;
+  void exportTo(const QctFile& qct_file, const PngExportOptions& options) const;
 
  private:
   static std::once_flag once_flag_;
@@ -47,7 +46,7 @@ PngExporter::PngExporter() {
   std::call_once(once_flag_, fpng::fpng_init);
 }
 
-void PngExporter::exportToImpl(const QctFile& qct_file, const PngExportOptions& options) const {
+void PngExporter::exportTo(const QctFile& qct_file, const PngExportOptions& options) const {
   if (!fpng::fpng_encode_image_to_file(options.path.string().c_str(), qct_file.image_index.imageBytesView().data(),
                                        qct_file.width(), qct_file.height(), palette::COLOR_CHANNELS, 0)) {
     throw QctExportException{"Failed to export PNG file."};

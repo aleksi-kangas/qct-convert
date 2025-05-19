@@ -29,24 +29,28 @@ struct ExportOptions {
  * A base class for QCT exporters.
  * @tparam O the export options type
  */
-template <typename O>
-class QctExporter {
+template <class C, typename O>
+class AbstractExporter {
  public:
-  virtual ~QctExporter() = default;
+  virtual ~AbstractExporter() = default;
 
   void exportTo(const QctFile& qct_file, const O& options) const {
     checkOverwrite(options);
-    exportToImpl(qct_file, options);
+    underlying().exportTo(qct_file, options);
   }
 
  protected:
-  virtual void exportToImpl(const QctFile&, const O& options) const = 0;
-
   static void checkOverwrite(const O& options) {
     if (!options.overwrite && std::filesystem::exists(options.path)) {
       throw QctExportException{
           std::format("File {} already exists, and overwrite is disabled.", options.path.string())};
     }
   }
+
+ private:
+  friend C;
+
+  [[nodiscard]] C& underlying() { return static_cast<C&>(*this); }
+  [[nodiscard]] const C& underlying() const { return static_cast<const C&>(*this); }
 };
 }  // namespace qct::ex
