@@ -34,6 +34,5 @@ void exportToFormat(const QctFile& qct_file, const O& export_options) {
     const PngExporter exporter{};
     exporter.exportTo(qct_file, export_options);
   }
-  throw std::logic_error{"Unknown ExportOptions"};
 }
 }  // namespace qct::ex
