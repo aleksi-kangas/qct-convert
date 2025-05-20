@@ -83,17 +83,11 @@ jobs:
         run: ctest --output-on-failure
         working-directory: ${{ github.workspace }}/build/release
 
-      - name: "Package .zip (Windows)"
-        if: matrix.os == 'windows-latest'
+      - name: "Package with CPack"
         run: |
-          Compress-Archive -Path "${{ github.workspace }}\build\release\qct-convert.exe" -DestinationPath "qct-convert_windows_x64.zip"
-
-      - name: "Package .zip (MacOS & Ubuntu)"
-        if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
-        run: |
-          cd ${{ github.workspace }}/build/release/
-          zip ${{ github.workspace }}/qct-convert_${{ matrix.os-short }}_${{ matrix.architecture }}.zip qct-convert
-          cd ${{ github.workspace }}
+          cpack -G ZIP
+          mv *.zip ${{ github.workspace }}/
+        working-directory: ${{ github.workspace }}/build/release
 
       - name: "Save VCPKG cache"
         uses: actions/cache/save@v4
