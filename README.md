@@ -74,8 +74,6 @@ export options are specified, the tool decodes the file and prints its metadata.
 
 - `--export-png-path <path>`: Export map image to a `.png` file
 
-You can use the `--export-kml` flag to export map boundaries to a `.kml` file.
-
 On Windows:
 
 ```cmd
