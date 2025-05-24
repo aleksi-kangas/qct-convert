@@ -2,6 +2,7 @@ module;
 
 #include <cstdint>
 #include <fstream>
+#include <iostream>
 
 export module qct:image.decode.pp;
 
@@ -22,6 +23,7 @@ class PixelPackingImageTileDecoder final : public AbstractImageTileDecoder<Pixel
   [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file,
                                                       const std::int32_t image_tile_byte_offset) const {
     // TODO
+    std::cerr << "Pixel packing decoder not implemented, output tile shall be empty" << std::endl;
     return {};
   }
 };

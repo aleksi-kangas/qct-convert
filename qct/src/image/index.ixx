@@ -101,7 +101,8 @@ std::vector<std::uint8_t> ImageIndex::channelBytes(const std::int32_t channel_in
 
 ImageIndex ImageIndex::parse(const std::filesystem::path& filepath, const meta::Metadata& metadata,
                              const palette::Palette& palette) {
-  std::vector<std::uint8_t> image_bytes(metadata.height_tiles * metadata.width_tiles * ImageTile::BYTE_COUNT);
+  std::vector<std::uint8_t> image_bytes(metadata.height_tiles * metadata.width_tiles *
+                                        static_cast<std::size_t>(ImageTile::BYTE_COUNT));
   std::vector<std::future<void>> image_tile_futures;
   image_tile_futures.reserve(metadata.height_tiles * metadata.width_tiles);
   for (std::int32_t y_tile = 0; y_tile < metadata.height_tiles; ++y_tile) {
@@ -143,11 +144,11 @@ std::int32_t ImageIndex::readImageTilePointer(std::ifstream& file, const std::in
 void ImageIndex::copyTileToImage(const std::int32_t y_tile, const std::int32_t x_tile,
                                  const ImageTile::bytes_2d_t& tile_bytes, const std::int32_t image_width_bytes,
                                  std::vector<std::uint8_t>& image_bytes) {
-  const std::int32_t tile_image_byte_offset =
-      y_tile * ImageTile::HEIGHT * image_width_bytes + x_tile * ImageTile::ROW_BYTE_COUNT;
+  const std::int64_t tile_image_byte_offset =
+      y_tile * ImageTile::HEIGHT * static_cast<std::int64_t>(image_width_bytes) + x_tile * ImageTile::ROW_BYTE_COUNT;
   for (std::int32_t tile_row = 0; tile_row < ImageTile::HEIGHT; ++tile_row) {
     const ImageTile::row_bytes_t& tile_row_bytes = tile_bytes[tile_row];
-    const std::int32_t row_offset = tile_image_byte_offset + tile_row * image_width_bytes;
+    const std::int64_t row_offset = static_cast<std::int64_t>(tile_image_byte_offset) + tile_row * image_width_bytes;
     std::ranges::copy(tile_row_bytes, image_bytes.begin() + row_offset);
   }
 }

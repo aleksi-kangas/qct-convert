@@ -18,11 +18,10 @@ export namespace qct::ex {
 struct ExportOptions {
   virtual ~ExportOptions() = default;
   std::filesystem::path path{};
-  bool overwrite{true};
 
  protected:
-  explicit ExportOptions(std::filesystem::path path, const bool overwrite = true)
-      : path{std::move(path)}, overwrite{overwrite} {}
+  explicit ExportOptions(std::filesystem::path path)
+      : path{std::move(path)} {}
 };
 
 /**
@@ -35,16 +34,7 @@ class AbstractExporter {
   virtual ~AbstractExporter() = default;
 
   void exportTo(const QctFile& qct_file, const O& options) const {
-    checkOverwrite(options);
     underlying().exportTo(qct_file, options);
-  }
-
- protected:
-  static void checkOverwrite(const O& options) {
-    if (!options.overwrite && std::filesystem::exists(options.path)) {
-      throw QctExportException{
-          std::format("File {} already exists, and overwrite is disabled.", options.path.string())};
-    }
   }
 
  private:

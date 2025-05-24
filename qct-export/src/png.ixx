@@ -17,7 +17,7 @@ export namespace qct::ex {
  * Options for exporting a QCT file to a PNG file.
  */
 struct PngExportOptions final : ExportOptions {
-  explicit PngExportOptions(const std::filesystem::path& path, const bool overwrite) : ExportOptions{path, overwrite} {}
+  explicit PngExportOptions(const std::filesystem::path& path) : ExportOptions{path} {}
 };
 
 /**

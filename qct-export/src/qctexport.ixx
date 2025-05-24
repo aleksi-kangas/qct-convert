@@ -24,15 +24,19 @@ export namespace qct::ex {
  */
 template <typename O>
 void exportToFormat(const QctFile& qct_file, const O& export_options) {
-  if constexpr (std::is_same_v<O, GeoTiffExportOptions>) {
-    const GeoTiffExporter exporter{};
-    exporter.exportTo(qct_file, export_options);
-  } else if constexpr (std::is_same_v<O, KmlExportOptions>) {
-    const KmlExporter exporter{};
-    exporter.exportTo(qct_file, export_options);
-  } else if constexpr (std::is_same_v<O, PngExportOptions>) {
-    const PngExporter exporter{};
-    exporter.exportTo(qct_file, export_options);
+  try {
+    if constexpr (std::is_same_v<O, GeoTiffExportOptions>) {
+      const GeoTiffExporter exporter{};
+      exporter.exportTo(qct_file, export_options);
+    } else if constexpr (std::is_same_v<O, KmlExportOptions>) {
+      const KmlExporter exporter{};
+      exporter.exportTo(qct_file, export_options);
+    } else if constexpr (std::is_same_v<O, PngExportOptions>) {
+      const PngExporter exporter{};
+      exporter.exportTo(qct_file, export_options);
+    }
+  } catch (const QctExportException& e) {
+    std::cerr << "Failed to export: " << e.what() << std::endl;
   }
 }
 }  // namespace qct::ex

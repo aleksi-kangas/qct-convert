@@ -50,9 +50,8 @@ struct GeoTiffExportOptions final : ExportOptions {
   };
   GeorefMethod georef_method{GeorefMethod::AUTOMATIC};
 
-  explicit GeoTiffExportOptions(const std::filesystem::path& path, const bool overwrite,
-                                const GeorefMethod georef_method)
-      : ExportOptions{path, overwrite}, georef_method{georef_method} {}
+  explicit GeoTiffExportOptions(const std::filesystem::path& path, const GeorefMethod georef_method)
+      : ExportOptions{path}, georef_method{georef_method} {}
 };
 
 /**
