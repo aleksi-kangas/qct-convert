@@ -14,6 +14,8 @@ import :image.index;
 import :image.tile;
 import :palette;
 import :meta;
+import :meta.magic;
+import :meta.version;
 
 export namespace qct {
 /**
