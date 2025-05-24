@@ -48,7 +48,7 @@ export options are specified, the tool decodes the file and prints its metadata.
 ### CLI
 
 - `<path/to/map.qct>`: Path to the input `.qct` file (required)
-- `--no-overwrite`: To prevent overwriting existing files (default is false)
+- `--force`: To attempt decoding anyways if the metadata is invalid or shows incompatible file
 
 #### Export Formats
 
