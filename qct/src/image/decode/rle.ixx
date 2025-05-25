@@ -5,6 +5,7 @@ module;
 
 export module qct:image.decode.rle;
 
+import :common.alias;
 import :image.decoder;
 import :image.decode.palette;
 import :image.tile;
@@ -35,7 +36,7 @@ export class RLEImageTileDecoder final : public AbstractImageTileDecoder<RLEImag
    * @param image_tile_byte_offset the byte offset of the tile in the image file
    * @return the tile bytes
    */
-  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file, std::int32_t image_tile_byte_offset) const;
+  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file, byte_offset_t image_tile_byte_offset) const;
 
  private:
   /**
@@ -48,9 +49,9 @@ export class RLEImageTileDecoder final : public AbstractImageTileDecoder<RLEImag
 };
 
 ImageTile::bytes_2d_t RLEImageTileDecoder::decodeTileBytes(std::ifstream& file,
-                                                     const std::int32_t image_tile_byte_offset) const {
+                                                           const byte_offset_t image_tile_byte_offset) const {
   const auto sub_palette = SubPalette::parse(file, image_tile_byte_offset, SubPalette::SizeType::NORMAL);
-  const std::int32_t pixel_data_byte_offset = image_tile_byte_offset + 0x01 + sub_palette.size;
+  const byte_offset_t pixel_data_byte_offset = image_tile_byte_offset + 0x01 + sub_palette.size;
   ImageTile::bytes_2d_t tile{};
   // In order to avoid reading one byte at a time from the file,
   // read bytes into a buffer assuming the worst case of one byte per pixel,
@@ -75,10 +76,11 @@ ImageTile::bytes_2d_t RLEImageTileDecoder::decodeTileBytes(std::ifstream& file,
 }
 
 DecodedRleByte RLEImageTileDecoder::decodeRleByte(const std::uint8_t rle_byte, const SubPalette& sub_palette) {
-  const std::int32_t sub_palette_index_mask = (1 << sub_palette.bitsRequiredToIndex()) - 1;
-  const std::int32_t sub_palette_index = rle_byte & sub_palette_index_mask;
-  const std::int32_t run_length = rle_byte >> sub_palette.bitsRequiredToIndex();
-  return {.palette_index = sub_palette.palette_indices[sub_palette_index], .run_length = run_length};
+  const std::uint32_t sub_palette_index_mask = (1 << static_cast<std::uint32_t>(sub_palette.bitsRequiredToIndex())) - 1;
+  const std::uint32_t sub_palette_index = rle_byte & sub_palette_index_mask;
+  const std::uint32_t run_length = rle_byte >> sub_palette.bitsRequiredToIndex();
+  return {.palette_index = sub_palette.palette_indices[sub_palette_index],
+          .run_length = static_cast<std::int32_t>(run_length)};
 }
 
 }  // namespace qct::image::decode

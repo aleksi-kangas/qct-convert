@@ -6,6 +6,7 @@ module;
 
 export module qct:image.decode.pp;
 
+import :common.alias;
 import :image.decoder;
 import :image.tile;
 import :palette;
@@ -21,7 +22,7 @@ class PixelPackingImageTileDecoder final : public AbstractImageTileDecoder<Pixel
   ~PixelPackingImageTileDecoder() override = default;
 
   [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file,
-                                                      const std::int32_t image_tile_byte_offset) const {
+                                                      const byte_offset_t image_tile_byte_offset) const {
     // TODO
     std::cerr << "Pixel packing decoder not implemented, output tile shall be empty" << std::endl;
     return {};

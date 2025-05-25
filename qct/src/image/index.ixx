@@ -14,6 +14,7 @@ module;
 
 export module qct:image.index;
 
+import :common.alias;
 import :common.crtp;
 import :image.decode;
 import :image.tile;
@@ -31,7 +32,7 @@ export namespace qct::image {
  * +--------+-------------------+--------------------------------------------+
  */
 struct ImageIndex final {
-  static constexpr std::int32_t BYTE_OFFSET{0x45A0};
+  static constexpr byte_offset_t BYTE_OFFSET{0x45A0};
 
   std::vector<std::uint8_t> image_bytes{};
 
@@ -121,11 +122,11 @@ std::future<void> ImageIndex::parseImageTileAsync(ImageTileParseTask&& task, std
       std::launch::async,
       [&image_bytes](const ImageTileParseTask& t) {
         std::ifstream file{t.filepath, std::ios::binary};
-        const std::int32_t image_tile_byte_offset =
+        const byte_offset_t image_tile_byte_offset =
             readImageTilePointer(file, t.metadata.width_tiles, t.y_tile, t.x_tile);
         const ImageTile::Encoding tile_encoding = ImageTile::encodingOf(file, image_tile_byte_offset);
         const auto image_tile_decoder = decode::makeImageTileDecoder(tile_encoding, t.palette);
-        std::visit(common::crtp::Overloaded{[&](auto& decoder) {
+        std::visit(crtp::Overloaded{[&](auto& decoder) {
                      const ImageTile::bytes_2d_t tile_bytes_2d = decoder.decodeTile(file, image_tile_byte_offset);
                      copyTileToImage(t.y_tile, t.x_tile, tile_bytes_2d,
                                      t.metadata.width_tiles * ImageTile::ROW_BYTE_COUNT, image_bytes);
@@ -137,18 +138,18 @@ std::future<void> ImageIndex::parseImageTileAsync(ImageTileParseTask&& task, std
 
 std::int32_t ImageIndex::readImageTilePointer(std::ifstream& file, const std::int32_t width_tiles,
                                               const std::int32_t y_tile, const std::int32_t x_tile) {
-  const std::int32_t image_tile_pointer_offset = (width_tiles * y_tile + x_tile) * 0x04;
+  const byte_offset_t image_tile_pointer_offset = (width_tiles * y_tile + x_tile) * 0x04;
   return util::readInt(file, BYTE_OFFSET + image_tile_pointer_offset);
 }
 
 void ImageIndex::copyTileToImage(const std::int32_t y_tile, const std::int32_t x_tile,
                                  const ImageTile::bytes_2d_t& tile_bytes, const std::int32_t image_width_bytes,
                                  std::vector<std::uint8_t>& image_bytes) {
-  const std::int64_t tile_image_byte_offset =
-      y_tile * ImageTile::HEIGHT * static_cast<std::int64_t>(image_width_bytes) + x_tile * ImageTile::ROW_BYTE_COUNT;
+  const byte_offset_t tile_image_byte_offset =
+      y_tile * ImageTile::HEIGHT * static_cast<byte_offset_t>(image_width_bytes) + x_tile * ImageTile::ROW_BYTE_COUNT;
   for (std::int32_t tile_row = 0; tile_row < ImageTile::HEIGHT; ++tile_row) {
     const ImageTile::row_bytes_t& tile_row_bytes = tile_bytes[tile_row];
-    const std::int64_t row_offset = static_cast<std::int64_t>(tile_image_byte_offset) + tile_row * image_width_bytes;
+    const byte_offset_t row_offset = tile_image_byte_offset + tile_row * image_width_bytes;
     std::ranges::copy(tile_row_bytes, image_bytes.begin() + row_offset);
   }
 }

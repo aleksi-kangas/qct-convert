@@ -47,7 +47,7 @@ int main(const int argc, char** argv) {
         qct::ex::KmlExportOptions kml_export_options{kml_export_path};
         qct::ex::PngExportOptions png_export_options{png_export_path};
         exports(qct_file, geotiff_export_options, kml_export_options, png_export_options);
-      } catch (const qct::common::QctException& e) {
+      } catch (const qct::QctException& e) {
         std::cerr << e.what() << std::endl;
       }
     } else {

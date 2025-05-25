@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME}
         src/qct_file.ixx
 
         # common
+        src/common/alias.ixx
         src/common/crtp.ixx
         src/common/exception.ixx
 

@@ -7,6 +7,7 @@ module;
 
 export module qct:image.decoder;
 
+import :common.alias;
 import :image.tile;
 import :palette;
 
@@ -24,7 +25,7 @@ class AbstractImageTileDecoder;
  */
 template <typename T>
 concept ImageTileBytesDecoder = requires(T t) {
-  { t.decodeTileBytes(std::declval<std::ifstream&>(), std::declval<std::int32_t>()) } -> std::same_as<ImageTile::bytes_2d_t>;
+  { t.decodeTileBytes(std::declval<std::ifstream&>(), std::declval<byte_offset_t>()) } -> std::same_as<ImageTile::bytes_2d_t>;
   requires std::derived_from<T, AbstractImageTileDecoder<T>>;
 };
 
@@ -37,7 +38,7 @@ class AbstractImageTileDecoder {
  public:
   virtual ~AbstractImageTileDecoder() = default;
 
-  [[nodiscard]] ImageTile::bytes_2d_t decodeTile(std::ifstream& file, std::int32_t image_tile_byte_offset) const {
+  [[nodiscard]] ImageTile::bytes_2d_t decodeTile(std::ifstream& file, const byte_offset_t image_tile_byte_offset) const {
     static_assert(ImageTileBytesDecoder<C>, "C must be a concrete class type that implements ImageTileBytesDecoder.");
     ImageTile::bytes_2d_t tile_bytes = underlying().decodeTileBytes(file, image_tile_byte_offset);
     deinterlaceRows(tile_bytes);

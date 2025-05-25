@@ -8,6 +8,7 @@ module;
 
 export module qct:image.decode.huffman;
 
+import :common.alias;
 import :common.exception;
 import :image.decoder;
 import :image.tile;
@@ -65,7 +66,7 @@ class HuffmanImageTileDecoder final : public AbstractImageTileDecoder<HuffmanIma
    * @param image_tile_byte_offset the byte offset of the tile in the image file
    * @return the tile bytes
    */
-  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file, std::int32_t image_tile_byte_offset) const;
+  [[nodiscard]] ImageTile::bytes_2d_t decodeTileBytes(std::ifstream& file, byte_offset_t image_tile_byte_offset) const;
 };
 
 bool HuffmanCodeBook::isColor() const {
@@ -120,7 +121,7 @@ palette::Color HuffmanCodeBook::getColor(const palette::Palette& palette) const 
 }
 palette::Color HuffmanCodeBook::getColor(const palette::Palette& palette, const std::int32_t node) const {
   if (!isColor(node))
-    throw common::QctException{std::format("Attempting to get color from non-color node={}", node)};
+    throw QctException{std::format("Attempting to get color from non-color node={}", node)};
   return palette.colors[static_cast<std::int32_t>(bytes_[node])];
 }
 
@@ -139,7 +140,7 @@ void HuffmanCodeBook::step(const bool bit) {
     } else if (isFarBranch()) {
       pointer_ += farBranchJumpSize(pointer_);
     } else {
-      throw common::QctException{"Attempting to step in a non-branch node"};
+      throw QctException{"Attempting to step in a non-branch node"};
     }
   } else {  // Left, i.e. no jump
     if (isFarBranch(pointer_)) {
@@ -147,7 +148,7 @@ void HuffmanCodeBook::step(const bool bit) {
     } else if (isNearBranch(pointer_)) {
       ++pointer_;
     } else {
-      throw common::QctException{"Attempting to step in a non-branch node"};
+      throw QctException{"Attempting to step in a non-branch node"};
     }
   }
 }
@@ -170,7 +171,7 @@ HuffmanCodeBook HuffmanCodeBook::parse(util::DynamicByteBuffer& dynamic_byte_buf
     }
   }
   if (!tree.isValid()) {
-    throw common::QctException{"Invalid Huffman tree"};
+    throw QctException{"Invalid Huffman tree"};
   }
   return tree;
 }
@@ -182,7 +183,7 @@ std::int32_t HuffmanCodeBook::nearBranchJumpSize(const std::int32_t node) const 
   return 257 - static_cast<std::int32_t>(bytes_[node]);
 }
 ImageTile::bytes_2d_t HuffmanImageTileDecoder::decodeTileBytes(std::ifstream& file,
-                                                               const std::int32_t image_tile_byte_offset) const {
+                                                               const byte_offset_t image_tile_byte_offset) const {
   ImageTile::bytes_2d_t tile{};
   util::DynamicByteBuffer dynamic_byte_buffer{file, image_tile_byte_offset + 1, 4096};
   auto tree = HuffmanCodeBook::parse(dynamic_byte_buffer);

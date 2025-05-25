@@ -2,6 +2,7 @@ export module qct;
 export import :file;
 
 // common
+export import :common.alias;
 export import :common.crtp;
 export import :common.exception;
 

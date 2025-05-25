@@ -9,6 +9,7 @@ module;
 
 export module qct:image.decode.palette;
 
+import :common.alias;
 import :util.reader;
 
 export namespace qct::image::decode {
@@ -28,10 +29,10 @@ struct SubPalette final {
     return static_cast<std::int32_t>(std::ceil(std::log2(size)));
   }
 
-  static SubPalette parse(std::ifstream& file, std::int32_t byte_offset, SizeType size_type);
+  static SubPalette parse(std::ifstream& file, byte_offset_t byte_offset, SizeType size_type);
 };
 
-SubPalette SubPalette::parse(std::ifstream& file, const std::int32_t byte_offset, const SizeType size_type) {
+SubPalette SubPalette::parse(std::ifstream& file, const byte_offset_t byte_offset, const SizeType size_type) {
   std::int32_t size{};
   switch (size_type) {
     case SizeType::NORMAL: {

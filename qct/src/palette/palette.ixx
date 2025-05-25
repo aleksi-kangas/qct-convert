@@ -8,6 +8,7 @@ module;
 
 export module qct:palette;
 
+import :common.alias;
 import :palette.color;
 import :util.reader;
 
@@ -20,7 +21,7 @@ export namespace qct::palette {
  * +--------+--------------+------------------------------+
  */
 struct Palette final {
-  static constexpr std::int32_t BYTE_OFFSET{0x01A0};
+  static constexpr byte_offset_t BYTE_OFFSET{0x01A0};
   static constexpr std::int32_t COLOR_COUNT{128};
 
   std::array<Color, COLOR_COUNT> colors{};

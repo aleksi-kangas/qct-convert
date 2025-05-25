@@ -6,6 +6,7 @@ module;
 
 export module qct:image.tile;
 
+import :common.alias;
 import :palette;
 import :palette.color;
 import :util.reader;
@@ -41,10 +42,10 @@ struct ImageTile final {
    * @param[in] image_tile_byte_offset image tile byte offset
    * @return encoding of the image tile
    */
-  static Encoding encodingOf(std::ifstream& file, std::int32_t image_tile_byte_offset);
+  static Encoding encodingOf(std::ifstream& file, byte_offset_t image_tile_byte_offset);
 };
 
-ImageTile::Encoding ImageTile::encodingOf(std::ifstream& file, const std::int32_t image_tile_byte_offset) {
+ImageTile::Encoding ImageTile::encodingOf(std::ifstream& file, const byte_offset_t image_tile_byte_offset) {
   const std::uint8_t first_byte = util::readByte(file, image_tile_byte_offset);
   if (first_byte == 0 || first_byte == 255)
     return Encoding::HUFFMAN_CODING;

@@ -6,6 +6,7 @@ module;
 
 export module qct:meta.extended;
 
+import :common.alias;
 import :meta.datum;
 import :util.reader;
 
@@ -30,7 +31,7 @@ struct ExtendedData final {
   std::string disk_name{};
   std::string associated_data{};
 
-  static ExtendedData parse(std::ifstream& file, std::int32_t pointer_byte_offset);
+  static ExtendedData parse(std::ifstream& file, byte_offset_t pointer_byte_offset);
 
   friend std::ostream& operator<<(std::ostream& os, const ExtendedData& extended_data) {
     os << "\n"
@@ -42,8 +43,8 @@ struct ExtendedData final {
   }
 };
 
-ExtendedData ExtendedData::parse(std::ifstream& file, const std::int32_t pointer_byte_offset) {
-  const std::int32_t byte_offset = util::readInt(file, pointer_byte_offset);
+ExtendedData ExtendedData::parse(std::ifstream& file, const byte_offset_t pointer_byte_offset) {
+  const byte_offset_t byte_offset = util::readInt(file, pointer_byte_offset);
   return {.map_type = util::readStringFromPointer(file, byte_offset + 0x00),
           .datum_shift = DatumShift::parse(file, byte_offset + 0x04),
           .disk_name = util::readStringFromPointer(file, byte_offset + 0x08),

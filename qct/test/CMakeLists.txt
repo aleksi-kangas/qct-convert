@@ -7,9 +7,8 @@ set(CMAKE_CXX_STANDARD 23)
 find_package(GTest CONFIG REQUIRED)
 include(GoogleTest)
 
-add_executable(${PROJECT_NAME} test.cpp
-        georef/georef_test.cpp
-)
+add_executable(${PROJECT_NAME}
+        georef/georef_test.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE libqct GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/W3>

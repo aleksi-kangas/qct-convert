@@ -64,7 +64,7 @@ void QctFile::checkMagicNumber(const meta::MagicNumber magic_number, const bool 
       if (force_decode) {
         std::cerr << unknown_magic_number_message << std::endl;
       } else {
-        throw common::QctException{unknown_magic_number_message};
+        throw QctException{unknown_magic_number_message};
       }
     }
   }
@@ -76,14 +76,14 @@ void QctFile::checkFileFormatVersion(const meta::FileFormatVersion file_format_v
     case meta::FileFormatVersion::QUICK_CHART_SUPPORTING_LICENSE_MANAGEMENT:
       break;
     case meta::FileFormatVersion::QC3:
-      throw common::QctException{"QC3 file format is not supported"};
+      throw QctException{"QC3 file format is not supported"};
     default: {
       const std::string unknown_file_format_version_message{
           "Unknown file format version, use --force flag to attempt decoding anyway"};
       if (force_decode) {
         std::cerr << unknown_file_format_version_message << std::endl;
       } else {
-        throw common::QctException{unknown_file_format_version_message};
+        throw QctException{unknown_file_format_version_message};
       }
     }
   }

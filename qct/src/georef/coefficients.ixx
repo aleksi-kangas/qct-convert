@@ -10,6 +10,7 @@ module;
 
 export module qct:georef.coefficients;
 
+import :common.alias;
 import :georef.coordinates;
 import :util.reader;
 
@@ -37,7 +38,7 @@ export namespace qct::georef {
  * +------------+-------------------+-------------------+-------------------+-------------------+
  */
 struct GeorefCoefficients final {
-  static constexpr std::int32_t BYTE_OFFSET{0x0060};
+  static constexpr byte_offset_t BYTE_OFFSET{0x0060};
 
   double eas;
   double eas_y;

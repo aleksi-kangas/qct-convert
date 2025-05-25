@@ -8,6 +8,7 @@ module;
 
 export module qct:meta;
 
+import :common.alias;
 import :meta.extended;
 import :meta.magic;
 import :meta.outline;
@@ -59,7 +60,7 @@ export namespace qct::meta {
  * +--------+-------------------+--------------------------------------------------------+
  */
 struct Metadata final {
-  static constexpr std::int32_t BYTE_OFFSET{0x0000};
+  static constexpr byte_offset_t BYTE_OFFSET{0x0000};
 
   MagicNumber magic_number{};
   FileFormatVersion file_format_version{};

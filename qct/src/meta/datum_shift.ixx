@@ -5,6 +5,7 @@ module;
 
 export module qct:meta.datum;
 
+import :common.alias;
 import :util.reader;
 
 export namespace qct::meta {
@@ -20,7 +21,7 @@ struct DatumShift final {
   double north{0};
   double east{0};
 
-  static DatumShift parse(std::ifstream& file, std::int32_t pointer_byte_offset);
+  static DatumShift parse(std::ifstream& file, byte_offset_t pointer_byte_offset);
 
   friend std::ostream& operator<<(std::ostream& os, const DatumShift& datum_shift) {
     os << "North: " << datum_shift.north << ", East: " << datum_shift.east;
@@ -28,8 +29,8 @@ struct DatumShift final {
   }
 };
 
-DatumShift DatumShift::parse(std::ifstream& file, const std::int32_t pointer_byte_offset) {
-  const std::int32_t byte_offset = util::readInt(file, pointer_byte_offset);
+DatumShift DatumShift::parse(std::ifstream& file, const byte_offset_t pointer_byte_offset) {
+  const byte_offset_t byte_offset = util::readInt(file, pointer_byte_offset);
   return {.north = util::readDouble(file, byte_offset + 0x00), .east = util::readDouble(file, byte_offset + 0x08)};
 }
 
