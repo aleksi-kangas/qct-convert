@@ -179,11 +179,13 @@ void GeoTiffExporter::setGroundControlPoints(const QctFile& qct_file, GDALDatase
   }
 }
 void GeoTiffExporter::setGeoTransform(const QctFile& qct_file, GDALDataset& gdal_dataset) {
+  const auto datum_shift = qct_file.metadata.extended_data.datum_shift;
+  const auto [top_left_longitude, top_left_latitude] = qct_file.georef.toWgs84Coordinates({0, 0}, datum_shift);
   std::array<double, 6> geo_transform{{
-      qct_file.georef.coefficients.lon,
+      top_left_longitude,
       qct_file.georef.coefficients.lon_x,
       qct_file.georef.coefficients.lon_y,
-      qct_file.georef.coefficients.lat,
+      top_left_latitude,
       qct_file.georef.coefficients.lat_x,
       qct_file.georef.coefficients.lat_y,
   }};
