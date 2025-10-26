@@ -4,11 +4,11 @@ import com.github.aleksikangas.qct.core.color.InterpolationMatrix;
 import com.github.aleksikangas.qct.core.color.Palette;
 import com.github.aleksikangas.qct.core.georef.GeoreferencingCoefficients;
 import com.github.aleksikangas.qct.core.meta.Metadata;
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.parser.ParserRegistryImpl;
+import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
+import com.github.aleksikangas.qct.core.parser.registry.ParserRegistryImpl;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
@@ -31,7 +31,8 @@ import java.nio.file.StandardOpenOption;
 public record QctFile(Metadata metadata,
                       GeoreferencingCoefficients georeferencingCoefficients,
                       Palette palette,
-                      InterpolationMatrix interpolationMatrix) implements Parseable {
+                      InterpolationMatrix interpolationMatrix) implements Parseable<QctFile> {
+  @Nonnull
   @Override
   public String toString() {
     return "Metadata:" +
@@ -47,34 +48,8 @@ public record QctFile(Metadata metadata,
     final Path path = Path.of(args[0]);
     final ParserRegistry parserRegistry = new ParserRegistryImpl();
     try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {
-      final QctFile qctFile = parserRegistry.getParser(QctFile.class)
-                                            .parse(asyncFileChannel, 0x00L, parserRegistry);
+      final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
       System.out.println(qctFile);
-    }
-  }
-
-  public static final class Parser extends AbstractParser<QctFile> {
-    @Override
-    public Class<QctFile> parseableClass() {
-      return QctFile.class;
-    }
-
-    @Override
-    public QctFile parse(final AsynchronousFileChannel asyncFileChannel,
-                         final long byteOffset,
-                         final ParserRegistry parserRegistry) {
-      return new QctFile(parserRegistry.getParser(Metadata.class)
-                                       .parse(asyncFileChannel, byteOffset + Metadata.BYTE_OFFSET, parserRegistry),
-                         parserRegistry.getParser(GeoreferencingCoefficients.class)
-                                       .parse(asyncFileChannel,
-                                              byteOffset + GeoreferencingCoefficients.BYTE_OFFSET,
-                                              parserRegistry),
-                         parserRegistry.getParser(Palette.class)
-                                       .parse(asyncFileChannel, byteOffset + Palette.BYTE_OFFSET, parserRegistry),
-                         parserRegistry.getParser(InterpolationMatrix.class)
-                                       .parse(asyncFileChannel,
-                                              byteOffset + InterpolationMatrix.BYTE_OFFSET,
-                                              parserRegistry));
     }
   }
 }

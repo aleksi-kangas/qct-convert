@@ -1,11 +1,8 @@
 package com.github.aleksikangas.qct.core.meta;
 
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.reader.QctReader;
 
-import java.nio.channels.AsynchronousFileChannel;
+import javax.annotation.Nonnull;
 
 /**
  * <pre>
@@ -28,7 +25,8 @@ public record ExtendedData(String mapType,
                            String diskName,
                            LicenseInformation licenseInformation,
                            String associatedData,
-                           DigitalMapShop digitalMapShop) implements Parseable {
+                           DigitalMapShop digitalMapShop) implements Parseable<ExtendedData> {
+  @Nonnull
   @Override
   public String toString() {
     return String.format("\t\tMap Type: %s\n", mapType) +
@@ -37,35 +35,5 @@ public record ExtendedData(String mapType,
            String.format("\t\tLicence Information: \n%s\n", licenseInformation) +
            String.format("\t\tAssociated Data: %s\n", associatedData) +
            String.format("\t\tDigital Map Shop: \n%s", digitalMapShop);
-  }
-
-  public static final class Parser extends AbstractParser<ExtendedData> {
-    @Override
-    public Class<ExtendedData> parseableClass() {
-      return ExtendedData.class;
-    }
-
-    @Override
-    public ExtendedData parse(final AsynchronousFileChannel asyncFileChannel,
-                              final long byteOffset,
-                              final ParserRegistry parserRegistry) {
-      return new ExtendedData(QctReader.readStringFromPointer(asyncFileChannel, byteOffset),
-                              parserRegistry.getParser(DatumShift.class)
-                                            .parse(asyncFileChannel,
-                                                   QctReader.readPointer(asyncFileChannel, byteOffset + 0x04L),
-                                                   parserRegistry),
-                              QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x08L),
-                              parserRegistry.getParser(LicenseInformation.class)
-                                            .parse(asyncFileChannel,
-                                                   QctReader.readPointer(asyncFileChannel, byteOffset + 0x14L),
-                                                   parserRegistry),
-                              QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x18L),
-                              parserRegistry.getParser(DigitalMapShop.class)
-                                            .parse(asyncFileChannel,
-                                                   QctReader.readPointer(asyncFileChannel, byteOffset + 0x1CL),
-                                                   parserRegistry));
-
-
-    }
   }
 }

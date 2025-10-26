@@ -1,11 +1,8 @@
 package com.github.aleksikangas.qct.core.meta;
 
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.reader.QctReader;
 
-import java.nio.channels.AsynchronousFileChannel;
+import javax.annotation.Nonnull;
 
 /**
  * <pre>
@@ -18,25 +15,10 @@ import java.nio.channels.AsynchronousFileChannel;
  * </pre>
  */
 public record DigitalMapShop(int size,
-                             String qc3Url) implements Parseable {
+                             String qc3Url) implements Parseable<DigitalMapShop> {
+  @Nonnull
   @Override
   public String toString() {
     return String.format("\t\t\tSize: %d\n", size) + String.format("\t\t\tQC3 URL: %s", qc3Url);
-  }
-
-  public static final class Parser extends AbstractParser<DigitalMapShop> {
-
-    @Override
-    public Class<DigitalMapShop> parseableClass() {
-      return DigitalMapShop.class;
-    }
-
-    @Override
-    public DigitalMapShop parse(final AsynchronousFileChannel asyncFileChannel,
-                                final long byteOffset,
-                                final ParserRegistry parserRegistry) {
-      return new DigitalMapShop(QctReader.readInt(asyncFileChannel, byteOffset),
-                                QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x04L));
-    }
   }
 }

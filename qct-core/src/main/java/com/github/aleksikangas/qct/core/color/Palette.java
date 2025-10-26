@@ -1,12 +1,9 @@
 package com.github.aleksikangas.qct.core.color;
 
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.reader.QctReader;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
-import java.nio.channels.AsynchronousFileChannel;
 
 /**
  * <pre>
@@ -26,10 +23,11 @@ import java.nio.channels.AsynchronousFileChannel;
  * +--------+-----------+-------------------------+
  * </pre>
  */
-public record Palette(Color[] colors) implements Parseable {
+public record Palette(Color[] colors) implements Parseable<Palette> {
   public static final long BYTE_OFFSET = 0x01A0L;
   public static final int SIZE = 128;
 
+  @Nonnull
   @Override
   public String toString() {
     final StringBuilder stringBuilder = new StringBuilder();
@@ -47,25 +45,4 @@ public record Palette(Color[] colors) implements Parseable {
     return stringBuilder.toString();
   }
 
-  public static final class Parser extends AbstractParser<Palette> {
-    @Override
-    public Class<Palette> parseableClass() {
-      return Palette.class;
-    }
-
-    @Override
-    public Palette parse(final AsynchronousFileChannel asyncFileChannel,
-                         final long byteOffset,
-                         final ParserRegistry parserRegistry) {
-      final int[] bytes = QctReader.readBytes(asyncFileChannel, byteOffset, SIZE * 4);
-      final Color[] colors = new Color[SIZE];
-      for (int i = 0; i < SIZE; ++i) {
-        final int blue = bytes[i * 4];
-        final int green = bytes[i * 4 + 1];
-        final int red = bytes[i * 4 + 2];
-        colors[i] = new Color(red, green, blue);
-      }
-      return new Palette(colors);
-    }
-  }
 }

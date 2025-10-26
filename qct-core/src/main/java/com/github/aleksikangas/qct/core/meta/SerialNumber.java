@@ -1,11 +1,8 @@
 package com.github.aleksikangas.qct.core.meta;
 
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.reader.QctReader;
 
-import java.nio.channels.AsynchronousFileChannel;
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 /**
@@ -17,23 +14,10 @@ import java.util.Arrays;
  * +--------+-----------+---------+
  * </pre>
  */
-public record SerialNumber(int[] bytes) implements Parseable {
+public record SerialNumber(int[] bytes) implements Parseable<SerialNumber> {
+  @Nonnull
   @Override
   public String toString() {
     return Arrays.toString(bytes);
-  }
-
-  public static final class Parser extends AbstractParser<SerialNumber> {
-    @Override
-    public Class<SerialNumber> parseableClass() {
-      return SerialNumber.class;
-    }
-
-    @Override
-    public SerialNumber parse(final AsynchronousFileChannel asyncFileChannel,
-                              final long byteOffset,
-                              final ParserRegistry parserRegistry) {
-      return new SerialNumber(QctReader.readBytes(asyncFileChannel, byteOffset, 32));
-    }
   }
 }

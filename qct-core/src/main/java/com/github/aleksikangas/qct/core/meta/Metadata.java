@@ -1,11 +1,8 @@
 package com.github.aleksikangas.qct.core.meta;
 
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.reader.QctReader;
 
-import java.nio.channels.AsynchronousFileChannel;
+import javax.annotation.Nonnull;
 import java.time.Instant;
 
 /**
@@ -73,9 +70,10 @@ public record Metadata(MagicNumber magicNumber,
                        int originalFileSize,
                        Instant originalFileCreationTime,
                        ExtendedData extendedData,
-                       MapOutline mapOutline) implements Parseable {
+                       MapOutline mapOutline) implements Parseable<Metadata> {
   public static final long BYTE_OFFSET = 0x0000L;
 
+  @Nonnull
   @Override
   public String toString() {
     return String.format("\tMagicNumber: %s\n", magicNumber) +
@@ -99,43 +97,5 @@ public record Metadata(MagicNumber magicNumber,
            String.format("\tOriginal File Creation Time: %s\n", originalFileCreationTime) +
            String.format("\tExtended Data:\n%s\n", extendedData) +
            String.format("\tMap Outline:\n%s", mapOutline);
-  }
-
-  public static final class Parser extends AbstractParser<Metadata> {
-    @Override
-    public Class<Metadata> parseableClass() {
-      return Metadata.class;
-    }
-
-    @Override
-    public Metadata parse(final AsynchronousFileChannel asyncFileChannel,
-                          final long byteOffset,
-                          final ParserRegistry parserRegistry) {
-      return new Metadata(MagicNumber.of(QctReader.readInt(asyncFileChannel, byteOffset)),
-                          FileFormatVersion.of(QctReader.readInt(asyncFileChannel, byteOffset + 0x04L)),
-                          QctReader.readInt(asyncFileChannel, byteOffset + 0x08L),
-                          QctReader.readInt(asyncFileChannel, byteOffset + 0x0CL),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x10L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x14L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x18L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x1CL),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x20L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x24L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x28L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x2CL),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x30L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x34L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x38L),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x3CL),
-                          QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x44L),
-                          QctReader.readInt(asyncFileChannel, byteOffset + 0x48L),
-                          Instant.ofEpochSecond(QctReader.readInt(asyncFileChannel, byteOffset + 0x4CL)),
-                          parserRegistry.getParser(ExtendedData.class)
-                                        .parse(asyncFileChannel,
-                                               QctReader.readPointer(asyncFileChannel, byteOffset + 0x54L),
-                                               parserRegistry),
-                          parserRegistry.getParser(MapOutline.class)
-                                        .parse(asyncFileChannel, byteOffset + 0x58L, parserRegistry));
-    }
   }
 }

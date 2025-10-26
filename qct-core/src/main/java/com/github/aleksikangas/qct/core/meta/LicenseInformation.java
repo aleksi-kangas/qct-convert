@@ -1,11 +1,8 @@
 package com.github.aleksikangas.qct.core.meta;
 
-import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.ParserRegistry;
-import com.github.aleksikangas.qct.core.reader.QctReader;
 
-import java.nio.channels.AsynchronousFileChannel;
+import javax.annotation.Nonnull;
 
 /**
  * <pre>
@@ -26,31 +23,12 @@ import java.nio.channels.AsynchronousFileChannel;
  */
 public record LicenseInformation(int identifier,
                                  String description,
-                                 SerialNumber serialNumber) implements Parseable {
+                                 SerialNumber serialNumber) implements Parseable<LicenseInformation> {
+  @Nonnull
   @Override
   public String toString() {
     return String.format("\t\t\tIdentifier: %d\n", identifier) +
            String.format("\t\t\tDescription: %s\n", description) +
            String.format("\t\t\tSerial Number: %s", serialNumber);
-  }
-
-  public static final class Parser extends AbstractParser<LicenseInformation> {
-
-    @Override
-    public Class<LicenseInformation> parseableClass() {
-      return LicenseInformation.class;
-    }
-
-    @Override
-    public LicenseInformation parse(final AsynchronousFileChannel asyncFileChannel,
-                                    final long byteOffset,
-                                    final ParserRegistry parserRegistry) {
-      return new LicenseInformation(QctReader.readInt(asyncFileChannel, byteOffset),
-                                    QctReader.readString(asyncFileChannel, byteOffset + 0x0CL),
-                                    parserRegistry.getParser(SerialNumber.class)
-                                                  .parse(asyncFileChannel,
-                                                         QctReader.readPointer(asyncFileChannel, byteOffset + 0x10L),
-                                                         parserRegistry));
-    }
   }
 }

@@ -1,18 +1,15 @@
 package com.github.aleksikangas.qct.core.parser;
 
-import java.nio.channels.AsynchronousFileChannel;
+import com.github.aleksikangas.qct.core.parser.task.ParseTask;
+
+import javax.annotation.Nonnull;
 
 /**
  * A parser for {@link Parseable} data.
  *
  * @param <T> parseable data
  */
-public interface Parser<T extends Parseable> {
-  /**
-   * @return the {@link Parseable} data class
-   */
-  Class<T> parseableClass();
-
+public interface Parser<P extends Parseable<P>, T extends ParseTask<P>> extends ParseableAware<P> {
   /**
    * Parses {@link Parseable} data.
    *
@@ -21,5 +18,6 @@ public interface Parser<T extends Parseable> {
    * @param parserRegistry   registry of {@link Parser}s
    * @return {@link Parseable} data
    */
-  T parse(AsynchronousFileChannel asyncFileChannel, long byteOffset, ParserRegistry parserRegistry);
+  @Nonnull
+  P execute(T parseTask);
 }
