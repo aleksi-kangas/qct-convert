@@ -7,8 +7,12 @@ import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.ParserRegistry;
+import com.github.aleksikangas.qct.core.parser.ParserRegistryImpl;
 
+import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * <pre>
@@ -37,6 +41,16 @@ public record QctFile(Metadata metadata,
            "Georeferencing Coefficients:" +
            "\n" +
            georeferencingCoefficients.toString();
+  }
+
+  static void main(final String[] args) throws IOException {
+    final Path path = Path.of(args[0]);
+    final ParserRegistry parserRegistry = new ParserRegistryImpl();
+    try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {
+      final QctFile qctFile = parserRegistry.getParser(QctFile.class)
+                                            .parse(asyncFileChannel, 0x00L, parserRegistry);
+      System.out.println(qctFile);
+    }
   }
 
   public static final class Parser extends AbstractParser<QctFile> {
