@@ -1,4 +1,4 @@
-package com.github.aleksikangas.qct.core.parser.task;
+package com.github.aleksikangas.qct.core.meta.parsers;
 
 import com.github.aleksikangas.qct.core.meta.Metadata;
 
