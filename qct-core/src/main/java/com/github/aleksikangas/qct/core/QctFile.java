@@ -3,6 +3,7 @@ package com.github.aleksikangas.qct.core;
 import com.github.aleksikangas.qct.core.color.InterpolationMatrix;
 import com.github.aleksikangas.qct.core.color.Palette;
 import com.github.aleksikangas.qct.core.georef.GeoreferencingCoefficients;
+import com.github.aleksikangas.qct.core.image.ImageIndex;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Set;
+import java.util.concurrent.Executors;
 
 /**
  * <pre>
@@ -28,28 +31,20 @@ import java.nio.file.StandardOpenOption;
  * +--------+--------------+----------------------------------------------------+
  * </pre>
  */
-public record QctFile(Metadata metadata,
-                      GeoreferencingCoefficients georeferencingCoefficients,
-                      Palette palette,
-                      InterpolationMatrix interpolationMatrix) implements Parseable<QctFile> {
-  @Nonnull
-  @Override
-  public String toString() {
-    return "Metadata:" +
-           "\n" +
-           metadata.toString() +
-           "\n" +
-           "Georeferencing Coefficients:" +
-           "\n" +
-           georeferencingCoefficients.toString();
-  }
-
-  static void main(final String[] args) throws IOException {
-    final Path path = Path.of(args[0]);
-    final ParserRegistry parserRegistry = new ParserRegistryImpl();
-    try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {
-      final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
-      System.out.println(qctFile);
+public record QctFile(Metadata metadata, GeoreferencingCoefficients georeferencingCoefficients, Palette palette,
+                      InterpolationMatrix interpolationMatrix, ImageIndex imageIndex) implements Parseable<QctFile> {
+    @Nonnull
+    @Override
+    public String toString() {
+        return "Metadata:" + "\n" + metadata.toString() + "\n" + "Georeferencing Coefficients:" + "\n" + georeferencingCoefficients.toString();
     }
-  }
+
+    static void main(final String[] args) throws IOException {
+        final Path path = Path.of(args[0]);
+        final ParserRegistry parserRegistry = new ParserRegistryImpl();
+        try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, Set.of(StandardOpenOption.READ), Executors.newVirtualThreadPerTaskExecutor())) {
+            final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
+            System.out.println(qctFile);
+        }
+    }
 }

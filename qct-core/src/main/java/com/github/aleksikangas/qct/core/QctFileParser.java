@@ -1,8 +1,11 @@
 package com.github.aleksikangas.qct.core;
 
+import com.github.aleksikangas.qct.core.color.Palette;
 import com.github.aleksikangas.qct.core.color.parsers.InterpolationMatrixParser;
 import com.github.aleksikangas.qct.core.color.parsers.PaletteParser;
 import com.github.aleksikangas.qct.core.georef.parsers.GeoreferencingCoefficientsParser;
+import com.github.aleksikangas.qct.core.image.parsers.ImageIndexParser;
+import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.meta.parsers.MetadataParser;
 import com.github.aleksikangas.qct.core.parser.Parser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
@@ -37,10 +40,16 @@ public final class QctFileParser implements Parser<QctFile, QctFileParser.Task> 
     @Nonnull
     @Override
     public QctFile parse() {
-      return new QctFile(parserRegistry.parse(new MetadataParser.Task(asyncFileChannel, parserRegistry)),
+      final Metadata metadata = parserRegistry.parse(new MetadataParser.Task(asyncFileChannel, parserRegistry));
+      final Palette palette = parserRegistry.parse(new PaletteParser.Task(asyncFileChannel));
+      return new QctFile(metadata,
                          parserRegistry.parse(new GeoreferencingCoefficientsParser.Task(asyncFileChannel)),
-                         parserRegistry.parse(new PaletteParser.Task(asyncFileChannel)),
-                         parserRegistry.parse(new InterpolationMatrixParser.Task(asyncFileChannel)));
+                         palette,
+                         parserRegistry.parse(new InterpolationMatrixParser.Task(asyncFileChannel)),
+                         parserRegistry.parse(new ImageIndexParser.Task(asyncFileChannel,
+                                                                        metadata,
+                                                                        palette,
+                                                                        parserRegistry)));
     }
   }
 }

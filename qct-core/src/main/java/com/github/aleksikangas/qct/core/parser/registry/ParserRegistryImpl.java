@@ -4,6 +4,9 @@ import com.github.aleksikangas.qct.core.QctFileParser;
 import com.github.aleksikangas.qct.core.color.parsers.InterpolationMatrixParser;
 import com.github.aleksikangas.qct.core.color.parsers.PaletteParser;
 import com.github.aleksikangas.qct.core.georef.parsers.GeoreferencingCoefficientsParser;
+import com.github.aleksikangas.qct.core.image.parsers.ImageIndexParser;
+import com.github.aleksikangas.qct.core.image.parsers.ImageTileParser;
+import com.github.aleksikangas.qct.core.image.parsers.SubPaletteParser;
 import com.github.aleksikangas.qct.core.meta.parsers.*;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.Parser;
@@ -24,6 +27,11 @@ public final class ParserRegistryImpl implements ParserRegistry {
 
     // georef
     register(new GeoreferencingCoefficientsParser());
+
+    // image
+    register(new ImageIndexParser());
+    register(new ImageTileParser());
+    register(new SubPaletteParser());
 
     // meta
     register(new DatumShiftParser());
