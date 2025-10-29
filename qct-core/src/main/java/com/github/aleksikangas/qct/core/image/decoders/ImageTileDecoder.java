@@ -3,6 +3,7 @@ package com.github.aleksikangas.qct.core.image.decoders;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.nio.channels.AsynchronousFileChannel;
 
@@ -21,5 +22,6 @@ public interface ImageTileDecoder {
      * @param byteOffset       byte offset of the {@link ImageTile}
      * @return decoded pixels of the {@link ImageTile}
      */
+    @Nonnull
     Color[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset);
 }

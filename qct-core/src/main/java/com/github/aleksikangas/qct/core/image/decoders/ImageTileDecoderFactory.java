@@ -5,6 +5,7 @@ import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.nio.channels.AsynchronousFileChannel;
 
@@ -29,6 +30,7 @@ public final class ImageTileDecoderFactory {
             return imageTileEncoding;
         }
 
+        @Nonnull
         @Override
         public Color[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) {
             final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];

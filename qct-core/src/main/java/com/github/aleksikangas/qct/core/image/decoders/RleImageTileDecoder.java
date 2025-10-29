@@ -9,6 +9,7 @@ import com.github.aleksikangas.qct.core.image.parsers.SubPaletteParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public final class RleImageTileDecoder extends AbstractImageTileDecoder {
         return ImageTileEncoding.RUN_LENGTH_ENCODING;
     }
 
+    @Nonnull
     @Override
     protected Color[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
         final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
