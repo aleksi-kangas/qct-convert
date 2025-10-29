@@ -28,7 +28,7 @@ public record LicenseInformation(int identifier,
   @Override
   public String toString() {
     return String.format("\t\t\tIdentifier: %d\n", identifier) +
-           String.format("\t\t\tDescription: %s\n", description) +
-           String.format("\t\t\tSerial Number: %s", serialNumber);
+        String.format("\t\t\tDescription: %s\n", description) +
+        String.format("\t\t\tSerial Number: %s", serialNumber);
   }
 }

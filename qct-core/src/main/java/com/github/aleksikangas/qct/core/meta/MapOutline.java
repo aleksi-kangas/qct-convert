@@ -22,8 +22,8 @@ public record MapOutline(Point[] points) implements Parseable<MapOutline> {
   @Override
   public String toString() {
     return Arrays.stream(points)
-                 .map(p -> "\t\t" + p)
-                 .collect(Collectors.joining("\n"));
+        .map(p -> "\t\t" + p)
+        .collect(Collectors.joining("\n"));
   }
 
   public record Point(double latitude,

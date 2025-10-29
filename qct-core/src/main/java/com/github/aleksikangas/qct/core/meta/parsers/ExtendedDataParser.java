@@ -34,7 +34,7 @@ public final class ExtendedDataParser implements Parser<ExtendedData, ExtendedDa
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      long byteOffset,
                      ParserRegistry parserRegistry)
-          implements ParseTask<ExtendedData>, AsyncReadable, ByteOffsetAware, ParserRegistryAware {
+      implements ParseTask<ExtendedData>, AsyncReadable, ByteOffsetAware, ParserRegistryAware {
     @Nonnull
     @Override
     public Class<ExtendedData> parseableClass() {
@@ -46,23 +46,23 @@ public final class ExtendedDataParser implements Parser<ExtendedData, ExtendedDa
     public ExtendedData parse() {
       return new ExtendedData(QctReader.readStringFromPointer(asyncFileChannel, byteOffset),
                               parserRegistry.getParser(DatumShift.class)
-                                            .execute(new DatumShiftParser.Task(asyncFileChannel,
-                                                                               QctReader.readPointer(asyncFileChannel,
-                                                                                                     byteOffset +
-                                                                                                     0x04L))),
+                                  .execute(new DatumShiftParser.Task(asyncFileChannel,
+                                                                     QctReader.readPointer(asyncFileChannel,
+                                                                                           byteOffset +
+                                                                                               0x04L))),
                               QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x08L),
                               parserRegistry.getParser(LicenseInformation.class)
-                                            .execute(new LicenseInformationParser.Task(asyncFileChannel,
-                                                                                       QctReader.readPointer(
-                                                                                               asyncFileChannel,
-                                                                                               byteOffset + 0x14L),
-                                                                                       parserRegistry)),
+                                  .execute(new LicenseInformationParser.Task(asyncFileChannel,
+                                                                             QctReader.readPointer(
+                                                                                 asyncFileChannel,
+                                                                                 byteOffset + 0x14L),
+                                                                             parserRegistry)),
                               QctReader.readStringFromPointer(asyncFileChannel, byteOffset + 0x18L),
                               parserRegistry.getParser(DigitalMapShop.class)
-                                            .execute(new DigitalMapShopParser.Task(asyncFileChannel,
-                                                                                   QctReader.readPointer(
-                                                                                           asyncFileChannel,
-                                                                                           byteOffset + 0x1CL))));
+                                  .execute(new DigitalMapShopParser.Task(asyncFileChannel,
+                                                                         QctReader.readPointer(
+                                                                             asyncFileChannel,
+                                                                             byteOffset + 0x1CL))));
     }
   }
 }

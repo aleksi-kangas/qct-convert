@@ -27,7 +27,7 @@ public final class InterpolationMatrixParser implements Parser<InterpolationMatr
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel)
-          implements ParseTask<InterpolationMatrix>, AsyncReadable {
+      implements ParseTask<InterpolationMatrix>, AsyncReadable {
     @Nonnull
     @Override
     public Class<InterpolationMatrix> parseableClass() {

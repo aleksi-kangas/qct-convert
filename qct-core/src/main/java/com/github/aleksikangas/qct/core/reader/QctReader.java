@@ -139,8 +139,8 @@ public final class QctReader {
   }
 
   /**
-   * Reads an integer (4-byte) pointer stored as little-endian from the given byte offset.
-   * Pointers are essentially byte offsets within the file.
+   * Reads an integer (4-byte) pointer stored as little-endian from the given byte offset. Pointers are essentially byte
+   * offsets within the file.
    *
    * @param asyncFileChannel to read from
    * @param byteOffset       the byte offset of the pointer
@@ -181,8 +181,8 @@ public final class QctReader {
   }
 
   /**
-   * Reads a NULL-terminated string by first reading the string pointer from the given byte offset,
-   * and then reading the string from the pointed byte offset.
+   * Reads a NULL-terminated string by first reading the string pointer from the given byte offset, and then reading the
+   * string from the pointed byte offset.
    *
    * @param asyncFileChannel  to read from
    * @param pointerByteOffset byte offset of the string pointer

@@ -59,14 +59,14 @@ public final class MetadataParser implements Parser<Metadata, MetadataParser.Tas
                           QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x48L),
                           Instant.ofEpochSecond(QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x4CL)),
                           parserRegistry.getParser(ExtendedData.class)
-                                        .execute(new ExtendedDataParser.Task(asyncFileChannel,
-                                                                             QctReader.readPointer(asyncFileChannel,
-                                                                                                   Metadata.BYTE_OFFSET +
-                                                                                                   0x54L),
-                                                                             parserRegistry)),
+                              .execute(new ExtendedDataParser.Task(asyncFileChannel,
+                                                                   QctReader.readPointer(asyncFileChannel,
+                                                                                         Metadata.BYTE_OFFSET +
+                                                                                             0x54L),
+                                                                   parserRegistry)),
                           parserRegistry.getParser(MapOutline.class)
-                                        .execute(new MapOutlineParser.Task(asyncFileChannel,
-                                                                           Metadata.BYTE_OFFSET + 0x58L)));
+                              .execute(new MapOutlineParser.Task(asyncFileChannel,
+                                                                 Metadata.BYTE_OFFSET + 0x58L)));
     }
   }
 }

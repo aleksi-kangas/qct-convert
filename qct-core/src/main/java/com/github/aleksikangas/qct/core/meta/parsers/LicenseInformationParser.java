@@ -31,7 +31,7 @@ public final class LicenseInformationParser implements Parser<LicenseInformation
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      long byteOffset,
                      ParserRegistry parserRegistry)
-          implements ParseTask<LicenseInformation>, AsyncReadable, ByteOffsetAware, ParserRegistryAware {
+      implements ParseTask<LicenseInformation>, AsyncReadable, ByteOffsetAware, ParserRegistryAware {
     @Nonnull
     @Override
     public Class<LicenseInformation> parseableClass() {
@@ -45,8 +45,8 @@ public final class LicenseInformationParser implements Parser<LicenseInformation
                                     QctReader.readString(asyncFileChannel, byteOffset + 0x0CL),
                                     parserRegistry.parse(new SerialNumberParser.Task(asyncFileChannel,
                                                                                      QctReader.readPointer(
-                                                                                             asyncFileChannel,
-                                                                                             byteOffset + 0x10L))));
+                                                                                         asyncFileChannel,
+                                                                                         byteOffset + 0x10L))));
     }
   }
 }

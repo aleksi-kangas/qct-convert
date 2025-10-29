@@ -31,20 +31,25 @@ import java.util.concurrent.Executors;
  * +--------+--------------+----------------------------------------------------+
  * </pre>
  */
-public record QctFile(Metadata metadata, GeoreferencingCoefficients georeferencingCoefficients, Palette palette,
-                      InterpolationMatrix interpolationMatrix, ImageIndex imageIndex) implements Parseable<QctFile> {
-    @Nonnull
-    @Override
-    public String toString() {
-        return "Metadata:" + "\n" + metadata.toString() + "\n" + "Georeferencing Coefficients:" + "\n" + georeferencingCoefficients.toString();
-    }
+public record QctFile(Metadata metadata,
+                      GeoreferencingCoefficients georeferencingCoefficients,
+                      Palette palette,
+                      InterpolationMatrix interpolationMatrix,
+                      ImageIndex imageIndex) implements Parseable<QctFile> {
+  @Nonnull
+  @Override
+  public String toString() {
+    return "Metadata:" + "\n" + metadata.toString() + "\n" + "Georeferencing Coefficients:" + "\n" + georeferencingCoefficients.toString();
+  }
 
-    static void main(final String[] args) throws IOException {
-        final Path path = Path.of(args[0]);
-        final ParserRegistry parserRegistry = new ParserRegistryImpl();
-        try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path, Set.of(StandardOpenOption.READ), Executors.newVirtualThreadPerTaskExecutor())) {
-            final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
-            System.out.println(qctFile);
-        }
+  static void main(final String[] args) throws IOException {
+    final Path path = Path.of(args[0]);
+    final ParserRegistry parserRegistry = new ParserRegistryImpl();
+    try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
+                                                                                       Set.of(StandardOpenOption.READ),
+                                                                                       Executors.newVirtualThreadPerTaskExecutor())) {
+      final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
+      System.out.println(qctFile);
     }
+  }
 }

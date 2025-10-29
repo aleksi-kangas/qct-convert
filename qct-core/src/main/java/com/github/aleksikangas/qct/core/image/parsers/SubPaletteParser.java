@@ -27,7 +27,7 @@ public final class SubPaletteParser implements Parser<SubPalette, SubPalettePars
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      long byteOffset,
                      SubPaletteSizeType subPaletteSizeType)
-          implements ParseTask<SubPalette>, AsyncReadable, ByteOffsetAware, SubPaletteSizeTypeAware {
+      implements ParseTask<SubPalette>, AsyncReadable, ByteOffsetAware, SubPaletteSizeTypeAware {
     @Nonnull
     @Override
     public Class<SubPalette> parseableClass() {

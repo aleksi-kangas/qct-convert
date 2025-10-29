@@ -13,7 +13,7 @@ import java.nio.channels.AsynchronousFileChannel;
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link GeoreferencingCoefficients}.
  */
 public final class GeoreferencingCoefficientsParser
-        implements Parser<GeoreferencingCoefficients, GeoreferencingCoefficientsParser.Task> {
+    implements Parser<GeoreferencingCoefficients, GeoreferencingCoefficientsParser.Task> {
   @Nonnull
   @Override
   public Class<GeoreferencingCoefficients> parseableClass() {
@@ -27,7 +27,7 @@ public final class GeoreferencingCoefficientsParser
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel)
-          implements ParseTask<GeoreferencingCoefficients>, AsyncReadable {
+      implements ParseTask<GeoreferencingCoefficients>, AsyncReadable {
 
     @Nonnull
     @Override

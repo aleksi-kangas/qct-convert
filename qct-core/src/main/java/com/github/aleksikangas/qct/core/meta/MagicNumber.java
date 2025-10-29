@@ -25,9 +25,9 @@ public enum MagicNumber {
 
   public static MagicNumber of(final int value) {
     return Arrays.stream(MagicNumber.values())
-                 .filter(f -> f.value == value)
-                 .findFirst()
-                 .orElseThrow();
+        .filter(f -> f.value == value)
+        .findFirst()
+        .orElseThrow();
   }
 
   @Override

@@ -77,25 +77,25 @@ public record Metadata(MagicNumber magicNumber,
   @Override
   public String toString() {
     return String.format("\tMagicNumber: %s\n", magicNumber) +
-           String.format("\tFileFormatVersion: %s\n", fileFormatVersion) +
-           String.format("\tWidth (tiles): %d\n", widthTiles) +
-           String.format("\tHeight (tiles): %d\n", heightTiles) +
-           String.format("\tLong Title: %s\n", longTitle) +
-           String.format("\tName: %s\n", name) +
-           String.format("\tIdentifier: %s\n", identifier) +
-           String.format("\tEdition: %s\n", edition) +
-           String.format("\tRevision: %s\n", revision) +
-           String.format("\tKeywords: %s\n", keywords) +
-           String.format("\tCopyright: %s\n", copyright) +
-           String.format("\tScale: %s\n", scale) +
-           String.format("\tDatum: %s\n", datum) +
-           String.format("\tDepths: %s\n", depths) +
-           String.format("\tHeights: %s\n", heights) +
-           String.format("\tProjection: %s\n", projection) +
-           String.format("\tOriginal File Name: %s\n", originalFileName) +
-           String.format("\tOriginal File Size (KB): %d\n", originalFileSize / 1000) +
-           String.format("\tOriginal File Creation Time: %s\n", originalFileCreationTime) +
-           String.format("\tExtended Data:\n%s\n", extendedData) +
-           String.format("\tMap Outline:\n%s", mapOutline);
+        String.format("\tFileFormatVersion: %s\n", fileFormatVersion) +
+        String.format("\tWidth (tiles): %d\n", widthTiles) +
+        String.format("\tHeight (tiles): %d\n", heightTiles) +
+        String.format("\tLong Title: %s\n", longTitle) +
+        String.format("\tName: %s\n", name) +
+        String.format("\tIdentifier: %s\n", identifier) +
+        String.format("\tEdition: %s\n", edition) +
+        String.format("\tRevision: %s\n", revision) +
+        String.format("\tKeywords: %s\n", keywords) +
+        String.format("\tCopyright: %s\n", copyright) +
+        String.format("\tScale: %s\n", scale) +
+        String.format("\tDatum: %s\n", datum) +
+        String.format("\tDepths: %s\n", depths) +
+        String.format("\tHeights: %s\n", heights) +
+        String.format("\tProjection: %s\n", projection) +
+        String.format("\tOriginal File Name: %s\n", originalFileName) +
+        String.format("\tOriginal File Size (KB): %d\n", originalFileSize / 1000) +
+        String.format("\tOriginal File Creation Time: %s\n", originalFileCreationTime) +
+        String.format("\tExtended Data:\n%s\n", extendedData) +
+        String.format("\tMap Outline:\n%s", mapOutline);
   }
 }

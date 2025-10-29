@@ -82,7 +82,7 @@ public record GeoreferencingCoefficients(double eas,
   public String toString() {
 
     return  // eas
-            "\teas: [" +
+        "\teas: [" +
             String.format(FORMAT, eas) +
             ", " +
             String.format(FORMAT_WITH_LABEL, "Y", easY) +
@@ -188,25 +188,25 @@ public record GeoreferencingCoefficients(double eas,
    */
   public Wgs84Coordinates toWgs84(final ImageCoordinates imageCoordinates, final DatumShift datumShift) {
     final double latitude = latXXX * Math.pow(imageCoordinates.x, 3) +
-                            latXX * Math.pow(imageCoordinates.x, 2) +
-                            latX * imageCoordinates.x +
-                            latYYY * Math.pow(imageCoordinates.y, 3) +
-                            latYY * Math.pow(imageCoordinates.y, 2) +
-                            latY * imageCoordinates.y +
-                            latXXY * Math.pow(imageCoordinates.x, 2) * imageCoordinates.y +
-                            latXYY * imageCoordinates.x * Math.pow(imageCoordinates.y, 2) +
-                            latXY * imageCoordinates.x * imageCoordinates.y +
-                            lat;
+        latXX * Math.pow(imageCoordinates.x, 2) +
+        latX * imageCoordinates.x +
+        latYYY * Math.pow(imageCoordinates.y, 3) +
+        latYY * Math.pow(imageCoordinates.y, 2) +
+        latY * imageCoordinates.y +
+        latXXY * Math.pow(imageCoordinates.x, 2) * imageCoordinates.y +
+        latXYY * imageCoordinates.x * Math.pow(imageCoordinates.y, 2) +
+        latXY * imageCoordinates.x * imageCoordinates.y +
+        lat;
     final double longitude = lonXXX * Math.pow(imageCoordinates.x, 3) +
-                             lonXX * Math.pow(imageCoordinates.x, 2) +
-                             lonX * imageCoordinates.x +
-                             lonYYY * Math.pow(imageCoordinates.y, 3) +
-                             lonYY * Math.pow(imageCoordinates.y, 2) +
-                             lonY * imageCoordinates.y +
-                             lonXXY * Math.pow(imageCoordinates.x, 2) * imageCoordinates.y +
-                             lonXYY * imageCoordinates.x * Math.pow(imageCoordinates.y, 2) +
-                             lonXY * imageCoordinates.x * imageCoordinates.y +
-                             lon;
+        lonXX * Math.pow(imageCoordinates.x, 2) +
+        lonX * imageCoordinates.x +
+        lonYYY * Math.pow(imageCoordinates.y, 3) +
+        lonYY * Math.pow(imageCoordinates.y, 2) +
+        lonY * imageCoordinates.y +
+        lonXXY * Math.pow(imageCoordinates.x, 2) * imageCoordinates.y +
+        lonXYY * imageCoordinates.x * Math.pow(imageCoordinates.y, 2) +
+        lonXY * imageCoordinates.x * imageCoordinates.y +
+        lon;
     return new Wgs84Coordinates(latitude + datumShift.north(), longitude + datumShift.east());
   }
 
@@ -222,25 +222,25 @@ public record GeoreferencingCoefficients(double eas,
     final double latitude = wgs84Coordinates.latitude - datumShift.north();
     final double longitude = wgs84Coordinates.longitude - datumShift.east();
     final double y = norXXX * Math.pow(longitude, 3) +
-                     norXX * Math.pow(longitude, 2) +
-                     norX * longitude +
-                     norYYY * Math.pow(latitude, 3) +
-                     norYY * Math.pow(latitude, 2) +
-                     norY * latitude +
-                     norYXX * latitude * Math.pow(longitude, 2) +
-                     norYYX * Math.pow(latitude, 2) * longitude +
-                     norXY * longitude * latitude +
-                     nor;
+        norXX * Math.pow(longitude, 2) +
+        norX * longitude +
+        norYYY * Math.pow(latitude, 3) +
+        norYY * Math.pow(latitude, 2) +
+        norY * latitude +
+        norYXX * latitude * Math.pow(longitude, 2) +
+        norYYX * Math.pow(latitude, 2) * longitude +
+        norXY * longitude * latitude +
+        nor;
     final double x = easXXX * Math.pow(longitude, 3) +
-                     easXX * Math.pow(longitude, 2) +
-                     easX * longitude +
-                     easYYY * Math.pow(latitude, 3) +
-                     easYY * Math.pow(latitude, 2) +
-                     easY * latitude +
-                     easYXX * latitude * Math.pow(longitude, 2) +
-                     easYYX * Math.pow(latitude, 2) * longitude +
-                     easXY * longitude * latitude +
-                     eas;
+        easXX * Math.pow(longitude, 2) +
+        easX * longitude +
+        easYYY * Math.pow(latitude, 3) +
+        easYY * Math.pow(latitude, 2) +
+        easY * latitude +
+        easYXX * latitude * Math.pow(longitude, 2) +
+        easYYX * Math.pow(latitude, 2) * longitude +
+        easXY * longitude * latitude +
+        eas;
     return new ImageCoordinates(y, x);
   }
 }

@@ -35,9 +35,11 @@ public final class ImageIndexParser implements Parser<ImageIndex, ImageIndexPars
   @Override
   public ImageIndex execute(final Task parseTask) {
     try {
-      return executorService.submit(parseTask::parse)
-                            .get();
-    } catch (final ExecutionException | InterruptedException e) {
+      return executorService.submit(parseTask::parse).get();
+    } catch (final ExecutionException e) {
+      throw new RuntimeException(e);
+    } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
       throw new RuntimeException(e);
     }
   }
@@ -45,8 +47,7 @@ public final class ImageIndexParser implements Parser<ImageIndex, ImageIndexPars
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      Metadata metadata,
                      Palette palette,
-                     ParserRegistry parserRegistry)
-          implements ParseTask<ImageIndex>, AsyncReadable, MetadataAware, PaletteAware, ParserRegistryAware {
+                     ParserRegistry parserRegistry) implements ParseTask<ImageIndex>, AsyncReadable, MetadataAware, PaletteAware, ParserRegistryAware {
     @Nonnull
     @Override
     public Class<ImageIndex> parseableClass() {

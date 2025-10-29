@@ -19,8 +19,8 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
  * | 0x4000 | Byte      | Precalculated Color Index |
  * +--------+-----------+---------------------------+
  * </pre>
- * The offset of any given row/column index into the matrix is given by: {@code offset = (128 x y) + x}.
- * Due to symmetry, {@code y} and {@code x} are interchangeable.
+ * The offset of any given row/column index into the matrix is given by: {@code offset = (128 x y) + x}. Due to
+ * symmetry, {@code y} and {@code x} are interchangeable.
  */
 public record InterpolationMatrix(int[] indices) implements Parseable<InterpolationMatrix> {
   public static final long BYTE_OFFSET = 0x05A0L;

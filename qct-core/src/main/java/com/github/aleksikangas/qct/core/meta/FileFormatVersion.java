@@ -27,9 +27,9 @@ public enum FileFormatVersion {
 
   public static FileFormatVersion of(final int value) {
     return Arrays.stream(FileFormatVersion.values())
-                 .filter(f -> f.value == value)
-                 .findFirst()
-                 .orElseThrow();
+        .filter(f -> f.value == value)
+        .findFirst()
+        .orElseThrow();
   }
 
   @Override
