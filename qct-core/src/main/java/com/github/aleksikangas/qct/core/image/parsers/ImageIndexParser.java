@@ -1,5 +1,6 @@
 package com.github.aleksikangas.qct.core.image.parsers;
 
+import com.github.aleksikangas.qct.core.QctRuntimeException;
 import com.github.aleksikangas.qct.core.color.Palette;
 import com.github.aleksikangas.qct.core.color.parsers.PaletteAware;
 import com.github.aleksikangas.qct.core.image.ImageIndex;
@@ -37,10 +38,10 @@ public final class ImageIndexParser implements Parser<ImageIndex, ImageIndexPars
     try {
       return executorService.submit(parseTask::parse).get();
     } catch (final ExecutionException e) {
-      throw new RuntimeException(e);
+      throw new QctRuntimeException(e);
     } catch (final InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new RuntimeException(e);
+      throw new QctRuntimeException(e);
     }
   }
 

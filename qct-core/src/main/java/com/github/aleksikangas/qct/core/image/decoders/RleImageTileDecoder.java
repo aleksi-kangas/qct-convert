@@ -17,11 +17,11 @@ import java.util.Objects;
 /**
  * An {@link ImageTileDecoder} for {@link ImageTile}s using {@link ImageTileEncoding#RUN_LENGTH_ENCODING}.
  */
-public final class RleImageTileDecoder extends AbstractImageTileDecoder {
+final class RleImageTileDecoder extends AbstractImageTileDecoder {
   private final Palette palette;
   private final ParserRegistry parserRegistry;
 
-  public RleImageTileDecoder(final Palette palette, final ParserRegistry parserRegistry) {
+  RleImageTileDecoder(final Palette palette, final ParserRegistry parserRegistry) {
     this.palette = Objects.requireNonNull(palette);
     this.parserRegistry = Objects.requireNonNull(parserRegistry);
   }

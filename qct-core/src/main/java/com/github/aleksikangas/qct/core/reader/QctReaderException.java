@@ -1,15 +1,20 @@
 package com.github.aleksikangas.qct.core.reader;
 
-public class QctReaderException extends RuntimeException {
-  public QctReaderException(final String message) {
+import com.github.aleksikangas.qct.core.QctRuntimeException;
+
+/**
+ * A {@link QctRuntimeException} indicating runtime error when reading a QCT file.
+ */
+public final class QctReaderException extends RuntimeException {
+  QctReaderException(final String message) {
     super(message);
   }
 
-  public QctReaderException(final String message, final Throwable cause) {
+  QctReaderException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public QctReaderException(final Throwable cause) {
+  QctReaderException(final Throwable cause) {
     super(cause);
   }
 }
