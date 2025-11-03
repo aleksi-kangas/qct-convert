@@ -50,12 +50,8 @@ public record QctFile(Metadata metadata,
       try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
                                                                                          Set.of(StandardOpenOption.READ),
                                                                                          Executors.newVirtualThreadPerTaskExecutor())) {
-        final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel,
-                                                                            executorService,
-                                                                            parserRegistry));
+        final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
         System.out.println(qctFile);
-
-        
       }
     }
   }
