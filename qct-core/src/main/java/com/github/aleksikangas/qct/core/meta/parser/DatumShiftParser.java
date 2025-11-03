@@ -1,7 +1,7 @@
-package com.github.aleksikangas.qct.core.meta.parsers;
+package com.github.aleksikangas.qct.core.meta.parser;
 
 import com.github.aleksikangas.qct.core.meta.DatumShift;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
@@ -9,21 +9,20 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link DatumShift}.
  */
-public final class DatumShiftParser implements Parser<DatumShift, DatumShiftParser.Task> {
-  @Nonnull
-  @Override
-  public Class<DatumShift> parseableClass() {
-    return DatumShift.class;
+public final class DatumShiftParser extends AbstractParser<DatumShift, DatumShiftParser.Task> {
+  public DatumShiftParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public DatumShift execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<DatumShift> parseableClass() {
+    return DatumShift.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

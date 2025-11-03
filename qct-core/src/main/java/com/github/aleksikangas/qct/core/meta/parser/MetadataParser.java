@@ -1,7 +1,9 @@
-package com.github.aleksikangas.qct.core.meta.parsers;
+package com.github.aleksikangas.qct.core.meta.parser;
 
-import com.github.aleksikangas.qct.core.meta.*;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.meta.FileFormatVersion;
+import com.github.aleksikangas.qct.core.meta.MagicNumber;
+import com.github.aleksikangas.qct.core.meta.Metadata;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
@@ -11,21 +13,20 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
 import java.time.Instant;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link Metadata}.
  */
-public final class MetadataParser implements Parser<Metadata, MetadataParser.Task> {
-  @Nonnull
-  @Override
-  public Class<Metadata> parseableClass() {
-    return Metadata.class;
+public final class MetadataParser extends AbstractParser<Metadata, MetadataParser.Task> {
+  public MetadataParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public Metadata execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<Metadata> parseableClass() {
+    return Metadata.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
@@ -58,15 +59,12 @@ public final class MetadataParser implements Parser<Metadata, MetadataParser.Tas
                           QctReader.readStringFromPointer(asyncFileChannel, Metadata.BYTE_OFFSET + 0x44L),
                           QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x48L),
                           Instant.ofEpochSecond(QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x4CL)),
-                          parserRegistry.getParser(ExtendedData.class)
-                              .execute(new ExtendedDataParser.Task(asyncFileChannel,
-                                                                   QctReader.readPointer(asyncFileChannel,
-                                                                                         Metadata.BYTE_OFFSET +
-                                                                                             0x54L),
-                                                                   parserRegistry)),
-                          parserRegistry.getParser(MapOutline.class)
-                              .execute(new MapOutlineParser.Task(asyncFileChannel,
-                                                                 Metadata.BYTE_OFFSET + 0x58L)));
+                          parserRegistry.parse(new ExtendedDataParser.Task(asyncFileChannel,
+                                                                           QctReader.readPointer(asyncFileChannel,
+                                                                                                 Metadata.BYTE_OFFSET + 0x54L),
+                                                                           parserRegistry)),
+                          parserRegistry.parse(new MapOutlineParser.Task(asyncFileChannel,
+                                                                         Metadata.BYTE_OFFSET + 0x58L)));
     }
   }
 }

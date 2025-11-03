@@ -1,10 +1,10 @@
-package com.github.aleksikangas.qct.core.meta.parsers;
+package com.github.aleksikangas.qct.core.meta.parser;
 
 import com.github.aleksikangas.qct.core.meta.DatumShift;
 import com.github.aleksikangas.qct.core.meta.DigitalMapShop;
 import com.github.aleksikangas.qct.core.meta.ExtendedData;
 import com.github.aleksikangas.qct.core.meta.LicenseInformation;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
@@ -14,21 +14,20 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link ExtendedData}.
  */
-public final class ExtendedDataParser implements Parser<ExtendedData, ExtendedDataParser.Task> {
-  @Nonnull
-  @Override
-  public Class<ExtendedData> parseableClass() {
-    return ExtendedData.class;
+public final class ExtendedDataParser extends AbstractParser<ExtendedData, ExtendedDataParser.Task> {
+  public ExtendedDataParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public ExtendedData execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<ExtendedData> parseableClass() {
+    return ExtendedData.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

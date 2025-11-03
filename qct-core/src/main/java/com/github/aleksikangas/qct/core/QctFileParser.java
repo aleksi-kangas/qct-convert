@@ -1,13 +1,13 @@
 package com.github.aleksikangas.qct.core;
 
 import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.color.parsers.InterpolationMatrixParser;
-import com.github.aleksikangas.qct.core.color.parsers.PaletteParser;
-import com.github.aleksikangas.qct.core.georef.parsers.GeoreferencingCoefficientsParser;
-import com.github.aleksikangas.qct.core.image.parsers.ImageIndexParser;
+import com.github.aleksikangas.qct.core.color.parser.InterpolationMatrixParser;
+import com.github.aleksikangas.qct.core.color.parser.PaletteParser;
+import com.github.aleksikangas.qct.core.georef.parser.GeoreferencingCoefficientsParser;
+import com.github.aleksikangas.qct.core.image.parser.ImageIndexParser;
 import com.github.aleksikangas.qct.core.meta.Metadata;
-import com.github.aleksikangas.qct.core.meta.parsers.MetadataParser;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.meta.parser.MetadataParser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
@@ -15,18 +15,17 @@ import com.github.aleksikangas.qct.core.parser.task.ParserRegistryAware;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
-public final class QctFileParser implements Parser<QctFile, QctFileParser.Task> {
-  @Nonnull
-  @Override
-  public Class<QctFile> parseableClass() {
-    return QctFile.class;
+public final class QctFileParser extends AbstractParser<QctFile, QctFileParser.Task> {
+  public QctFileParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public QctFile execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<QctFile> parseableClass() {
+    return QctFile.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

@@ -1,4 +1,4 @@
-package com.github.aleksikangas.qct.core.image.parsers;
+package com.github.aleksikangas.qct.core.image.parser.task;
 
 import com.github.aleksikangas.qct.core.image.color.SubPaletteSizeType;
 

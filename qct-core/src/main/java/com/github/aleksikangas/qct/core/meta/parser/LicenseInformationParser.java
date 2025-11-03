@@ -1,7 +1,7 @@
-package com.github.aleksikangas.qct.core.meta.parsers;
+package com.github.aleksikangas.qct.core.meta.parser;
 
 import com.github.aleksikangas.qct.core.meta.LicenseInformation;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
@@ -11,21 +11,20 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link LicenseInformation}.
  */
-public final class LicenseInformationParser implements Parser<LicenseInformation, LicenseInformationParser.Task> {
-  @Nonnull
-  @Override
-  public Class<LicenseInformation> parseableClass() {
-    return LicenseInformation.class;
+public final class LicenseInformationParser extends AbstractParser<LicenseInformation, LicenseInformationParser.Task> {
+  public LicenseInformationParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public LicenseInformation execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<LicenseInformation> parseableClass() {
+    return LicenseInformation.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

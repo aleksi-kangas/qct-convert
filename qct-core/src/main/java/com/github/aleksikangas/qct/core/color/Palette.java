@@ -1,9 +1,10 @@
 package com.github.aleksikangas.qct.core.color;
 
 import com.github.aleksikangas.qct.core.parser.Parseable;
+import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * <pre>
@@ -26,6 +27,11 @@ import java.awt.*;
 public record Palette(Color[] colors) implements Parseable<Palette> {
   public static final long BYTE_OFFSET = 0x01A0L;
   public static final int SIZE = 128;
+
+  public Color getColor(final int paletteIndex) {
+    Preconditions.checkArgument(0 <= paletteIndex && paletteIndex < SIZE);
+    return colors[paletteIndex];
+  }
 
   @Nonnull
   @Override

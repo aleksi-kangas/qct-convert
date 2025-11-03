@@ -1,29 +1,28 @@
-package com.github.aleksikangas.qct.core.color.parsers;
+package com.github.aleksikangas.qct.core.color.parser;
 
 import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link Palette}.
  */
-public final class PaletteParser implements Parser<Palette, PaletteParser.Task> {
-  @Nonnull
-  @Override
-  public Class<Palette> parseableClass() {
-    return Palette.class;
+public final class PaletteParser extends AbstractParser<Palette, PaletteParser.Task> {
+  public PaletteParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public Palette execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<Palette> parseableClass() {
+    return Palette.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask<Palette>, AsyncReadable {

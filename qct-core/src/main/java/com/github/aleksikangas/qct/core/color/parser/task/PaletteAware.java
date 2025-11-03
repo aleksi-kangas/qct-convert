@@ -1,4 +1,4 @@
-package com.github.aleksikangas.qct.core.color.parsers;
+package com.github.aleksikangas.qct.core.color.parser.task;
 
 import com.github.aleksikangas.qct.core.color.Palette;
 

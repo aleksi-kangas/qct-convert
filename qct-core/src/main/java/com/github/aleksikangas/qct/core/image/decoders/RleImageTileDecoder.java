@@ -5,7 +5,7 @@ import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.color.SubPalette;
 import com.github.aleksikangas.qct.core.image.color.SubPaletteSizeType;
-import com.github.aleksikangas.qct.core.image.parsers.SubPaletteParser;
+import com.github.aleksikangas.qct.core.image.parser.SubPaletteParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 

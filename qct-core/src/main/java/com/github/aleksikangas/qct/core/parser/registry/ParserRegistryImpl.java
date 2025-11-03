@@ -1,46 +1,48 @@
 package com.github.aleksikangas.qct.core.parser.registry;
 
 import com.github.aleksikangas.qct.core.QctFileParser;
-import com.github.aleksikangas.qct.core.color.parsers.InterpolationMatrixParser;
-import com.github.aleksikangas.qct.core.color.parsers.PaletteParser;
-import com.github.aleksikangas.qct.core.georef.parsers.GeoreferencingCoefficientsParser;
-import com.github.aleksikangas.qct.core.image.parsers.ImageIndexParser;
-import com.github.aleksikangas.qct.core.image.parsers.ImageTileParser;
-import com.github.aleksikangas.qct.core.image.parsers.SubPaletteParser;
-import com.github.aleksikangas.qct.core.meta.parsers.*;
+import com.github.aleksikangas.qct.core.color.parser.InterpolationMatrixParser;
+import com.github.aleksikangas.qct.core.color.parser.PaletteParser;
+import com.github.aleksikangas.qct.core.georef.parser.GeoreferencingCoefficientsParser;
+import com.github.aleksikangas.qct.core.image.parser.ImageIndexParser;
+import com.github.aleksikangas.qct.core.image.parser.ImageTileParser;
+import com.github.aleksikangas.qct.core.image.parser.SubPaletteParser;
+import com.github.aleksikangas.qct.core.meta.parser.*;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.Parser;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 public final class ParserRegistryImpl implements ParserRegistry {
   private final Map<Class<? extends Parseable<?>>, Parser<? extends Parseable<?>, ? extends ParseTask<?>>> parsers = new HashMap<>();
 
-  public ParserRegistryImpl() {
-    register(new QctFileParser());
+  public ParserRegistryImpl(final ExecutorService executorService) {
+    register(new QctFileParser(executorService));
 
     // color
-    register(new InterpolationMatrixParser());
-    register(new PaletteParser());
+    register(new InterpolationMatrixParser(executorService));
+    register(new PaletteParser(executorService));
 
     // georef
-    register(new GeoreferencingCoefficientsParser());
+    register(new GeoreferencingCoefficientsParser(executorService));
 
     // image
-    register(new ImageIndexParser());
-    register(new ImageTileParser());
-    register(new SubPaletteParser());
+    register(new ImageIndexParser(executorService));
+    register(new ImageTileParser(executorService));
+    register(new SubPaletteParser(executorService));
 
     // meta
-    register(new DatumShiftParser());
-    register(new DigitalMapShopParser());
-    register(new ExtendedDataParser());
-    register(new MetadataParser());
-    register(new LicenseInformationParser());
-    register(new MapOutlineParser());
-    register(new SerialNumberParser());
+    register(new DatumShiftParser(executorService));
+    register(new DigitalMapShopParser(executorService));
+    register(new ExtendedDataParser(executorService));
+    register(new MetadataParser(executorService));
+    register(new LicenseInformationParser(executorService));
+    register(new MapOutlineParser(executorService));
+    register(new SerialNumberParser(executorService));
   }
 
   @Override
@@ -55,6 +57,11 @@ public final class ParserRegistryImpl implements ParserRegistry {
   @Override
   public <T extends Parseable<T>> T parse(final ParseTask<T> task) {
     return getParser(task.parseableClass()).execute(task);
+  }
+
+  @Override
+  public <T extends Parseable<T>> CompletableFuture<T> parseAsync(final ParseTask<T> task) {
+    return getParser(task.parseableClass()).executeAsync(task);
   }
 
   private <P extends Parseable<P>, T extends ParseTask<P>> void register(final Parser<P, T> parser) {

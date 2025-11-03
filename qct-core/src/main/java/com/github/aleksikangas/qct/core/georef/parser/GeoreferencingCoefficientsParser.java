@@ -1,33 +1,30 @@
-package com.github.aleksikangas.qct.core.georef.parsers;
+package com.github.aleksikangas.qct.core.georef.parser;
 
 import com.github.aleksikangas.qct.core.georef.GeoreferencingCoefficients;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link GeoreferencingCoefficients}.
  */
-public final class GeoreferencingCoefficientsParser
-    implements Parser<GeoreferencingCoefficients, GeoreferencingCoefficientsParser.Task> {
+public final class GeoreferencingCoefficientsParser extends AbstractParser<GeoreferencingCoefficients, GeoreferencingCoefficientsParser.Task> {
+  public GeoreferencingCoefficientsParser(final ExecutorService executorService) {
+    super(executorService);
+  }
+
   @Nonnull
   @Override
   public Class<GeoreferencingCoefficients> parseableClass() {
     return GeoreferencingCoefficients.class;
   }
 
-  @Nonnull
-  @Override
-  public GeoreferencingCoefficients execute(final Task parseTask) {
-    return parseTask.parse();
-  }
-
-  public record Task(AsynchronousFileChannel asyncFileChannel)
-      implements ParseTask<GeoreferencingCoefficients>, AsyncReadable {
+  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask<GeoreferencingCoefficients>, AsyncReadable {
 
     @Nonnull
     @Override

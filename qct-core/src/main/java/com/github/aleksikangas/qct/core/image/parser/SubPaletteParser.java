@@ -1,8 +1,9 @@
-package com.github.aleksikangas.qct.core.image.parsers;
+package com.github.aleksikangas.qct.core.image.parser;
 
 import com.github.aleksikangas.qct.core.image.color.SubPalette;
 import com.github.aleksikangas.qct.core.image.color.SubPaletteSizeType;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.image.parser.task.SubPaletteSizeTypeAware;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
@@ -10,18 +11,17 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
-public final class SubPaletteParser implements Parser<SubPalette, SubPaletteParser.Task> {
-  @Nonnull
-  @Override
-  public Class<SubPalette> parseableClass() {
-    return SubPalette.class;
+public final class SubPaletteParser extends AbstractParser<SubPalette, SubPaletteParser.Task> {
+  public SubPaletteParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public SubPalette execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<SubPalette> parseableClass() {
+    return SubPalette.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

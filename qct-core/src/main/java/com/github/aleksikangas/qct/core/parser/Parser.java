@@ -3,6 +3,7 @@ package com.github.aleksikangas.qct.core.parser;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A parser for {@link Parseable} data.
@@ -20,4 +21,7 @@ public interface Parser<P extends Parseable<P>, T extends ParseTask<P>> extends 
    */
   @Nonnull
   P execute(T parseTask);
+
+  @Nonnull
+  CompletableFuture<P> executeAsync(T parseTask);
 }

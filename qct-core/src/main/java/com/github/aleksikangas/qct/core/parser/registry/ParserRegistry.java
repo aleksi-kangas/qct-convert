@@ -4,6 +4,8 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.Parser;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * A registry for {@link Parser}s.
  */
@@ -11,4 +13,6 @@ public interface ParserRegistry {
   <P extends Parseable<P>, T extends ParseTask<P>> Parser<P, T> getParser(Class<P> parseableClass);
 
   <T extends Parseable<T>> T parse(ParseTask<T> task);
+
+  <T extends Parseable<T>> CompletableFuture<T> parseAsync(ParseTask<T> parseTask);
 }

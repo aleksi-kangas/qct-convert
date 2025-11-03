@@ -1,7 +1,7 @@
-package com.github.aleksikangas.qct.core.meta.parsers;
+package com.github.aleksikangas.qct.core.meta.parser;
 
 import com.github.aleksikangas.qct.core.meta.MapOutline;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
@@ -9,21 +9,20 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link MapOutline}.
  */
-public final class MapOutlineParser implements Parser<MapOutline, MapOutlineParser.Task> {
-  @Nonnull
-  @Override
-  public Class<MapOutline> parseableClass() {
-    return MapOutline.class;
+public final class MapOutlineParser extends AbstractParser<MapOutline, MapOutlineParser.Task> {
+  public MapOutlineParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
   @Override
-  public MapOutline execute(final Task parseTask) {
-    return parseTask.parse();
+  public Class<MapOutline> parseableClass() {
+    return MapOutline.class;
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

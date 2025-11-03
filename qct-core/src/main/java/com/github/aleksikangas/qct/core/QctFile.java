@@ -15,6 +15,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -44,12 +45,18 @@ public record QctFile(Metadata metadata,
 
   static void main(final String[] args) throws IOException {
     final Path path = Path.of(args[0]);
-    final ParserRegistry parserRegistry = new ParserRegistryImpl();
-    try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
-                                                                                       Set.of(StandardOpenOption.READ),
-                                                                                       Executors.newVirtualThreadPerTaskExecutor())) {
-      final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
-      System.out.println(qctFile);
+    try (final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
+      final ParserRegistry parserRegistry = new ParserRegistryImpl(executorService);
+      try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
+                                                                                         Set.of(StandardOpenOption.READ),
+                                                                                         Executors.newVirtualThreadPerTaskExecutor())) {
+        final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel,
+                                                                            executorService,
+                                                                            parserRegistry));
+        System.out.println(qctFile);
+
+        
+      }
     }
   }
 }

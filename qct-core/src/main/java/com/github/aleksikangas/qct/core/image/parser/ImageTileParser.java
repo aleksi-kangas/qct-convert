@@ -1,12 +1,12 @@
-package com.github.aleksikangas.qct.core.image.parsers;
+package com.github.aleksikangas.qct.core.image.parser;
 
 import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.color.parsers.PaletteAware;
+import com.github.aleksikangas.qct.core.color.parser.task.PaletteAware;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.decoders.ImageTileDecoder;
 import com.github.aleksikangas.qct.core.image.decoders.ImageTileDecoderFactory;
-import com.github.aleksikangas.qct.core.parser.Parser;
+import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
 import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
@@ -17,15 +17,14 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link ImageTile}.
  */
-public final class ImageTileParser implements Parser<ImageTile, ImageTileParser.Task> {
-  @Nonnull
-  @Override
-  public ImageTile execute(final Task parseTask) {
-    return parseTask.parse();
+public final class ImageTileParser extends AbstractParser<ImageTile, ImageTileParser.Task> {
+  public ImageTileParser(final ExecutorService executorService) {
+    super(executorService);
   }
 
   @Nonnull
