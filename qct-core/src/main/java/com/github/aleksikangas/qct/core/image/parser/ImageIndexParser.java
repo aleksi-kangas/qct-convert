@@ -1,5 +1,6 @@
 package com.github.aleksikangas.qct.core.image.parser;
 
+import com.github.aleksikangas.qct.core.QctRuntimeException;
 import com.github.aleksikangas.qct.core.color.Palette;
 import com.github.aleksikangas.qct.core.color.parser.task.PaletteAware;
 import com.github.aleksikangas.qct.core.image.ImageIndex;
@@ -15,6 +16,10 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -45,6 +50,7 @@ public final class ImageIndexParser extends AbstractParser<ImageIndex, ImageInde
     @Override
     public ImageIndex parse() {
       final ImageTile[][] imageTiles = new ImageTile[metadata.heightTiles()][metadata.widthTiles()];
+      final List<CompletableFuture<?>> imageTileFutures = new ArrayList<>();
       for (int y = 0; y < metadata.heightTiles(); ++y) {
         for (int x = 0; x < metadata.widthTiles(); ++x) {
           final long imageTilePointerByteOffset = ((long) metadata.widthTiles() * y + x) * 0x04L;
@@ -53,9 +59,19 @@ public final class ImageIndexParser extends AbstractParser<ImageIndex, ImageInde
           final var task = new ImageTileParser.Task(asyncFileChannel, imageTileByteOffset, palette, parserRegistry);
           final int yTile = y;
           final int xTile = x;
-          parserRegistry.parseAsync(task).thenAccept(imageTile -> imageTiles[yTile][xTile] = imageTile);
+          imageTileFutures.add(parserRegistry.parseAsync(task).thenAccept(imageTile -> imageTiles[yTile][xTile] = imageTile));
         }
       }
+      imageTileFutures.forEach(imageTileFuture -> {
+        try {
+          imageTileFuture.get();
+        } catch (final ExecutionException e) {
+          throw new QctRuntimeException(e);
+        } catch (final InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new QctRuntimeException(e);
+        }
+      });
       return new ImageIndex(imageTiles);
     }
   }
