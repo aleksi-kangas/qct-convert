@@ -13,11 +13,9 @@ import java.nio.channels.AsynchronousFileChannel;
  * A factory for {@link ImageTileDecoder}s.
  */
 public final class ImageTileDecoderFactory {
-  public static ImageTileDecoder create(final ImageTileEncoding imageTileEncoding,
-                                        final Palette palette,
-                                        final ParserRegistry parserRegistry) {
+  public static ImageTileDecoder create(final ImageTileEncoding imageTileEncoding, final Palette palette, final ParserRegistry parserRegistry) {
     return switch (imageTileEncoding) {
-      case HUFFMAN_CODING -> new PlaceholderImageTileDecoder(ImageTileEncoding.HUFFMAN_CODING);
+      case HUFFMAN_CODING -> new HuffmanImageTileDecoder(palette);
       case PIXEL_PACKING -> new PlaceholderImageTileDecoder(ImageTileEncoding.PIXEL_PACKING);
       case RUN_LENGTH_ENCODING -> new RleImageTileDecoder(palette, parserRegistry);
     };
