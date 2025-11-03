@@ -8,6 +8,8 @@ import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -37,6 +39,8 @@ public record QctFile(Metadata metadata,
                       Palette palette,
                       InterpolationMatrix interpolationMatrix,
                       ImageIndex imageIndex) implements Parseable<QctFile> {
+  private static final Logger LOG = LoggerFactory.getLogger(QctFile.class);
+
   @Nonnull
   @Override
   public String toString() {
@@ -51,7 +55,10 @@ public record QctFile(Metadata metadata,
                                                                                          Set.of(StandardOpenOption.READ),
                                                                                          Executors.newVirtualThreadPerTaskExecutor())) {
         final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
+        LOG.info("Decode successful");
         System.out.println(qctFile);
+      } catch (final QctRuntimeException e) {
+        LOG.error("Failed to parse QctFile", e);
       }
     }
   }

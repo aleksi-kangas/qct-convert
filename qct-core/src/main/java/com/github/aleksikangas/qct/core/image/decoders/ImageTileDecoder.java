@@ -23,5 +23,5 @@ public interface ImageTileDecoder {
    * @return decoded pixels of the {@link ImageTile}
    */
   @Nonnull
-  Color[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset);
+  Color[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
 }

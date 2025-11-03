@@ -56,7 +56,12 @@ public final class ImageIndexParser extends AbstractParser<ImageIndex, ImageInde
           final long imageTilePointerByteOffset = ((long) metadata.widthTiles() * y + x) * 0x04L;
           final long imageTileByteOffset = QctReader.readPointer(asyncFileChannel,
                                                                  ImageIndex.BYTE_OFFSET + imageTilePointerByteOffset);
-          final var task = new ImageTileParser.Task(asyncFileChannel, imageTileByteOffset, palette, parserRegistry);
+          final var task = new ImageTileParser.Task(asyncFileChannel,
+                                                    imageTileByteOffset,
+                                                    y,
+                                                    x,
+                                                    palette,
+                                                    parserRegistry);
           final int yTile = y;
           final int xTile = x;
           imageTileFutures.add(parserRegistry.parseAsync(task).thenAccept(imageTile -> imageTiles[yTile][xTile] = imageTile));

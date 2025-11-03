@@ -6,13 +6,13 @@ import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.decoders.ImageTileDecoder;
 import com.github.aleksikangas.qct.core.image.decoders.ImageTileDecoderFactory;
+import com.github.aleksikangas.qct.core.image.decoders.QctDecoderException;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
-import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
-import com.github.aleksikangas.qct.core.parser.task.ByteOffsetAware;
-import com.github.aleksikangas.qct.core.parser.task.ParseTask;
-import com.github.aleksikangas.qct.core.parser.task.ParserRegistryAware;
+import com.github.aleksikangas.qct.core.parser.task.*;
 import com.github.aleksikangas.qct.core.reader.QctReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutorService;
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link ImageTile}.
  */
 public final class ImageTileParser extends AbstractParser<ImageTile, ImageTileParser.Task> {
+  private static final Logger LOG = LoggerFactory.getLogger(ImageTileParser.class);
+
   public ImageTileParser(final ExecutorService executorService) {
     super(executorService);
   }
@@ -35,9 +37,10 @@ public final class ImageTileParser extends AbstractParser<ImageTile, ImageTilePa
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      long byteOffset,
+                     int y,
+                     int x,
                      Palette palette,
-                     ParserRegistry parserRegistry)
-      implements ParseTask<ImageTile>, AsyncReadable, ByteOffsetAware, PaletteAware, ParserRegistryAware {
+                     ParserRegistry parserRegistry) implements ParseTask<ImageTile>, AsyncReadable, ByteOffsetAware, CoordinatesAware, PaletteAware, ParserRegistryAware {
 
     @Nonnull
     @Override
@@ -52,8 +55,13 @@ public final class ImageTileParser extends AbstractParser<ImageTile, ImageTilePa
       final ImageTileDecoder imageTileDecoder = ImageTileDecoderFactory.create(imageTileEncoding,
                                                                                palette,
                                                                                parserRegistry);
-      final Color[][] pixels = imageTileDecoder.decode(asyncFileChannel, byteOffset);
-      return new ImageTile(imageTileEncoding, pixels);
+      try {
+        final Color[][] pixels = imageTileDecoder.decode(asyncFileChannel, byteOffset);
+        return new ImageTile(imageTileEncoding, pixels);
+      } catch (final QctDecoderException e) {
+        LOG.warn("Failed to decode ImageTile=[y={}, x={}], replacing with black pixels", y, x, e);
+        return new ImageTile(imageTileEncoding, allBlackTilePixels());
+      }
     }
 
     private static ImageTileEncoding encodingOf(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
@@ -65,6 +73,16 @@ public final class ImageTileParser extends AbstractParser<ImageTile, ImageTilePa
         return ImageTileEncoding.PIXEL_PACKING;
       }
       return ImageTileEncoding.RUN_LENGTH_ENCODING;
+    }
+
+    private static Color[][] allBlackTilePixels() {
+      final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
+      for (int y = 0; y < ImageTile.HEIGHT; ++y) {
+        for (int x = 0; x < ImageTile.WIDTH; ++x) {
+          pixels[y][x] = Color.BLACK;
+        }
+      }
+      return pixels;
     }
   }
 }
