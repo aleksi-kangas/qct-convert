@@ -1,6 +1,9 @@
 package com.github.aleksikangas.qct.core.image;
 
 import com.github.aleksikangas.qct.core.parser.Parseable;
+import com.google.common.base.Preconditions;
+
+import java.awt.image.BufferedImage;
 
 /**
  * <pre>
@@ -31,6 +34,25 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable<ImageInd
   }
 
   public ImageTile imageTile(final int yTile, final int xTile) {
+    Preconditions.checkArgument(0 <= yTile && yTile < heightTiles());
+    Preconditions.checkArgument(0 <= xTile && xTile < widthTiles());
     return imageTiles[yTile][xTile];
+  }
+
+  public BufferedImage asBufferedImage() {
+    final BufferedImage bufferedImage = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_RGB);
+    for (int yTile = 0; yTile < heightTiles(); ++yTile) {
+      for (int xTile = 0; xTile < widthTiles(); ++xTile) {
+        final ImageTile imageTile = imageTiles[yTile][xTile];
+        for (int y = 0; y < ImageTile.HEIGHT; ++y) {
+          for (int x = 0; x < ImageTile.WIDTH; ++x) {
+            bufferedImage.setRGB(xTile * ImageTile.WIDTH + x,
+                                 yTile * ImageTile.HEIGHT + y,
+                                 imageTile.pixel(y, x).getRGB());
+          }
+        }
+      }
+    }
+    return bufferedImage;
   }
 }
