@@ -1,6 +1,7 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
 import com.github.aleksikangas.qct.core.color.Palette;
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.color.SubPalette;
@@ -10,7 +11,6 @@ import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Objects;
 
@@ -33,8 +33,8 @@ final class RleImageTileDecoder extends AbstractImageTileDecoder {
 
   @Nonnull
   @Override
-  protected Color[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
-    final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
+  protected QctPixel[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
+    final QctPixel[][] pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
     final SubPalette subPalette = parserRegistry.parse(new SubPaletteParser.Task(asyncFileChannel,
                                                                                  byteOffset,
                                                                                  SubPaletteSizeType.NORMAL));
@@ -48,7 +48,7 @@ final class RleImageTileDecoder extends AbstractImageTileDecoder {
     while (pixelCount < ImageTile.PIXEL_COUNT) {
       final int rleByte = bytes[byteIndex++];
       final DecodedRleByte decodedRleByte = decodeRleByte(rleByte, subPalette);
-      final Color color = palette.colors()[decodedRleByte.paletteIndex];
+      final var color = new QctPixel(palette.colors()[decodedRleByte.paletteIndex], decodedRleByte.paletteIndex);
       for (int i = 0; i < decodedRleByte.runLength; ++i) {
         final int y = (pixelCount + i) / ImageTile.WIDTH;
         final int x = (pixelCount + i) % ImageTile.WIDTH;

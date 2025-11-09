@@ -1,6 +1,7 @@
 package com.github.aleksikangas.qct.core.image.parser;
 
 import com.github.aleksikangas.qct.core.color.Palette;
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.color.parser.task.PaletteAware;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
@@ -15,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.ExecutorService;
 
@@ -56,11 +56,17 @@ public final class ImageTileParser extends AbstractParser<ImageTile, ImageTilePa
                                                                                palette,
                                                                                parserRegistry);
       try {
-        final Color[][] pixels = imageTileDecoder.decode(asyncFileChannel, byteOffset);
+        final QctPixel[][] pixels = imageTileDecoder.decode(asyncFileChannel, byteOffset);
         return new ImageTile(imageTileEncoding, pixels);
       } catch (final QctDecoderException e) {
-        LOG.warn("Failed to decode ImageTile=[y={}, x={}], replacing with black pixels", y, x, e);
-        return new ImageTile(imageTileEncoding, allBlackTilePixels());
+        LOG.warn("Failed to decode ImageTile=[y={}, x={}], replacing with palette first color (R={}, G={}, B={}) pixels",
+                 y,
+                 x,
+                 palette.getColor(0).getRed(),
+                 palette.getColor(0).getGreen(),
+                 palette.getColor(0).getBlue(),
+                 e);
+        return new ImageTile(imageTileEncoding, allPaletteFirstColorPixels());
       }
     }
 
@@ -75,11 +81,11 @@ public final class ImageTileParser extends AbstractParser<ImageTile, ImageTilePa
       return ImageTileEncoding.RUN_LENGTH_ENCODING;
     }
 
-    private static Color[][] allBlackTilePixels() {
-      final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
+    private QctPixel[][] allPaletteFirstColorPixels() {
+      final var pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
       for (int y = 0; y < ImageTile.HEIGHT; ++y) {
         for (int x = 0; x < ImageTile.WIDTH; ++x) {
-          pixels[y][x] = Color.BLACK;
+          pixels[y][x] = new QctPixel(palette.getColor(0), 0);
         }
       }
       return pixels;

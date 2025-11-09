@@ -1,12 +1,12 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
 
 /**
@@ -20,8 +20,8 @@ abstract class AbstractImageTileDecoder implements ImageTileDecoder {
 
   @Nonnull
   @Override
-  public final Color[][] decode(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) throws QctDecoderException {
-    final Color[][] pixels = decodePixels(asyncFileChannel, byteOffset);
+  public final QctPixel[][] decode(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) throws QctDecoderException {
+    final QctPixel[][] pixels = decodePixels(asyncFileChannel, byteOffset);
     return deinterlaceRows(pixels);
   }
 
@@ -32,10 +32,10 @@ abstract class AbstractImageTileDecoder implements ImageTileDecoder {
    * @param byteOffset       byte offset of the {@link ImageTile}
    * @return decoded pixels of the {@link ImageTile}
    * @implSpec Shall not perform any deinterlacing of the rows.
-   * @see #deinterlaceRows(Color[][])
+   * @see #deinterlaceRows(QctPixel[][])
    */
   @Nonnull
-  protected abstract Color[][] decodePixels(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
+  protected abstract QctPixel[][] decodePixels(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
 
   /**
    * Deinterlaces rows of an {@link ImageTile}. The pixel content of each tile is scanned from left to right in rows of
@@ -46,8 +46,8 @@ abstract class AbstractImageTileDecoder implements ImageTileDecoder {
    * @param pixels of the {@link ImageTile}
    * @return deinterlaced pixels of the {@link ImageTile}
    */
-  private Color[][] deinterlaceRows(final Color[][] pixels) {
-    final Color[][] deinterlacedPixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
+  private QctPixel[][] deinterlaceRows(final QctPixel[][] pixels) {
+    final var deinterlacedPixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
     for (int i = 0; i < ImageTile.HEIGHT; ++i) {
       deinterlacedPixels[DEINTERLACED_ROW_SEQUENCE[i]] = pixels[i];
     }

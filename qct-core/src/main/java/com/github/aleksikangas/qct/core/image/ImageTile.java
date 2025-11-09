@@ -1,8 +1,7 @@
 package com.github.aleksikangas.qct.core.image;
 
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-
-import java.awt.Color;
 
 /**
  * Represents a single tile of an image. Each tile within the image is compressed to reduce the size of the image file.
@@ -10,12 +9,12 @@ import java.awt.Color;
  * algorithms rely on the fact that an image tile will likely contain fewer colors than the overall image.
  */
 public record ImageTile(ImageTileEncoding encoding,
-                        Color[][] pixels) implements Parseable<ImageTile> {
+                        QctPixel[][] pixels) implements Parseable<ImageTile> {
   public static final int HEIGHT = 64;
   public static final int WIDTH = 64;
   public static final int PIXEL_COUNT = HEIGHT * WIDTH;
 
-  public Color pixel(final int y, final int x) {
+  public QctPixel pixel(final int y, final int x) {
     return pixels[y][x];
   }
 }

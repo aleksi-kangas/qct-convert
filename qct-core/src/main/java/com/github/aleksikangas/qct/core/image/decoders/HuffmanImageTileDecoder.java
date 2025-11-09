@@ -1,13 +1,13 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
 import com.github.aleksikangas.qct.core.color.Palette;
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.reader.DynamicByteBuffer;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ final class HuffmanImageTileDecoder extends AbstractImageTileDecoder {
 
   @Nonnull
   @Override
-  protected Color[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) throws QctDecoderException {
+  protected QctPixel[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) throws QctDecoderException {
     final DynamicByteBuffer dynamicByteBuffer = new DynamicByteBuffer(asyncFileChannel, byteOffset + 1, 4096);
     final HuffmanCodeBook huffmanCodeBook = new HuffmanCodeBook(dynamicByteBuffer);
     if (huffmanCodeBook.size() == 1) {
@@ -34,10 +34,10 @@ final class HuffmanImageTileDecoder extends AbstractImageTileDecoder {
     return decodeWith(huffmanCodeBook, dynamicByteBuffer);
   }
 
-  private Color[][] decodeConstant(final HuffmanCodeBook huffmanCodeBook) {
+  private QctPixel[][] decodeConstant(final HuffmanCodeBook huffmanCodeBook) {
     Preconditions.checkArgument(huffmanCodeBook.size() == 1);
-    final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
-    final Color color = huffmanCodeBook.getColor(0, palette);
+    final var pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
+    final QctPixel color = huffmanCodeBook.getColor(0, palette);
     for (int y = 0; y < ImageTile.HEIGHT; ++y) {
       for (int x = 0; x < ImageTile.WIDTH; ++x) {
         pixels[y][x] = color;
@@ -46,9 +46,9 @@ final class HuffmanImageTileDecoder extends AbstractImageTileDecoder {
     return pixels;
   }
 
-  private Color[][] decodeWith(final HuffmanCodeBook huffmanCodeBook, final DynamicByteBuffer dynamicByteBuffer) {
+  private QctPixel[][] decodeWith(final HuffmanCodeBook huffmanCodeBook, final DynamicByteBuffer dynamicByteBuffer) {
     Preconditions.checkArgument(huffmanCodeBook.size() > 1);
-    final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
+    final var pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
     int currentByte = dynamicByteBuffer.nextByte();
     int bitCount = 8;
     int pixelIndex = 0;
@@ -56,8 +56,7 @@ final class HuffmanImageTileDecoder extends AbstractImageTileDecoder {
       if (huffmanCodeBook.isColor()) {
         final int y = pixelIndex / ImageTile.WIDTH;
         final int x = pixelIndex % ImageTile.WIDTH;
-        final Color color = huffmanCodeBook.getColor(palette);
-        pixels[y][x] = color;
+        pixels[y][x] = huffmanCodeBook.getColor(palette);
         ++pixelIndex;
         huffmanCodeBook.reset();
         continue;

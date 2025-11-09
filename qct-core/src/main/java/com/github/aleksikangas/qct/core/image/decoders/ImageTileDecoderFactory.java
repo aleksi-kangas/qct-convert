@@ -1,6 +1,7 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
 import com.github.aleksikangas.qct.core.color.Palette;
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
@@ -30,11 +31,11 @@ public final class ImageTileDecoderFactory {
 
     @Nonnull
     @Override
-    public Color[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) {
-      final Color[][] pixels = new Color[ImageTile.HEIGHT][ImageTile.WIDTH];
+    public QctPixel[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) {
+      final var pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
       for (int y = 0; y < ImageTile.HEIGHT; ++y) {
         for (int x = 0; x < ImageTile.WIDTH; ++x) {
-          pixels[y][x] = Color.BLACK;
+          pixels[y][x] = new QctPixel(Color.BLACK, 0);
         }
       }
       return pixels;

@@ -1,9 +1,11 @@
 package com.github.aleksikangas.qct.core.image;
 
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.google.common.base.Preconditions;
 
-import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * <pre>
@@ -39,20 +41,25 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable<ImageInd
     return imageTiles[yTile][xTile];
   }
 
-  public BufferedImage asBufferedImage() {
-    final BufferedImage bufferedImage = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_RGB);
-    for (int yTile = 0; yTile < heightTiles(); ++yTile) {
-      for (int xTile = 0; xTile < widthTiles(); ++xTile) {
-        final ImageTile imageTile = imageTiles[yTile][xTile];
-        for (int y = 0; y < ImageTile.HEIGHT; ++y) {
-          for (int x = 0; x < ImageTile.WIDTH; ++x) {
-            bufferedImage.setRGB(xTile * ImageTile.WIDTH + x,
-                                 yTile * ImageTile.HEIGHT + y,
-                                 imageTile.pixel(y, x).getRGB());
-          }
-        }
-      }
-    }
-    return bufferedImage;
+  public QctPixel pixel(final int y, final int x) {
+    Preconditions.checkArgument(0 <= y && y < height());
+    Preconditions.checkArgument(0 <= x && x < width());
+    final ImageTile imageTile = imageTiles[y / ImageTile.HEIGHT][x / ImageTile.WIDTH];
+    return imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
+  }
+
+  public QctPixel[][] asPixels() {
+    final var pixels = new QctPixel[height()][width()];
+    IntStream.range(0, height())
+        .parallel()
+        .forEach(y -> {
+          final var rowPixels = new QctPixel[width()];
+          Arrays.parallelSetAll(rowPixels, x -> {
+            final ImageTile imageTile = imageTile(y / ImageTile.HEIGHT, x / ImageTile.WIDTH);
+            return imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
+          });
+          pixels[y] = rowPixels;
+        });
+    return pixels;
   }
 }

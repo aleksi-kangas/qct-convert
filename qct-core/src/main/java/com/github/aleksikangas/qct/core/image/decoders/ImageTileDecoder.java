@@ -1,10 +1,10 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
+import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.nio.channels.AsynchronousFileChannel;
 
 public interface ImageTileDecoder {
@@ -23,5 +23,5 @@ public interface ImageTileDecoder {
    * @return decoded pixels of the {@link ImageTile}
    */
   @Nonnull
-  Color[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
+  QctPixel[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
 }
