@@ -1,6 +1,7 @@
 package com.github.aleksikangas.qct.core.meta.parser;
 
 import com.github.aleksikangas.qct.core.meta.FileFormatVersion;
+import com.github.aleksikangas.qct.core.meta.Flag;
 import com.github.aleksikangas.qct.core.meta.MagicNumber;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
@@ -56,6 +57,7 @@ public final class MetadataParser extends AbstractParser<Metadata, MetadataParse
                           QctReader.readStringFromPointer(asyncFileChannel, Metadata.BYTE_OFFSET + 0x34L),
                           QctReader.readStringFromPointer(asyncFileChannel, Metadata.BYTE_OFFSET + 0x38L),
                           QctReader.readStringFromPointer(asyncFileChannel, Metadata.BYTE_OFFSET + 0x3CL),
+                          Flag.flagsOf(QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x40)),
                           QctReader.readStringFromPointer(asyncFileChannel, Metadata.BYTE_OFFSET + 0x44L),
                           QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x48L),
                           Instant.ofEpochSecond(QctReader.readInt(asyncFileChannel, Metadata.BYTE_OFFSET + 0x4CL)),

@@ -47,8 +47,7 @@ public record QctFile(Metadata metadata,
     return "Metadata:" + "\n" + metadata.toString() + "\n" + "Georeferencing Coefficients:" + "\n" + georeferencingCoefficients.toString();
   }
 
-  static void main(final String[] args) throws IOException {
-    final Path path = Path.of(args[0]);
+  public static QctFile parse(final Path path) {
     try (final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
       final ParserRegistry parserRegistry = new ParserRegistryImpl(executorService);
       try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
@@ -56,10 +55,17 @@ public record QctFile(Metadata metadata,
                                                                                          Executors.newVirtualThreadPerTaskExecutor())) {
         final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
         LOG.info("Decode successful");
-        System.out.println(qctFile);
-      } catch (final QctRuntimeException e) {
+        return qctFile;
+      } catch (final IOException e) {
         LOG.error("Failed to parse QctFile", e);
+        throw new QctRuntimeException(e);
       }
     }
+  }
+
+  static void main(final String[] args) {
+    final Path path = Path.of(args[0]);
+    final QctFile qctFile = QctFile.parse(path);
+    System.out.println(qctFile);
   }
 }

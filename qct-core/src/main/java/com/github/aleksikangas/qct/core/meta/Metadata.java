@@ -1,9 +1,11 @@
 package com.github.aleksikangas.qct.core.meta;
 
+import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 
 import javax.annotation.Nonnull;
 import java.time.Instant;
+import java.util.EnumSet;
 
 /**
  * <pre>
@@ -66,12 +68,21 @@ public record Metadata(MagicNumber magicNumber,
                        String depths,
                        String heights,
                        String projection,
+                       EnumSet<Flag> flags,
                        String originalFileName,
                        int originalFileSize,
                        Instant originalFileCreationTime,
                        ExtendedData extendedData,
                        MapOutline mapOutline) implements Parseable<Metadata> {
   public static final long BYTE_OFFSET = 0x0000L;
+
+  public int widthPixels() {
+    return widthTiles * ImageTile.WIDTH;
+  }
+
+  public int heightPixels() {
+    return heightTiles * ImageTile.HEIGHT;
+  }
 
   @Nonnull
   @Override
@@ -92,6 +103,7 @@ public record Metadata(MagicNumber magicNumber,
         String.format("\tDepths: %s\n", depths) +
         String.format("\tHeights: %s\n", heights) +
         String.format("\tProjection: %s\n", projection) +
+        String.format("\tFlags: %s\n", flags) +
         String.format("\tOriginal File Name: %s\n", originalFileName) +
         String.format("\tOriginal File Size (KB): %d\n", originalFileSize / 1000) +
         String.format("\tOriginal File Creation Time: %s\n", originalFileCreationTime) +
