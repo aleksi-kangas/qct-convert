@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 23)
 
 enable_testing()
 
-add_subdirectory(qct)
-add_subdirectory(qct-export)
+add_subdirectory(qct-cpp)
+add_subdirectory(qct-export-cpp)
 
 add_executable(${PROJECT_NAME} CLI11.hpp main.cpp)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
