@@ -10,9 +10,11 @@ import java.util.concurrent.CompletableFuture;
  * A registry for {@link Parser}s.
  */
 public interface ParserRegistry {
-  <P extends Parseable<P>, T extends ParseTask<P>> Parser<P, T> getParser(Class<P> parseableClass);
+  <P extends Parseable, T extends ParseTask<P>> void register(Parser<P, T> parser);
 
-  <T extends Parseable<T>> T parse(ParseTask<T> task);
+  <P extends Parseable, T extends ParseTask<P>> Parser<P, T> getParser(Class<Parser<P, T>> parserClass);
 
-  <T extends Parseable<T>> CompletableFuture<T> parseAsync(ParseTask<T> parseTask);
+  <P extends Parseable, T extends ParseTask<P>> P parse(Class<Parser<P, T>> parserClass, T parseTask);
+
+  <P extends Parseable, T extends ParseTask<P>> CompletableFuture<P> parseAsync(Class<Parser<P, T>> parserClass, T parseTask);
 }

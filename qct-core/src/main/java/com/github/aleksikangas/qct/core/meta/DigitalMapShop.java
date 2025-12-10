@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  * </pre>
  */
 public record DigitalMapShop(int size,
-                             String qc3Url) implements Parseable<DigitalMapShop> {
+                             String qc3Url) implements Parseable {
   @Nonnull
   @Override
   public String toString() {

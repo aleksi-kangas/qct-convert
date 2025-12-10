@@ -14,7 +14,7 @@ import java.util.Arrays;
  * +--------+-----------+---------+
  * </pre>
  */
-public record SerialNumber(int[] bytes) implements Parseable<SerialNumber> {
+public record SerialNumber(int[] bytes) implements Parseable {
   @Nonnull
   @Override
   public String toString() {

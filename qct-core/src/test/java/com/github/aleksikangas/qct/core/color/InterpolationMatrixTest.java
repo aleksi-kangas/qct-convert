@@ -21,13 +21,13 @@ public final class InterpolationMatrixTest {
   private static InterpolationMatrix generateSymmetric() {
     final int[] m = new int[InterpolationMatrix.SIZE];
     IntStream.range(0, InterpolationMatrix.SIZE_ROWS)
-             .forEach(y -> IntStream.range(0, InterpolationMatrix.SIZE_COLUMNS)
-                                    .forEach(x -> {
-                                      final int minIdx = Math.min(y, x);
-                                      final int maxIdx = Math.max(y, x);
-                                      final int value = (minIdx * InterpolationMatrix.SIZE_COLUMNS) + maxIdx;
-                                      m[(y * InterpolationMatrix.SIZE_COLUMNS) + x] = value;
-                                    }));
+        .forEach(y -> IntStream.range(0, InterpolationMatrix.SIZE_COLUMNS)
+            .forEach(x -> {
+              final int minIdx = Math.min(y, x);
+              final int maxIdx = Math.max(y, x);
+              final int value = (minIdx * InterpolationMatrix.SIZE_COLUMNS) + maxIdx;
+              m[(y * InterpolationMatrix.SIZE_COLUMNS) + x] = value;
+            }));
     return new InterpolationMatrix(m);
   }
 }

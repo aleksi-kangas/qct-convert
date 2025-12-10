@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
  * +--------+-------------------+--------------------------------------------+
  * </pre>
  */
-public record ImageIndex(ImageTile[][] imageTiles) implements Parseable<ImageIndex> {
+public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
   public static final long BYTE_OFFSET = 0x45A0L;
 
   public int heightTiles() {

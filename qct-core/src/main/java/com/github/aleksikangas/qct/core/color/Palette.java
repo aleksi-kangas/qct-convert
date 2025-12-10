@@ -24,7 +24,7 @@ import java.awt.Color;
  * +--------+-----------+-------------------------+
  * </pre>
  */
-public record Palette(Color[] colors) implements Parseable<Palette> {
+public record Palette(Color[] colors) implements Parseable {
   public static final long BYTE_OFFSET = 0x01A0L;
   public static final int SIZE = 128;
 

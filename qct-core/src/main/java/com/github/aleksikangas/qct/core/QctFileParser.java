@@ -8,47 +8,41 @@ import com.github.aleksikangas.qct.core.image.parser.ImageIndexParser;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.meta.parser.MetadataParser;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
-import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
-import com.github.aleksikangas.qct.core.parser.task.AsyncReadable;
+import com.github.aleksikangas.qct.core.parser.Parsers;
+import com.github.aleksikangas.qct.core.parser.feature.AsyncFileChannelAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
-import com.github.aleksikangas.qct.core.parser.task.ParserRegistryAware;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
-import java.util.concurrent.ExecutorService;
 
-public final class QctFileParser extends AbstractParser<QctFile, QctFileParser.Task> {
-  public QctFileParser(final ExecutorService executorService) {
-    super(executorService);
-  }
-
+/**
+ * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link QctFile}.
+ */
+@ApplicationScoped
+public class QctFileParser extends AbstractParser<QctFile, QctFileParser.Task> {
   @Nonnull
   @Override
   public Class<QctFile> parseableClass() {
     return QctFile.class;
   }
 
-  public record Task(AsynchronousFileChannel asyncFileChannel,
-                     ParserRegistry parserRegistry) implements ParseTask<QctFile>, AsyncReadable, ParserRegistryAware {
-    @Nonnull
-    @Override
-    public Class<QctFile> parseableClass() {
-      return QctFile.class;
-    }
+  @Nonnull
+  @Override
+  public QctFile parse(final Task parseTask) {
+    final Metadata metadata = Parsers.execute(MetadataParser.class,
+                                              new MetadataParser.Task(parseTask.asyncFileChannel));
+    final Palette palette = Parsers.execute(PaletteParser.class, new PaletteParser.Task(parseTask.asyncFileChannel));
+    return new QctFile(metadata,
+                       Parsers.execute(GeoreferencingCoefficientsParser.class,
+                                       new GeoreferencingCoefficientsParser.Task(parseTask.asyncFileChannel)),
+                       palette,
+                       Parsers.execute(InterpolationMatrixParser.class,
+                                       new InterpolationMatrixParser.Task(parseTask.asyncFileChannel)),
+                       Parsers.execute(ImageIndexParser.class,
+                                       new ImageIndexParser.Task(parseTask.asyncFileChannel, metadata, palette)));
+  }
 
-    @Nonnull
-    @Override
-    public QctFile parse() {
-      final Metadata metadata = parserRegistry.parse(new MetadataParser.Task(asyncFileChannel, parserRegistry));
-      final Palette palette = parserRegistry.parse(new PaletteParser.Task(asyncFileChannel));
-      return new QctFile(metadata,
-                         parserRegistry.parse(new GeoreferencingCoefficientsParser.Task(asyncFileChannel)),
-                         palette,
-                         parserRegistry.parse(new InterpolationMatrixParser.Task(asyncFileChannel)),
-                         parserRegistry.parse(new ImageIndexParser.Task(asyncFileChannel,
-                                                                        metadata,
-                                                                        palette,
-                                                                        parserRegistry)));
-    }
+  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask<QctFile>, AsyncFileChannelAware {
   }
 }

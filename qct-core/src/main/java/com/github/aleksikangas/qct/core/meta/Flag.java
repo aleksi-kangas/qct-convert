@@ -17,7 +17,7 @@ import java.util.List;
  * +--------+-------------------+---------------------------------+
  * </pre>
  */
-public enum Flag implements Parseable<Flag> {
+public enum Flag implements Parseable {
   MUST_HAVE_ORIGINAL_FILE(0),
   ALLOW_CALIBRATION(1);
 

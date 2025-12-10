@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
  */
 public record LicenseInformation(int identifier,
                                  String description,
-                                 SerialNumber serialNumber) implements Parseable<LicenseInformation> {
+                                 SerialNumber serialNumber) implements Parseable {
   @Nonnull
   @Override
   public String toString() {

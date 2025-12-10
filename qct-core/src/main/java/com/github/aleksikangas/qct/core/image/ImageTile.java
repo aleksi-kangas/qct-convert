@@ -9,7 +9,7 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
  * algorithms rely on the fact that an image tile will likely contain fewer colors than the overall image.
  */
 public record ImageTile(ImageTileEncoding encoding,
-                        QctPixel[][] pixels) implements Parseable<ImageTile> {
+                        QctPixel[][] pixels) implements Parseable {
   public static final int HEIGHT = 64;
   public static final int WIDTH = 64;
   public static final int PIXEL_COUNT = HEIGHT * WIDTH;

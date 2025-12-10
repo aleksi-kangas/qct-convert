@@ -6,8 +6,9 @@ import com.github.aleksikangas.qct.core.georef.GeoreferencingCoefficients;
 import com.github.aleksikangas.qct.core.image.ImageIndex;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
-import com.github.aleksikangas.qct.core.parser.registry.ParserRegistryImpl;
+import com.github.aleksikangas.qct.core.parser.Parsers;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,6 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -38,7 +38,7 @@ public record QctFile(Metadata metadata,
                       GeoreferencingCoefficients georeferencingCoefficients,
                       Palette palette,
                       InterpolationMatrix interpolationMatrix,
-                      ImageIndex imageIndex) implements Parseable<QctFile> {
+                      ImageIndex imageIndex) implements Parseable {
   private static final Logger LOG = LoggerFactory.getLogger(QctFile.class);
 
   @Nonnull
@@ -48,24 +48,24 @@ public record QctFile(Metadata metadata,
   }
 
   public static QctFile parse(final Path path) {
-    try (final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
-      final ParserRegistry parserRegistry = new ParserRegistryImpl(executorService);
-      try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
-                                                                                         Set.of(StandardOpenOption.READ),
-                                                                                         Executors.newVirtualThreadPerTaskExecutor())) {
-        final QctFile qctFile = parserRegistry.parse(new QctFileParser.Task(asyncFileChannel, parserRegistry));
-        LOG.info("Decode successful");
-        return qctFile;
-      } catch (final IOException e) {
-        LOG.error("Failed to parse QctFile", e);
-        throw new QctRuntimeException(e);
-      }
+    try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
+                                                                                       Set.of(StandardOpenOption.READ),
+                                                                                       Executors.newVirtualThreadPerTaskExecutor())) {
+      final QctFile qctFile = Parsers.execute(QctFileParser.class, new QctFileParser.Task(asyncFileChannel));
+      LOG.info("Decode successful");
+      return qctFile;
+    } catch (final IOException e) {
+      LOG.error("Failed to parse QctFile", e);
+      throw new QctRuntimeException(e);
     }
   }
 
   static void main(final String[] args) {
-    final Path path = Path.of(args[0]);
-    final QctFile qctFile = QctFile.parse(path);
-    System.out.println(qctFile);
+    final var weld = new Weld();
+    try (final WeldContainer _ = weld.initialize()) {
+      final Path path = Path.of(args[0]);
+      final QctFile qctFile = QctFile.parse(path);
+      System.out.println(qctFile);
+    }
   }
 }

@@ -73,7 +73,7 @@ public record Metadata(MagicNumber magicNumber,
                        int originalFileSize,
                        Instant originalFileCreationTime,
                        ExtendedData extendedData,
-                       MapOutline mapOutline) implements Parseable<Metadata> {
+                       MapOutline mapOutline) implements Parseable {
   public static final long BYTE_OFFSET = 0x0000L;
 
   public int widthPixels() {

@@ -25,7 +25,7 @@ public record ExtendedData(String mapType,
                            String diskName,
                            LicenseInformation licenseInformation,
                            String associatedData,
-                           DigitalMapShop digitalMapShop) implements Parseable<ExtendedData> {
+                           DigitalMapShop digitalMapShop) implements Parseable {
   @Nonnull
   @Override
   public String toString() {

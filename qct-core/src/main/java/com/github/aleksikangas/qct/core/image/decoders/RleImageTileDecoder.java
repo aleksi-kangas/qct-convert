@@ -7,7 +7,7 @@ import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.color.SubPalette;
 import com.github.aleksikangas.qct.core.image.color.SubPaletteSizeType;
 import com.github.aleksikangas.qct.core.image.parser.SubPaletteParser;
-import com.github.aleksikangas.qct.core.parser.registry.ParserRegistry;
+import com.github.aleksikangas.qct.core.parser.Parsers;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
@@ -19,11 +19,9 @@ import java.util.Objects;
  */
 final class RleImageTileDecoder extends AbstractImageTileDecoder {
   private final Palette palette;
-  private final ParserRegistry parserRegistry;
 
-  RleImageTileDecoder(final Palette palette, final ParserRegistry parserRegistry) {
+  RleImageTileDecoder(final Palette palette) {
     this.palette = Objects.requireNonNull(palette);
-    this.parserRegistry = Objects.requireNonNull(parserRegistry);
   }
 
   @Override
@@ -35,9 +33,9 @@ final class RleImageTileDecoder extends AbstractImageTileDecoder {
   @Override
   protected QctPixel[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
     final QctPixel[][] pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
-    final SubPalette subPalette = parserRegistry.parse(new SubPaletteParser.Task(asyncFileChannel,
-                                                                                 byteOffset,
-                                                                                 SubPaletteSizeType.NORMAL));
+    final SubPalette subPalette = Parsers.execute(SubPaletteParser.class, new SubPaletteParser.Task(asyncFileChannel,
+                                                                                                    byteOffset,
+                                                                                                    SubPaletteSizeType.NORMAL));
     final long pixelDataByteOffset = byteOffset + 0x01L + subPalette.size();
     // In order to avoid reading one byte at a time from the file,
     // read bytes into a buffer assuming the worst case of one byte per pixel (64 x 64 = 4096 bytes),

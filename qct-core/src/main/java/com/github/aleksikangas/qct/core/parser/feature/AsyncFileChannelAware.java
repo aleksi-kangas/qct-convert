@@ -1,7 +1,7 @@
-package com.github.aleksikangas.qct.core.parser.task;
+package com.github.aleksikangas.qct.core.parser.feature;
 
 import java.nio.channels.AsynchronousFileChannel;
 
-public interface AsyncReadable {
+public interface AsyncFileChannelAware {
   AsynchronousFileChannel asyncFileChannel();
 }

@@ -10,18 +10,10 @@ import java.util.concurrent.CompletableFuture;
  *
  * @param <T> parseable data
  */
-public interface Parser<P extends Parseable<P>, T extends ParseTask<P>> extends ParseableAware<P> {
-  /**
-   * Parses {@link Parseable} data.
-   *
-   * @param asyncFileChannel to read from
-   * @param byteOffset       the byte offset within the file
-   * @param parserRegistry   registry of {@link Parser}s
-   * @return {@link Parseable} data
-   */
+public interface Parser<P extends Parseable, T extends ParseTask<P>> extends ParseableAware<P> {
   @Nonnull
-  P execute(T parseTask);
+  P parse(T parseTask);
 
   @Nonnull
-  CompletableFuture<P> executeAsync(T parseTask);
+  CompletableFuture<P> parseAsync(T parseTask);
 }

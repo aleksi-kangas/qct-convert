@@ -11,7 +11,7 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
  * @param paletteIndices
  */
 public record SubPalette(int size,
-                         int[] paletteIndices) implements Parseable<SubPalette> {
+                         int[] paletteIndices) implements Parseable {
   /**
    * The number of bits required to index the sub-palette.
    *

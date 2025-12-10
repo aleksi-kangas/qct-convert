@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * +--------+-----------+-----------+
  * </pre>
  */
-public record MapOutline(Point[] points) implements Parseable<MapOutline> {
+public record MapOutline(Point[] points) implements Parseable {
   @Nonnull
   @Override
   public String toString() {
@@ -27,7 +27,7 @@ public record MapOutline(Point[] points) implements Parseable<MapOutline> {
   }
 
   public record Point(double latitude,
-                      double longitude) implements Parseable<Point> {
+                      double longitude) implements Parseable {
     @Nonnull
     @Override
     public String toString() {

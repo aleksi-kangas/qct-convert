@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  * </pre>
  */
 public record DatumShift(double north,
-                         double east) implements Parseable<DatumShift> {
+                         double east) implements Parseable {
   @Nonnull
   @Override
   public String toString() {

@@ -71,7 +71,7 @@ public record GeoreferencingCoefficients(double eas,
                                          double lonXXX,
                                          double lonXXY,
                                          double lonXYY,
-                                         double lonYYY) implements Parseable<GeoreferencingCoefficients> {
+                                         double lonYYY) implements Parseable {
   public static final long BYTE_OFFSET = 0x0060L;
 
   private static final String FORMAT = "%.6f";
