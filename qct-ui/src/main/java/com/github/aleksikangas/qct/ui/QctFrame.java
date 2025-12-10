@@ -1,6 +1,5 @@
 package com.github.aleksikangas.qct.ui;
 
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.github.aleksikangas.qct.ui.file.QctFileServiceImpl;
 import com.github.aleksikangas.qct.ui.image.ImageDisplayPanel;
 import com.github.aleksikangas.qct.ui.settings.SettingsPanel;
@@ -28,12 +27,5 @@ public final class QctFrame extends JFrame {
     splitPane.setRightComponent(imageDisplayPanel);
     add(splitPane);
     pack();
-  }
-
-  static void main(final String[] args) {
-    FlatMacDarkLaf.setup();
-    final var app = new QctFrame();
-    app.setLocationRelativeTo(null);
-    app.setVisible(true);
   }
 }

@@ -30,12 +30,15 @@ public final class QctFileServiceImpl implements QctFileService {
     CompletableFuture.supplyAsync(() -> QctFile.parse(Objects.requireNonNull(path))).thenAccept(qctFile -> {
       this.qctFile.set(qctFile);
       notifyQctFileListeners();
+    }).exceptionally(e -> {
+      System.out.println(e);
+      return null;
     });
   }
 
   @Override
   public void scaleQctFile(final QctFile qctFile, final int scale) {
-    
+
   }
 
   private void notifyQctFileListeners() {

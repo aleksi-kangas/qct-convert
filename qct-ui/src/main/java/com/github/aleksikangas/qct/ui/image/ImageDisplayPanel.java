@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.annotation.Nullable;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,6 +16,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public final class ImageDisplayPanel extends JPanel implements QctFileAware {
   private final QctFileService qctFileService;
@@ -46,9 +48,12 @@ public final class ImageDisplayPanel extends JPanel implements QctFileAware {
 
   @Override
   public void onQctFile(final QctFile qctFile) {
-    bufferedImage = ImageUtils.asBufferedImage(qctFile.imageIndex().asPixels());
-    revalidate();
-    repaint();
+    CompletableFuture.supplyAsync(() -> ImageUtils.asBufferedImage(qctFile.imageIndex().asPixels())).thenAccept(
+        bufferedImage -> SwingUtilities.invokeLater(() -> {
+          this.bufferedImage = bufferedImage;
+          revalidate();
+          repaint();
+        }));
   }
 
   @Override
