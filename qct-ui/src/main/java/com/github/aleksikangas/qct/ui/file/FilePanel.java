@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 public final class FilePanel extends JPanel implements QctFileAware {
-  private final JLabel fileLabel = new JLabel("File:");
   private final JTextField fileTextField = new JTextField();
   private final JButton fileBrowseButton = new JButton("Browse...");
   private final JButton decodeButton = new JButton("Decode");
@@ -20,8 +19,9 @@ public final class FilePanel extends JPanel implements QctFileAware {
   private final QctFileService qctFileService;
 
   public FilePanel(final QctFileService qctFileService) {
-    super(new MigLayout("fill", "[][][fill, grow]", "[][]"));
+    super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[grow][grow]", "[fill, grow][fill, grow]"));
     this.qctFileService = Objects.requireNonNull(qctFileService);
+    setBorder(BorderFactory.createTitledBorder("File"));
 
     fileTextField.setEnabled(false);
     fileBrowseButton.addActionListener(e -> selectFile());
@@ -29,10 +29,9 @@ public final class FilePanel extends JPanel implements QctFileAware {
 
     setDecodeButtonEnabled(false);
 
-    add(fileLabel);
-    add(fileTextField, "skip, wrap");
+    add(fileTextField, "grow, span 2, wrap");
     add(fileBrowseButton, "");
-    add(decodeButton, "wrap");
+    add(decodeButton, "alignx right, wrap");
   }
 
   @Override

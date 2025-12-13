@@ -7,9 +7,7 @@ import com.github.aleksikangas.qct.ui.file.QctFileService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.annotation.Nullable;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.util.Objects;
 
 public final class MetadataPanel extends JPanel implements QctFileAware {
@@ -99,8 +97,10 @@ public final class MetadataPanel extends JPanel implements QctFileAware {
   private final JPanel mapOutlinePanel;
 
   public MetadataPanel(final QctFileService qctFileService) {
-    super(new MigLayout("", "[][fill, grow]", ""));
+    super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[][fill, grow]", ""));
     this.qctFileService = Objects.requireNonNull(qctFileService);
+    setBorder(BorderFactory.createTitledBorder("Metadata"));
+
     datumShiftPanel = new DatumShiftPanel(qctFileService);
     licenseInformationPanel = new LicenseInformationPanel(qctFileService);
     digitalMapShopPanel = new DigitalMapShopPanel(qctFileService);
