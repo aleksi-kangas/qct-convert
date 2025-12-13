@@ -1,8 +1,9 @@
 package com.github.aleksikangas.qct.ui.file;
 
 import com.github.aleksikangas.qct.core.QctFile;
+import jakarta.enterprise.context.ApplicationScoped;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicReference;
 
+@ApplicationScoped
 public final class QctFileServiceImpl implements QctFileService {
   private final Set<QctFileAware> listeners = new CopyOnWriteArraySet<>();
 
