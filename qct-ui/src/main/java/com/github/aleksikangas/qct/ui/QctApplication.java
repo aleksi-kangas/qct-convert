@@ -8,7 +8,7 @@ import jakarta.inject.Inject;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.util.Objects;
 
 @ApplicationScoped

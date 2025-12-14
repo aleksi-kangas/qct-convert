@@ -7,8 +7,6 @@ import com.github.aleksikangas.qct.core.image.ImageIndex;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.github.aleksikangas.qct.core.parser.Parsers;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,15 +55,6 @@ public record QctFile(Metadata metadata,
     } catch (final IOException e) {
       LOG.error("Failed to parse QctFile", e);
       throw new QctRuntimeException(e);
-    }
-  }
-
-  static void main(final String[] args) {
-    final var weld = new Weld();
-    try (final WeldContainer _ = weld.initialize()) {
-      final Path path = Path.of(args[0]);
-      final QctFile qctFile = QctFile.parse(path);
-      System.out.println(qctFile);
     }
   }
 }

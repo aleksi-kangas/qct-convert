@@ -2,11 +2,11 @@ name: Build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "java" ]
     tags:
       - "v*.*.*"
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "java" ]
 
 permissions:
   contents: write
@@ -18,91 +18,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
-        include:
-          - os: windows-latest
-            os-short: windows
-            architecture: x64
-          - os: ubuntu-latest
-            os-short: linux
-            architecture: x64
-          - os: macos-latest
-            os-short: macos
-            architecture: arm64
-
-    env:
-      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg_cache,readwrite
+        os: [ ubuntu-latest ]
 
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: "Restore VCPKG cache"
-        uses: actions/cache/restore@v4
+      - name: "Install JDK"
+        uses: actions/setup-java@v5
         with:
-          path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.os-short }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: vcpkg-${{ matrix.os-short }}-
+          distribution: "temurin"
+          java-version: "25"
 
-      - name: "Install Clang on Ubuntu"
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang lld llvm-dev
-          echo "CC=/usr/bin/clang" >> $GITHUB_ENV
-          echo "CXX=/usr/bin/clang++" >> $GITHUB_ENV
-          echo "/usr/bin" >> $GITHUB_PATH
-          echo "CXXFLAGS=-mpclmul -msse4.1" >> $GITHUB_ENV
-
-      - name: "Install Clang on macOS"
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install autoconf automake libtool llvm
-          echo "CC=/opt/homebrew/opt/llvm/bin/clang" >> $GITHUB_ENV
-          echo "CXX=/opt/homebrew/opt/llvm/bin/clang++" >> $GITHUB_ENV
-          echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
-          # SDKROOT is needed to locate the required headers...
-          echo "SDKROOT=$(xcrun --show-sdk-path)" >> $GITHUB_ENV
-          echo "CXXFLAGS=-isysroot $(xcrun --show-sdk-path)" >> $GITHUB_ENV
-
-      - name: "Get CMake"
-        uses: lukka/get-cmake@v3.31.6
-
-      - name: "Setup VCPKG"
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgConfigurationJsonGlob: '**/vcpkg-configuration.json'
-
-      - name: "Run CMake"
-        uses: lukka/run-cmake@v10
-        with:
-          configurePreset: release
-          buildPreset: release
-
-      - name: "Run Tests"
-        run: ctest --output-on-failure
-        working-directory: ${{ github.workspace }}/build/release
-
-      - name: "Package with CPack"
-        run: |
-          cpack -G ZIP
-          mv *.zip ${{ github.workspace }}/
-        working-directory: ${{ github.workspace }}/build/release
-
-      - name: "Save VCPKG cache"
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.os-short }}-${{ hashFiles('vcpkg.json') }}
+      - name: "Package"
+        run: mvn -B clean package
 
       - name: "Upload artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: ${{ matrix.os-short }}
           if-no-files-found: error
           path: |
-            ${{ github.workspace }}/*.zip
+            ${{ github.workspace }}/qct-ui/target/*-jar-with-dependencies.jar
 
   release:
     name: "Create GitHub Release"
@@ -112,7 +50,7 @@ jobs:
 
     steps:
       - name: "Download artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           path: ./artifacts
 
