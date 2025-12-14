@@ -8,16 +8,17 @@ import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.meta.parser.task.MetadataAware;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
-import com.github.aleksikangas.qct.core.parser.Parsers;
 import com.github.aleksikangas.qct.core.parser.feature.AsyncFileChannelAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -26,6 +27,13 @@ import java.util.concurrent.ExecutionException;
  */
 @ApplicationScoped
 public class ImageIndexParser extends AbstractParser<ImageIndex, ImageIndexParser.Task> {
+  private final ImageTileParser imageTileParser;
+
+  @Inject
+  public ImageIndexParser(final ImageTileParser imageTileParser) {
+    this.imageTileParser = Objects.requireNonNull(imageTileParser);
+  }
+
   @Nonnull
   @Override
   public Class<ImageIndex> parseableClass() {
@@ -49,8 +57,7 @@ public class ImageIndexParser extends AbstractParser<ImageIndex, ImageIndexParse
                                                   parseTask.palette);
         final int yTile = y;
         final int xTile = x;
-        imageTileFutures.add(Parsers.executeAsync(ImageTileParser.class,
-                                                  task).thenAccept(imageTile -> imageTiles[yTile][xTile] = imageTile));
+        imageTileFutures.add(imageTileParser.parseAsync(task).thenAccept(imageTile -> imageTiles[yTile][xTile] = imageTile));
       }
     }
     imageTileFutures.forEach(imageTileFuture -> {
@@ -68,6 +75,6 @@ public class ImageIndexParser extends AbstractParser<ImageIndex, ImageIndexParse
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      Metadata metadata,
-                     Palette palette) implements ParseTask<ImageIndex>, AsyncFileChannelAware, MetadataAware, PaletteAware {
+                     Palette palette) implements ParseTask, AsyncFileChannelAware, MetadataAware, PaletteAware {
   }
 }

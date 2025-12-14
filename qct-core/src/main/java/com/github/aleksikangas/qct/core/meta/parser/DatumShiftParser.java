@@ -30,6 +30,6 @@ public class DatumShiftParser extends AbstractParser<DatumShift, DatumShiftParse
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
-                     long byteOffset) implements ParseTask<DatumShift>, AsyncFileChannelAware, ByteOffsetAware {
+                     long byteOffset) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware {
   }
 }

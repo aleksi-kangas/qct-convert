@@ -29,6 +29,6 @@ public class SerialNumberParser extends AbstractParser<SerialNumber, SerialNumbe
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
-                     long byteOffset) implements ParseTask<SerialNumber>, AsyncFileChannelAware, ByteOffsetAware {
+                     long byteOffset) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware {
   }
 }

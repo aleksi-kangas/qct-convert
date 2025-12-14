@@ -5,21 +5,31 @@ import com.github.aleksikangas.qct.core.meta.Flag;
 import com.github.aleksikangas.qct.core.meta.MagicNumber;
 import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
-import com.github.aleksikangas.qct.core.parser.Parsers;
 import com.github.aleksikangas.qct.core.parser.feature.AsyncFileChannelAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 import com.github.aleksikangas.qct.core.reader.QctReader;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * A {@link com.github.aleksikangas.qct.core.parser.Parser} for {@link Metadata}.
  */
 @ApplicationScoped
 public class MetadataParser extends AbstractParser<Metadata, MetadataParser.Task> {
+  private final ExtendedDataParser extendedDataParser;
+  private final MapOutlineParser mapOutlineParser;
+
+  @Inject
+  public MetadataParser(final ExtendedDataParser extendedDataParser, final MapOutlineParser mapOutlineParser) {
+    this.extendedDataParser = Objects.requireNonNull(extendedDataParser);
+    this.mapOutlineParser = Objects.requireNonNull(mapOutlineParser);
+  }
+
   @Nonnull
   @Override
   public Class<Metadata> parseableClass() {
@@ -51,15 +61,13 @@ public class MetadataParser extends AbstractParser<Metadata, MetadataParser.Task
                         QctReader.readInt(parseTask.asyncFileChannel, Metadata.BYTE_OFFSET + 0x48L),
                         Instant.ofEpochSecond(QctReader.readInt(parseTask.asyncFileChannel,
                                                                 Metadata.BYTE_OFFSET + 0x4CL)),
-                        Parsers.execute(ExtendedDataParser.class,
-                                        new ExtendedDataParser.Task(parseTask.asyncFileChannel,
-                                                                    QctReader.readPointer(parseTask.asyncFileChannel,
-                                                                                          Metadata.BYTE_OFFSET + 0x54L))),
-                        Parsers.execute(MapOutlineParser.class,
-                                        new MapOutlineParser.Task(parseTask.asyncFileChannel,
-                                                                  Metadata.BYTE_OFFSET + 0x58L)));
+                        extendedDataParser.parse(new ExtendedDataParser.Task(parseTask.asyncFileChannel,
+                                                                             QctReader.readPointer(parseTask.asyncFileChannel,
+                                                                                                   Metadata.BYTE_OFFSET + 0x54L))),
+                        mapOutlineParser.parse(new MapOutlineParser.Task(parseTask.asyncFileChannel,
+                                                                         Metadata.BYTE_OFFSET + 0x58L)));
   }
 
-  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask<Metadata>, AsyncFileChannelAware {
+  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask, AsyncFileChannelAware {
   }
 }

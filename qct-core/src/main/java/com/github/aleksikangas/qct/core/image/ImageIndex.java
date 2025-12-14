@@ -5,6 +5,7 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
 import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 /**
@@ -18,6 +19,25 @@ import java.util.stream.IntStream;
  */
 public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
   public static final long BYTE_OFFSET = 0x45A0L;
+
+  @Override
+  public boolean equals(final Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    final ImageIndex that = (ImageIndex) o;
+    return Objects.deepEquals(imageTiles, that.imageTiles);
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.deepHashCode(imageTiles);
+  }
+
+  @Override
+  public String toString() {
+    return "ImageIndex{" +
+        "imageTiles=" + Arrays.toString(imageTiles) +
+        '}';
+  }
 
   public int heightTiles() {
     return imageTiles.length;

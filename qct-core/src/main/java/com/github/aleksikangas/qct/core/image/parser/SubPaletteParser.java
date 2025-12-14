@@ -37,6 +37,6 @@ public class SubPaletteParser extends AbstractParser<SubPalette, SubPaletteParse
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      long byteOffset,
-                     SubPaletteSizeType subPaletteSizeType) implements ParseTask<SubPalette>, AsyncFileChannelAware, ByteOffsetAware, SubPaletteSizeTypeAware {
+                     SubPaletteSizeType subPaletteSizeType) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware, SubPaletteSizeTypeAware {
   }
 }

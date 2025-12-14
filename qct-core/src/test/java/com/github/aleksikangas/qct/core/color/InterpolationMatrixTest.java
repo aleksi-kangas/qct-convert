@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests for {@link InterpolationMatrix}.
  */
-public final class InterpolationMatrixTest {
+final class InterpolationMatrixTest {
   @Test
-  public void test() {
+  void test() {
     final var interpolationMatrix = generateSymmetric();
     assertEquals(2, interpolationMatrix.colorIndexOf(2, 0));
     assertEquals(2, interpolationMatrix.colorIndexOf(0, 2));

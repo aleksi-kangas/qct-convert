@@ -105,28 +105,17 @@ public final class HuffmanCodeBook {
   }
 
   private boolean isValid() {
-    if (size() == 0) {
-      return false;
-    }
-    if (size() == 1) {
-      return true;
-    }
-    for (int i = 0; i < size(); ++i) {
-      if (isColor(i)) {
-        continue;
-      }
+    if (size() == 0) return false;
+    if (size() == 1) return true;
+    int i = 0;
+    while (i < size()) {
+      if (isColor(i)) continue;
       if (isFarBranch(i)) {
-        if (i + 2 >= size()) {
-          return false;
-        }
-        if (i + farBranchJumpSize(i) >= size()) {
-          return false;
-        }
+        if (i + 2 >= size() || i + farBranchJumpSize(i) >= size()) return false;
         i += 2;
       } else if (isNearBranch(i)) {
-        if (i + nearBranchJumpSize(i) >= size()) {
-          return false;
-        }
+        if (i + nearBranchJumpSize(i) >= size()) return false;
+        ++i;
       } else {
         return false;
       }

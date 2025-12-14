@@ -2,8 +2,8 @@ package com.github.aleksikangas.qct.core.meta;
 
 import com.github.aleksikangas.qct.core.parser.Parseable;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -15,7 +15,18 @@ import java.util.Arrays;
  * </pre>
  */
 public record SerialNumber(int[] bytes) implements Parseable {
-  @Nonnull
+  @Override
+  public boolean equals(final Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    final SerialNumber that = (SerialNumber) o;
+    return Objects.deepEquals(bytes, that.bytes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(bytes);
+  }
+
   @Override
   public String toString() {
     return Arrays.toString(bytes);

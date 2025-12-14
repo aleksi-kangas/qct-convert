@@ -31,6 +31,6 @@ public class DigitalMapShopParser extends AbstractParser<DigitalMapShop, Digital
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
-                     long byteOffset) implements ParseTask<DigitalMapShop>, AsyncFileChannelAware, ByteOffsetAware {
+                     long byteOffset) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware {
   }
 }

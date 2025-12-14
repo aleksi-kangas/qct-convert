@@ -5,6 +5,7 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <pre>
@@ -27,7 +28,7 @@ public enum Flag implements Parseable {
     this.value = value;
   }
 
-  public static EnumSet<Flag> flagsOf(final int x) {
+  public static Set<Flag> flagsOf(final int x) {
     final List<Flag> flagList = new ArrayList<>();
     if ((x & MUST_HAVE_ORIGINAL_FILE.value) == MUST_HAVE_ORIGINAL_FILE.value) {
       flagList.add(MUST_HAVE_ORIGINAL_FILE);

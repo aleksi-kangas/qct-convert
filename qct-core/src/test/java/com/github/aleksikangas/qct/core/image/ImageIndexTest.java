@@ -9,12 +9,12 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public final class ImageIndexTest {
+final class ImageIndexTest {
   private static final QctPixel BLACK = new QctPixel(Color.BLACK, 0);
   private static final QctPixel WHITE = new QctPixel(Color.WHITE, 0);
 
   @Test
-  public void pixelTest() {
+  void pixelTest() {
     final var imageTiles = new ImageTile[2][2];
     imageTiles[0][0] = new ImageTile(ImageTileEncoding.HUFFMAN_CODING, withWhitePixel(blackTilePixels(), 1, 2));
     imageTiles[0][1] = new ImageTile(ImageTileEncoding.HUFFMAN_CODING, withWhitePixel(blackTilePixels(), 2, 3));
@@ -33,7 +33,7 @@ public final class ImageIndexTest {
   }
 
   @Test
-  public void asPixelsTest() {
+  void asPixelsTest() {
     final var imageTiles = new ImageTile[2][2];
     imageTiles[0][0] = new ImageTile(ImageTileEncoding.HUFFMAN_CODING, withWhitePixel(blackTilePixels(), 1, 2));
     imageTiles[0][1] = new ImageTile(ImageTileEncoding.HUFFMAN_CODING, withWhitePixel(blackTilePixels(), 2, 3));

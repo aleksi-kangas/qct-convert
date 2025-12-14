@@ -80,7 +80,6 @@ public record GeoreferencingCoefficients(double eas,
   @Nonnull
   @Override
   public String toString() {
-
     return  // eas
         "\teas: [" +
             String.format(FORMAT, eas) +

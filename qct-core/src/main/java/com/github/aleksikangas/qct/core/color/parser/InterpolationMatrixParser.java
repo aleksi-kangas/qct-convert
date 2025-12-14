@@ -29,6 +29,6 @@ public class InterpolationMatrixParser extends AbstractParser<InterpolationMatri
                                                        InterpolationMatrix.SIZE));
   }
 
-  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask<InterpolationMatrix>, AsyncFileChannelAware {
+  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask, AsyncFileChannelAware {
   }
 }

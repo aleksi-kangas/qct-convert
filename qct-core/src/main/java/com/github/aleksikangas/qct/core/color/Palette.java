@@ -5,6 +5,8 @@ import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -31,6 +33,18 @@ public record Palette(Color[] colors) implements Parseable {
   public Color getColor(final int paletteIndex) {
     Preconditions.checkArgument(0 <= paletteIndex && paletteIndex < SIZE);
     return colors[paletteIndex];
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    final Palette palette = (Palette) o;
+    return Objects.deepEquals(colors, palette.colors);
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(colors);
   }
 
   @Nonnull

@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @param <T> parseable data
  */
-public interface Parser<P extends Parseable, T extends ParseTask<P>> extends ParseableAware<P> {
+public interface Parser<P extends Parseable, T extends ParseTask> extends ParseableAware<P> {
   @Nonnull
   P parse(T parseTask);
 

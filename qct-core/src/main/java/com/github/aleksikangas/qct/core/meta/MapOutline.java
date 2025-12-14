@@ -4,6 +4,7 @@ import com.github.aleksikangas.qct.core.parser.Parseable;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -18,12 +19,22 @@ import java.util.stream.Collectors;
  * </pre>
  */
 public record MapOutline(Point[] points) implements Parseable {
+  @Override
+  public boolean equals(final Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    final MapOutline that = (MapOutline) o;
+    return Objects.deepEquals(points, that.points);
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(points);
+  }
+
   @Nonnull
   @Override
   public String toString() {
-    return Arrays.stream(points)
-        .map(p -> "\t\t" + p)
-        .collect(Collectors.joining("\n"));
+    return Arrays.stream(points).map(p -> "\t\t" + p).collect(Collectors.joining("\n"));
   }
 
   public record Point(double latitude,

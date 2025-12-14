@@ -19,6 +19,6 @@ public record DigitalMapShop(int size,
   @Nonnull
   @Override
   public String toString() {
-    return String.format("\t\t\tSize: %d\n", size) + String.format("\t\t\tQC3 URL: %s", qc3Url);
+    return String.format("\t\t\tSize: %d%n", size) + String.format("\t\t\tQC3 URL: %s", qc3Url);
   }
 }

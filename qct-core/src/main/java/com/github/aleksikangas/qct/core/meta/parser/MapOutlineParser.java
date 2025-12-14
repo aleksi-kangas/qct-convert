@@ -37,6 +37,6 @@ public class MapOutlineParser extends AbstractParser<MapOutline, MapOutlineParse
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
-                     long byteOffset) implements ParseTask<MapOutline>, AsyncFileChannelAware, ByteOffsetAware {
+                     long byteOffset) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware {
   }
 }

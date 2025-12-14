@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class AbstractParser<P extends Parseable, T extends ParseTask<P>> implements Parser<P, T> {
+public abstract class AbstractParser<P extends Parseable, T extends ParseTask> implements Parser<P, T> {
   protected final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
   @Nonnull

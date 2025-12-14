@@ -36,6 +36,6 @@ public class PaletteParser extends AbstractParser<Palette, PaletteParser.Task> {
     return new Palette(colors);
   }
 
-  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask<Palette>, AsyncFileChannelAware {
+  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask, AsyncFileChannelAware {
   }
 }

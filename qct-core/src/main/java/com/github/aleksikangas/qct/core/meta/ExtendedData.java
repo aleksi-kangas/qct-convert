@@ -29,11 +29,11 @@ public record ExtendedData(String mapType,
   @Nonnull
   @Override
   public String toString() {
-    return String.format("\t\tMap Type: %s\n", mapType) +
-        String.format("\t\tDatum Shift: %s\n", datumShift) +
-        String.format("\t\tDisk Name: %s\n", diskName) +
-        String.format("\t\tLicence Information: \n%s\n", licenseInformation) +
-        String.format("\t\tAssociated Data: %s\n", associatedData) +
-        String.format("\t\tDigital Map Shop: \n%s", digitalMapShop);
+    return String.format("\t\tMap Type: %s%", mapType) +
+        String.format("\t\tDatum Shift: %s%n", datumShift) +
+        String.format("\t\tDisk Name: %s", diskName) +
+        String.format("\t\tLicence Information: %n%s%n", licenseInformation) +
+        String.format("\t\tAssociated Data: %s%n", associatedData) +
+        String.format("\t\tDigital Map Shop: %n%s", digitalMapShop);
   }
 }

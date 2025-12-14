@@ -80,6 +80,6 @@ public class ImageTileParser extends AbstractParser<ImageTile, ImageTileParser.T
                      long byteOffset,
                      int y,
                      int x,
-                     Palette palette) implements ParseTask<ImageTile>, AsyncFileChannelAware, ByteOffsetAware, CoordinatesAware, PaletteAware {
+                     Palette palette) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware, CoordinatesAware, PaletteAware {
   }
 }
