@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 @ApplicationScoped
-public final class QctFileService {
+public final class QctFileService implements DecodeRequestEvent.Aware {
   private static final Logger LOG = LoggerFactory.getLogger(QctFileService.class);
 
   private final Event<DecodeFailureEvent> decodeFailureEventPublisher;
@@ -28,6 +28,7 @@ public final class QctFileService {
     this.decodeSuccessEventPublisher = Objects.requireNonNull(decodeSuccessEventPublisher);
   }
 
+  @Override
   public void onDecodeRequest(@ObservesAsync final DecodeRequestEvent e) {
     try {
       final QctFile qctFile = QctFile.parse(e.qctFilePath());
