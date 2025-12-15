@@ -1,50 +1,46 @@
 package com.github.aleksikangas.qct.ui.export;
 
-import com.github.aleksikangas.qct.core.QctFile;
-import com.github.aleksikangas.qct.ui.file.QctFileAware;
-import com.github.aleksikangas.qct.ui.file.QctFileService;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import java.util.Objects;
 
-public final class ExportPanel extends JPanel implements QctFileAware {
-    private final JButton exportPngButton = new JButton("PNG...");
+public final class ExportPanel extends AbstractPanel implements DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware {
+  private final JButton exportPngButton = new JButton("PNG...");
 
-    private final QctFileService qctFileService;
+  private final transient Controller controller;
 
-    private QctFile qctFile;
+  public ExportPanel(final Controller controller) {
+    super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[grow]", "[fill, grow]"));
+    this.controller = Objects.requireNonNull(controller);
+    setBorder(BorderFactory.createTitledBorder("Export"));
+    exportPngButton.setEnabled(false);
+    add(exportPngButton, "wrap");
+  }
 
-    public ExportPanel(final QctFileService qctFileService) {
-        super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[grow]", "[fill, grow]"));
-        this.qctFileService = Objects.requireNonNull(qctFileService);
-        setBorder(BorderFactory.createTitledBorder("Export"));
+  @Override
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
+    exportPngButton.setEnabled(true);
+  }
 
-        exportPngButton.addActionListener(_ -> exportPng());
-        exportPngButton.setEnabled(false);
+  @Override
+  public void onDecodeFailure(final DecodeFailureEvent event) {
+    exportPngButton.setEnabled(false);
+  }
 
-        add(exportPngButton, "wrap");
+  @ApplicationScoped
+  public static class Controller extends AbstractController<ExportPanel> {
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new ExportPanel(this));
     }
-
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        qctFileService.bind(this);
-    }
-
-    @Override
-    public void removeNotify() {
-        super.removeNotify();
-        qctFileService.unbind(this);
-    }
-
-    @Override
-    public void onQctFile(final QctFile qctFile) {
-        this.qctFile = qctFile;
-        exportPngButton.setEnabled(true);
-    }
-
-    private void exportPng() {
-        // TODO
-    }
+  }
 }

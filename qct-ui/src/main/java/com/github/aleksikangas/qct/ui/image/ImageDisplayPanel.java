@@ -1,14 +1,16 @@
 package com.github.aleksikangas.qct.ui.image;
 
-import com.github.aleksikangas.qct.core.QctFile;
 import com.github.aleksikangas.qct.core.image.ImageUtils;
-import com.github.aleksikangas.qct.ui.file.QctFileAware;
-import com.github.aleksikangas.qct.ui.file.QctFileService;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
 import javax.annotation.Nullable;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,29 +18,16 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-public final class ImageDisplayPanel extends JPanel implements QctFileAware {
-  private final QctFileService qctFileService;
+public final class ImageDisplayPanel extends AbstractPanel {
+  private final transient Controller controller;
 
   @Nullable
-  private BufferedImage bufferedImage;
+  private transient BufferedImage bufferedImage;
 
-  public ImageDisplayPanel(final QctFileService qctFileService) {
+  public ImageDisplayPanel(final Controller controller) {
     super(new MigLayout("", "[fill, grow]", "[fill, grow][fill]"));
-    this.qctFileService = Objects.requireNonNull(qctFileService);
-  }
-
-  @Override
-  public void addNotify() {
-    super.addNotify();
-    qctFileService.bind(this);
-  }
-
-  @Override
-  public void removeNotify() {
-    super.removeNotify();
-    qctFileService.unbind(this);
+    this.controller = Objects.requireNonNull(controller);
   }
 
   @Override
@@ -47,13 +36,20 @@ public final class ImageDisplayPanel extends JPanel implements QctFileAware {
   }
 
   @Override
-  public void onQctFile(final QctFile qctFile) {
-    CompletableFuture.supplyAsync(() -> ImageUtils.asBufferedImage(qctFile.imageIndex().asPixels())).thenAccept(
-        bufferedImage -> SwingUtilities.invokeLater(() -> {
-          this.bufferedImage = bufferedImage;
-          revalidate();
-          repaint();
-        }));
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
+    final BufferedImage image = ImageUtils.asBufferedImage(event.qctFile().imageIndex().asPixels());
+    ThreadUtil.runOnEDT(() -> {
+      this.bufferedImage = image;
+      repaint();
+    });
+  }
+
+  @Override
+  public void onDecodeFailure(final DecodeFailureEvent event) {
+    ThreadUtil.runOnEDT(() -> {
+      this.bufferedImage = null;
+      repaint();
+    });
   }
 
   @Override
@@ -90,6 +86,14 @@ public final class ImageDisplayPanel extends JPanel implements QctFileAware {
                     this);
     } finally {
       g2d.dispose();
+    }
+  }
+
+  @ApplicationScoped
+  public static class Controller extends AbstractController<ImageDisplayPanel> {
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new ImageDisplayPanel(this));
     }
   }
 }

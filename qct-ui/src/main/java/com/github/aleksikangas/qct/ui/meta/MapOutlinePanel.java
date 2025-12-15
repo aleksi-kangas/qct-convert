@@ -1,58 +1,53 @@
 package com.github.aleksikangas.qct.ui.meta;
 
-import com.github.aleksikangas.qct.core.QctFile;
 import com.github.aleksikangas.qct.core.meta.MapOutline;
-import com.github.aleksikangas.qct.ui.file.QctFileAware;
-import com.github.aleksikangas.qct.ui.file.QctFileService;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-final class MapOutlinePanel extends JPanel implements QctFileAware {
-  private final QctFileService qctFileService;
+public final class MapOutlinePanel extends AbstractPanel {
+  private final transient Controller controller;
 
-  private final List<JLabel> pointLabels = new ArrayList<>();
-  private final List<JTextField> pointFields = new ArrayList<>();
-
-  MapOutlinePanel(final QctFileService qctFileService) {
+  public MapOutlinePanel(final Controller controller) {
     super(new MigLayout("insets 0", "[][fill, grow]", ""));
-    this.qctFileService = Objects.requireNonNull(qctFileService);
+    this.controller = Objects.requireNonNull(controller);
   }
 
   @Override
-  public void addNotify() {
-    super.addNotify();
-    qctFileService.bind(this);
-  }
-
-  @Override
-  public void removeNotify() {
-    super.removeNotify();
-    qctFileService.unbind(this);
-  }
-
-  @Override
-  public void onQctFile(final QctFile qctFile) {
-    pointLabels.clear();
-    pointFields.clear();
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
     removeAll();
-    for (final MapOutline.Point point : qctFile.metadata().mapOutline().points()) {
+    for (final MapOutline.Point point : event.qctFile().metadata().mapOutline().points()) {
       final var pointLabel = new JLabel("Lat / Lon (°):");
-      pointLabels.add(pointLabel);
 
       final JTextField pointField = new JTextField(point.latitude() + " / " + point.longitude());
       pointField.setEnabled(false);
-      pointFields.add(pointField);
 
       add(pointLabel);
       add(pointField, "wrap");
     }
     revalidate();
-    repaint();
+  }
+
+  @Override
+  public void onDecodeFailure(final DecodeFailureEvent event) {
+    removeAll();
+    revalidate();
+  }
+
+  @ApplicationScoped
+  public static class Controller extends AbstractController<MapOutlinePanel> {
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new MapOutlinePanel(this));
+    }
   }
 }

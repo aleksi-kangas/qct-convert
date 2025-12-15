@@ -1,26 +1,37 @@
 package com.github.aleksikangas.qct.ui.file;
 
-import com.github.aleksikangas.qct.core.QctFile;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 
-import javax.annotation.Nullable;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public final class FilePanel extends JPanel implements QctFileAware {
+public final class FilePanel extends AbstractPanel {
   private final JTextField fileTextField = new JTextField();
   private final JButton fileBrowseButton = new JButton("Browse...");
   private final JButton decodeButton = new JButton("Decode");
 
-  private final QctFileService qctFileService;
+  private final transient Controller controller;
 
-  public FilePanel(final QctFileService qctFileService) {
+  public FilePanel(final Controller controller) {
     super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[grow][grow]", "[fill, grow][fill, grow]"));
-    this.qctFileService = Objects.requireNonNull(qctFileService);
+    this.controller = Objects.requireNonNull(controller);
     setBorder(BorderFactory.createTitledBorder("File"));
 
     fileTextField.setEnabled(false);
@@ -35,24 +46,15 @@ public final class FilePanel extends JPanel implements QctFileAware {
   }
 
   @Override
-  public void addNotify() {
-    super.addNotify();
-    qctFileService.bind(this);
-  }
-
-  @Override
-  public void removeNotify() {
-    super.removeNotify();
-    qctFileService.unbind(this);
-  }
-
-  @Override
-  public void onQctFile(@Nullable final QctFile qctFile) {
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
     fileBrowseButton.setEnabled(true);
     setDecodeButtonEnabled(true);
+  }
 
-    revalidate();
-    repaint();
+  @Override
+  public void onDecodeFailure(final DecodeFailureEvent event) {
+    fileBrowseButton.setEnabled(true);
+    setDecodeButtonEnabled(true);
   }
 
   private void selectFile() {
@@ -71,12 +73,29 @@ public final class FilePanel extends JPanel implements QctFileAware {
   private void decodeSelectedFile() {
     fileBrowseButton.setEnabled(false);
     setDecodeButtonEnabled(false);
-    qctFileService.decodeQctFile(Path.of(fileTextField.getText()));
+    controller.decodeQctFile(Path.of(fileTextField.getText()));
   }
 
   private void setDecodeButtonEnabled(final boolean enabled) {
-    decodeButton.setEnabled(!fileTextField.getText().isBlank() &&
-                                Files.exists(Path.of(fileTextField.getText()))
-                                && enabled);
+    decodeButton.setEnabled(!fileTextField.getText().isBlank() && Files.exists(Path.of(fileTextField.getText())) && enabled);
+  }
+
+  @ApplicationScoped
+  public static class Controller extends AbstractController<FilePanel> {
+    private final Event<DecodeRequestEvent> decodeRequestEventPublisher;
+
+    @Inject
+    public Controller(final Event<DecodeRequestEvent> decodeRequestEventPublisher) {
+      this.decodeRequestEventPublisher = Objects.requireNonNull(decodeRequestEventPublisher);
+    }
+
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new FilePanel(this));
+    }
+
+    private void decodeQctFile(final Path qctFilePath) {
+      decodeRequestEventPublisher.fireAsync(new DecodeRequestEvent(qctFilePath));
+    }
   }
 }

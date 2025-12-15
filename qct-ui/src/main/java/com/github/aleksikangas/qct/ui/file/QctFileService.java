@@ -1,15 +1,40 @@
 package com.github.aleksikangas.qct.ui.file;
 
 import com.github.aleksikangas.qct.core.QctFile;
+import com.github.aleksikangas.qct.core.QctRuntimeException;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.ObservesAsync;
+import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
+import java.util.Objects;
 
-public interface QctFileService {
-  void bind(QctFileAware qctFileAware);
+@ApplicationScoped
+public final class QctFileService {
+  private static final Logger LOG = LoggerFactory.getLogger(QctFileService.class);
 
-  void unbind(QctFileAware qctFileAware);
+  private final Event<DecodeFailureEvent> decodeFailureEventPublisher;
+  private final Event<DecodeSuccessEvent> decodeSuccessEventPublisher;
 
-  void decodeQctFile(final Path path);
+  @Inject
+  public QctFileService(final Event<DecodeFailureEvent> decodeFailureEventPublisher,
+                        final Event<DecodeSuccessEvent> decodeSuccessEventPublisher) {
+    this.decodeFailureEventPublisher = Objects.requireNonNull(decodeFailureEventPublisher);
+    this.decodeSuccessEventPublisher = Objects.requireNonNull(decodeSuccessEventPublisher);
+  }
 
-  void scaleQctFile(final QctFile qctFile, final int scale);
+  public void onDecodeRequest(@ObservesAsync final DecodeRequestEvent e) {
+    try {
+      final QctFile qctFile = QctFile.parse(e.qctFilePath());
+      decodeSuccessEventPublisher.fireAsync(new DecodeSuccessEvent(qctFile));
+    } catch (final QctRuntimeException ex) {
+      LOG.warn("Failed to parse QctFile", ex);
+      decodeFailureEventPublisher.fireAsync(new DecodeFailureEvent(ex));
+    }
+  }
 }

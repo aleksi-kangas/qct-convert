@@ -1,53 +1,57 @@
 package com.github.aleksikangas.qct.ui.meta;
 
-import com.github.aleksikangas.qct.core.QctFile;
-import com.github.aleksikangas.qct.ui.file.QctFileAware;
-import com.github.aleksikangas.qct.ui.file.QctFileService;
+import com.github.aleksikangas.qct.core.meta.DigitalMapShop;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.util.Objects;
 
-final class DigitalMapShopPanel extends JPanel implements QctFileAware {
-  private final QctFileService qctFileService;
-
-  private final JLabel sizeLabel = new JLabel("Size:");
+public final class DigitalMapShopPanel extends AbstractPanel {
   private final JTextField sizeField = new JTextField();
-
-  private final JLabel qc3UrlLabel = new JLabel("QC3 URL:");
   private final JTextField qc3UrlField = new JTextField();
 
-  DigitalMapShopPanel(final QctFileService qctFileService) {
+  private final transient Controller controller;
+
+  public DigitalMapShopPanel(final Controller controller) {
     super(new MigLayout("insets 0", "[][fill, grow]", "[][]"));
-    this.qctFileService = Objects.requireNonNull(qctFileService);
+    this.controller = Objects.requireNonNull(controller);
 
     sizeField.setEnabled(false);
     qc3UrlField.setEnabled(false);
 
-    add(sizeLabel);
+    add(new JLabel("Size:"));
     add(sizeField, "wrap");
 
-    add(qc3UrlLabel);
+    add(new JLabel("QC3 URL:"));
     add(qc3UrlField, "wrap");
   }
 
   @Override
-  public void addNotify() {
-    super.addNotify();
-    qctFileService.bind(this);
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
+    final DigitalMapShop digitalMapShop = event.qctFile().metadata().extendedData().digitalMapShop();
+    sizeField.setText(String.valueOf(digitalMapShop.size()));
+    qc3UrlField.setText(digitalMapShop.qc3Url());
   }
 
   @Override
-  public void removeNotify() {
-    super.removeNotify();
-    qctFileService.unbind(this);
+  public void onDecodeFailure(final DecodeFailureEvent event) {
+    sizeField.setText("");
+    qc3UrlField.setText("");
   }
 
-  @Override
-  public void onQctFile(final QctFile qctFile) {
-    sizeField.setText(String.valueOf(qctFile.metadata().extendedData().digitalMapShop().size()));
-    qc3UrlField.setText(qctFile.metadata().extendedData().digitalMapShop().qc3Url());
+  @ApplicationScoped
+  public static class Controller extends AbstractController<DigitalMapShopPanel> {
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new DigitalMapShopPanel(this));
+    }
   }
 }

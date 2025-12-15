@@ -1,61 +1,64 @@
 package com.github.aleksikangas.qct.ui.meta;
 
-import com.github.aleksikangas.qct.core.QctFile;
-import com.github.aleksikangas.qct.ui.file.QctFileAware;
-import com.github.aleksikangas.qct.ui.file.QctFileService;
+import com.github.aleksikangas.qct.core.meta.LicenseInformation;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.util.Objects;
 
-final class LicenseInformationPanel extends JPanel implements QctFileAware {
-  private final QctFileService qctFileService;
-
-  private final JLabel identifierLabel = new JLabel("Identifier:");
+public final class LicenseInformationPanel extends AbstractPanel {
   private final JTextField identifierField = new JTextField();
-
-  private final JLabel descriptionLabel = new JLabel("Description:");
   private final JTextField descriptionField = new JTextField();
-
-  private final JLabel serialNumberLabel = new JLabel("Serial Number:");
   private final JTextField serialNumberField = new JTextField();
 
-  LicenseInformationPanel(final QctFileService qctFileService) {
+  private final transient Controller controller;
+
+  public LicenseInformationPanel(final Controller controller) {
     super(new MigLayout("insets 0", "[][fill, grow]", "[][][]"));
-    this.qctFileService = Objects.requireNonNull(qctFileService);
+    this.controller = Objects.requireNonNull(controller);
 
     identifierField.setEnabled(false);
     descriptionField.setEnabled(false);
     serialNumberField.setEnabled(false);
 
-    add(identifierLabel);
+    add(new JLabel("Identifier:"));
     add(identifierField, "wrap");
 
-    add(descriptionLabel);
+    add(new JLabel("Description:"));
     add(descriptionField, "wrap");
 
-    add(serialNumberLabel);
+    add(new JLabel("Serial Number:"));
     add(serialNumberField, "wrap");
   }
 
   @Override
-  public void addNotify() {
-    super.addNotify();
-    qctFileService.bind(this);
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
+    final LicenseInformation licenseInformation = event.qctFile().metadata().extendedData().licenseInformation();
+    identifierField.setText(String.valueOf(licenseInformation.identifier()));
+    descriptionField.setText(licenseInformation.description());
+    serialNumberField.setText(licenseInformation.serialNumber().toString());
   }
 
   @Override
-  public void removeNotify() {
-    super.removeNotify();
-    qctFileService.unbind(this);
+  public void onDecodeFailure(final DecodeFailureEvent event) {
+    identifierField.setText("");
+    descriptionField.setText("");
+    serialNumberField.setText("");
   }
 
-  @Override
-  public void onQctFile(final QctFile qctFile) {
-    identifierField.setText(String.valueOf(qctFile.metadata().extendedData().licenseInformation().identifier()));
-    descriptionField.setText(qctFile.metadata().extendedData().licenseInformation().description());
-    serialNumberField.setText(qctFile.metadata().extendedData().licenseInformation().serialNumber().toString());
+  @ApplicationScoped
+  public static class Controller extends AbstractController<LicenseInformationPanel> {
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new LicenseInformationPanel(this));
+    }
   }
 }

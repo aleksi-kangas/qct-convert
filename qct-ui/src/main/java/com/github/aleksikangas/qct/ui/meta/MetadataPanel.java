@@ -1,219 +1,165 @@
 package com.github.aleksikangas.qct.ui.meta;
 
-import com.github.aleksikangas.qct.core.QctFile;
 import com.github.aleksikangas.qct.core.meta.Metadata;
-import com.github.aleksikangas.qct.ui.file.QctFileAware;
-import com.github.aleksikangas.qct.ui.file.QctFileService;
+import com.github.aleksikangas.qct.ui.common.AbstractController;
+import com.github.aleksikangas.qct.ui.common.AbstractPanel;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 
-import javax.annotation.Nullable;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import java.util.Objects;
 
-public final class MetadataPanel extends JPanel implements QctFileAware {
-  private final QctFileService qctFileService;
+public final class MetadataPanel extends AbstractPanel {
+  private final transient Controller controller;
 
-  private final JLabel magicNumberLabel = new JLabel("Magic Number:");
   private final JTextField magicNumberField = new JTextField();
-
-  private final JLabel fileFormatVersionLabel = new JLabel("File Format Version:");
   private final JTextField fileFormatVersionField = new JTextField();
-
-  private final JLabel widthLabel = new JLabel("Width (tiles / pixels):");
   private final JTextField widthField = new JTextField();
-
-  private final JLabel heightLabel = new JLabel("Height (tiles / pixels):");
   private final JTextField heightField = new JTextField();
-
-  private final JLabel longTitleLabel = new JLabel("Long Title:");
   private final JTextField longTitleField = new JTextField();
-
-  private final JLabel nameLabel = new JLabel("Name:");
   private final JTextField nameField = new JTextField();
-
-  private final JLabel identifierLabel = new JLabel("Identifier:");
   private final JTextField identifierField = new JTextField();
-
-  private final JLabel editionLabel = new JLabel("Edition:");
   private final JTextField editionField = new JTextField();
-
-  private final JLabel revisionLabel = new JLabel("Revision:");
   private final JTextField revisionField = new JTextField();
-
-  private final JLabel keywordsLabel = new JLabel("Keywords:");
   private final JTextField keywordsField = new JTextField();
-
-  private final JLabel copyrightLabel = new JLabel("Copyright:");
   private final JTextField copyrightField = new JTextField();
-
-  private final JLabel scaleLabel = new JLabel("Scale:");
   private final JTextField scaleField = new JTextField();
-
-  private final JLabel datumLabel = new JLabel("Datum:");
   private final JTextField datumField = new JTextField();
-
-  private final JLabel depthsLabel = new JLabel("Depths:");
   private final JTextField depthsField = new JTextField();
-
-  private final JLabel heightsLabel = new JLabel("Heights:");
   private final JTextField heightsField = new JTextField();
-
-  private final JLabel projectionLabel = new JLabel("Projection:");
   private final JTextField projectionField = new JTextField();
-
-  private final JLabel flagsLabel = new JLabel("Flags:");
   private final JTextField flagsField = new JTextField();
-
-  private final JLabel originalFileNameLabel = new JLabel("Original File Name:");
   private final JTextField originalFileNameField = new JTextField();
-
-  private final JLabel originalFileSizeLabel = new JLabel("Original File Size:");
   private final JTextField originalFileSizeField = new JTextField();
-
-  private final JLabel originalFileCreationTimeLabel = new JLabel("Original File Creation Time:");
   private final JTextField originalFileCreationTimeField = new JTextField();
 
   // --- Extended Data ---
-  private final JLabel mapTypeLabel = new JLabel("Map Type:");
   private final JTextField mapTypeField = new JTextField();
-
-  private final JLabel datumShiftLabel = new JLabel("Datum Shift:");
-  private final JPanel datumShiftPanel;
-
-  private final JLabel diskNameLabel = new JLabel("Disk Name:");
   private final JTextField diskNameField = new JTextField();
-
-  private final JLabel licenseInformationLabel = new JLabel("License Information");
-  private final JPanel licenseInformationPanel;
-
-  private final JLabel associatedDataLabel = new JLabel("Associated Data:");
   private final JTextField associatedDataField = new JTextField();
-
-  private final JLabel digitalMapShopLabel = new JLabel("Digital Map Shop:");
-  private final JPanel digitalMapShopPanel;
   // --- Extended Data ---
 
-  private final JLabel mapOutlineLabel = new JLabel("Map Outline:");
-  private final JPanel mapOutlinePanel;
-
-  public MetadataPanel(final QctFileService qctFileService) {
+  public MetadataPanel(final Controller controller, final DatumShiftPanel datumShiftPanel, final LicenseInformationPanel licenseInformationPanel, final DigitalMapShopPanel digitalMapShopPanel, final MapOutlinePanel mapOutlinePanel) {
     super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[][fill, grow]", ""));
-    this.qctFileService = Objects.requireNonNull(qctFileService);
+    this.controller = Objects.requireNonNull(controller);
     setBorder(BorderFactory.createTitledBorder("Metadata"));
 
-    datumShiftPanel = new DatumShiftPanel(qctFileService);
-    licenseInformationPanel = new LicenseInformationPanel(qctFileService);
-    digitalMapShopPanel = new DigitalMapShopPanel(qctFileService);
-    mapOutlinePanel = new MapOutlinePanel(qctFileService);
+    magicNumberField.setEnabled(false);
+    fileFormatVersionField.setEnabled(false);
+    widthField.setEnabled(false);
+    heightField.setEnabled(false);
+    longTitleField.setEnabled(false);
+    nameField.setEnabled(false);
+    identifierField.setEnabled(false);
+    editionField.setEnabled(false);
+    revisionField.setEnabled(false);
+    keywordsField.setEnabled(false);
+    copyrightField.setEnabled(false);
+    scaleField.setEnabled(false);
+    datumField.setEnabled(false);
+    depthsField.setEnabled(false);
+    heightsField.setEnabled(false);
+    projectionField.setEnabled(false);
+    flagsField.setEnabled(false);
+    originalFileNameField.setEnabled(false);
+    originalFileSizeField.setEnabled(false);
+    originalFileCreationTimeField.setEnabled(false);
+    mapTypeField.setEnabled(false);
+    diskNameField.setEnabled(false);
+    associatedDataField.setEnabled(false);
 
-    setFieldsEnabled(false);
-
-    add(magicNumberLabel);
+    add(new JLabel("Magic Number:"));
     add(magicNumberField, "wrap");
 
-    add(fileFormatVersionLabel);
+    add(new JLabel("File Format Version:"));
     add(fileFormatVersionField, "wrap");
 
-    add(widthLabel);
+    add(new JLabel("Width (tiles / pixels):"));
     add(widthField, "wrap");
 
-    add(heightLabel);
+    add(new JLabel("Height (tiles / pixels):"));
     add(heightField, "wrap");
 
-    add(longTitleLabel);
+    add(new JLabel("Long Title:"));
     add(longTitleField, "wrap");
 
-    add(nameLabel);
+    add(new JLabel("Name:"));
     add(nameField, "wrap");
 
-    add(identifierLabel);
+    add(new JLabel("Identifier:"));
     add(identifierField, "wrap");
 
-    add(editionLabel);
+    add(new JLabel("Edition:"));
     add(editionField, "wrap");
 
-    add(revisionLabel);
+    add(new JLabel("Revision:"));
     add(revisionField, "wrap");
 
-    add(keywordsLabel);
+    add(new JLabel("Keywords:"));
     add(keywordsField, "wrap");
 
-    add(copyrightLabel);
+    add(new JLabel("Copyright:"));
     add(copyrightField, "wrap");
 
-    add(scaleLabel);
+    add(new JLabel("Scale:"));
     add(scaleField, "wrap");
 
-    add(datumLabel);
+    add(new JLabel("Datum:"));
     add(datumField, "wrap");
 
-    add(depthsLabel);
+    add(new JLabel("Depths:"));
     add(depthsField, "wrap");
 
-    add(heightsLabel);
+    add(new JLabel("Heights:"));
     add(heightsField, "wrap");
 
-    add(projectionLabel);
+    add(new JLabel("Projection:"));
     add(projectionField, "wrap");
 
-    add(flagsLabel);
+    add(new JLabel("Flags:"));
     add(flagsField, "wrap");
 
-    add(originalFileNameLabel);
+    add(new JLabel("Original File Name:"));
     add(originalFileNameField, "wrap");
 
-    add(originalFileSizeLabel);
+    add(new JLabel("Original File Size:"));
     add(originalFileSizeField, "wrap");
 
-    add(originalFileCreationTimeLabel);
+    add(new JLabel("Original File Creation Time:"));
     add(originalFileCreationTimeField, "wrap");
 
-    add(mapTypeLabel);
+    add(new JLabel("Map Type:"));
     add(mapTypeField, "wrap");
 
-    add(datumShiftLabel);
+    add(new JLabel("Datum Shift:"));
     add(datumShiftPanel, "wrap");
 
-    add(diskNameLabel);
+    add(new JLabel("Disk Name:"));
     add(diskNameField, "wrap");
 
-    add(licenseInformationLabel);
+    add(new JLabel("License Information"));
     add(licenseInformationPanel, "wrap");
 
-    add(associatedDataLabel);
+    add(new JLabel("Associated Data:"));
     add(associatedDataField, "wrap");
 
-    add(digitalMapShopLabel);
+    add(new JLabel("Digital Map Shop:"));
     add(digitalMapShopPanel, "wrap");
 
-    add(mapOutlineLabel);
+    add(new JLabel("Map Outline:"));
     add(mapOutlinePanel, "wrap");
   }
 
   @Override
-  public void addNotify() {
-    super.addNotify();
-    qctFileService.bind(this);
-  }
-
-  @Override
-  public void removeNotify() {
-    super.removeNotify();
-    qctFileService.unbind(this);
-  }
-
-  @Override
-  public void onQctFile(@Nullable final QctFile qctFile) {
-    if (qctFile != null) {
-      display(qctFile.metadata());
-    } else {
-      clear();
-    }
-    revalidate();
-    repaint();
-  }
-
-  private void display(final Metadata metadata) {
+  public void onDecodeSuccess(final DecodeSuccessEvent event) {
+    final Metadata metadata = event.qctFile().metadata();
     magicNumberField.setText(metadata.magicNumber().toString());
     fileFormatVersionField.setText(metadata.fileFormatVersion().toString());
     widthField.setText(String.format("%d / %d", metadata.widthTiles(), metadata.widthPixels()));
@@ -233,7 +179,7 @@ public final class MetadataPanel extends JPanel implements QctFileAware {
     flagsField.setText(metadata.flags().toString());
     originalFileNameField.setText(metadata.originalFileName());
     originalFileSizeField.setText(String.valueOf(metadata.originalFileSize()));
-    originalFileSizeField.setToolTipText(String.format("KB: %d\nMB: %d\nGB: %.2f",
+    originalFileSizeField.setToolTipText(String.format("KB: %d%n0MB: %d%nGB: %.2f",
                                                        metadata.originalFileSize() / 1000,
                                                        metadata.originalFileSize() / 1000 / 1000,
                                                        metadata.originalFileSize() / 1000.0 / 1000.0 / 1000.0));
@@ -243,33 +189,8 @@ public final class MetadataPanel extends JPanel implements QctFileAware {
     associatedDataField.setText(metadata.extendedData().associatedData());
   }
 
-  private void setFieldsEnabled(final boolean enabled) {
-    magicNumberField.setEnabled(enabled);
-    fileFormatVersionField.setEnabled(enabled);
-    widthField.setEnabled(enabled);
-    heightField.setEnabled(enabled);
-    longTitleField.setEnabled(enabled);
-    nameField.setEnabled(enabled);
-    identifierField.setEnabled(enabled);
-    editionField.setEnabled(enabled);
-    revisionField.setEnabled(enabled);
-    keywordsField.setEnabled(enabled);
-    copyrightField.setEnabled(enabled);
-    scaleField.setEnabled(enabled);
-    datumField.setEnabled(enabled);
-    depthsField.setEnabled(enabled);
-    heightsField.setEnabled(enabled);
-    projectionField.setEnabled(enabled);
-    flagsField.setEnabled(enabled);
-    originalFileNameField.setEnabled(enabled);
-    originalFileSizeField.setEnabled(enabled);
-    originalFileCreationTimeField.setEnabled(enabled);
-    mapTypeField.setEnabled(enabled);
-    diskNameField.setEnabled(enabled);
-    associatedDataField.setEnabled(enabled);
-  }
-
-  private void clear() {
+  @Override
+  public void onDecodeFailure(final DecodeFailureEvent event) {
     magicNumberField.setText("");
     fileFormatVersionField.setText("");
     widthField.setText("");
@@ -293,5 +214,33 @@ public final class MetadataPanel extends JPanel implements QctFileAware {
     mapTypeField.setText("");
     diskNameField.setText("");
     associatedDataField.setText("");
+  }
+
+  @ApplicationScoped
+  public static class Controller extends AbstractController<MetadataPanel> {
+    private final DatumShiftPanel.Controller datumShiftPanelController;
+    private final LicenseInformationPanel.Controller licenseInformationPanelController;
+    private final DigitalMapShopPanel.Controller digitalMapShopPanelController;
+    private final MapOutlinePanel.Controller mapOutlinePanelController;
+
+    @Inject
+    public Controller(final DatumShiftPanel.Controller datumShiftPanelController,
+                      final LicenseInformationPanel.Controller licenseInformationPanelController,
+                      final DigitalMapShopPanel.Controller digitalMapShopPanelController,
+                      final MapOutlinePanel.Controller mapOutlinePanelController) {
+      this.datumShiftPanelController = Objects.requireNonNull(datumShiftPanelController);
+      this.licenseInformationPanelController = Objects.requireNonNull(licenseInformationPanelController);
+      this.digitalMapShopPanelController = Objects.requireNonNull(digitalMapShopPanelController);
+      this.mapOutlinePanelController = Objects.requireNonNull(mapOutlinePanelController);
+    }
+
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> panel = new MetadataPanel(this,
+                                                          datumShiftPanelController.getPanel(),
+                                                          licenseInformationPanelController.getPanel(),
+                                                          digitalMapShopPanelController.getPanel(),
+                                                          mapOutlinePanelController.getPanel()));
+    }
   }
 }

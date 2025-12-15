@@ -1,27 +1,62 @@
 package com.github.aleksikangas.qct.ui;
 
-import com.github.aleksikangas.qct.ui.file.QctFileService;
 import com.github.aleksikangas.qct.ui.image.ImageDisplayPanel;
 import com.github.aleksikangas.qct.ui.settings.SettingsPanel;
+import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.Objects;
 
 public final class QctFrame extends JFrame {
-  public QctFrame(final QctFileService qctFileService) throws HeadlessException {
-    super("QCT Convert");
+  private final transient Controller controller;
 
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  public QctFrame(final Controller controller, final SettingsPanel settingsPanel, final ImageDisplayPanel imageDisplayPanel) {
+    super("QCT Convert");
+    this.controller = Objects.requireNonNull(controller);
+
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setLayout(new MigLayout("insets 0", "[fill, grow]", "[fill, grow]"));
 
     final var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setResizeWeight(0.3);
-    final var scrollPane = new JScrollPane(new SettingsPanel(qctFileService));
+    final var scrollPane = new JScrollPane(settingsPanel);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
     splitPane.setLeftComponent(scrollPane);
-    splitPane.setRightComponent(new ImageDisplayPanel(qctFileService));
+    splitPane.setRightComponent(imageDisplayPanel);
     add(splitPane);
     pack();
+  }
+
+  @ApplicationScoped
+  public static class Controller {
+    private final SettingsPanel.Controller settingsPanelController;
+    private final ImageDisplayPanel.Controller imageDisplayPanelController;
+
+    @Inject
+    public Controller(final SettingsPanel.Controller settingsPanelController,
+                      final ImageDisplayPanel.Controller imageDisplayPanelController) {
+      this.settingsPanelController = Objects.requireNonNull(settingsPanelController);
+      this.imageDisplayPanelController = Objects.requireNonNull(imageDisplayPanelController);
+    }
+
+    private QctFrame qctFrame;
+
+    @PostConstruct
+    public void init() {
+      ThreadUtil.runOnEDT(() -> qctFrame = new QctFrame(this,
+                                                        settingsPanelController.getPanel(),
+                                                        imageDisplayPanelController.getPanel()));
+    }
+
+    public void show() {
+      ThreadUtil.runOnEDT(() -> {
+        qctFrame.setLocationRelativeTo(null);
+        qctFrame.setVisible(true);
+      });
+    }
   }
 }
