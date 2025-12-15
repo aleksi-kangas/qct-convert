@@ -18,6 +18,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public final class ImageDisplayPanel extends AbstractPanel {
   private final transient Controller controller;
@@ -37,19 +38,18 @@ public final class ImageDisplayPanel extends AbstractPanel {
 
   @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
-    final BufferedImage image = ImageUtils.asBufferedImage(event.qctFile().imageIndex().asPixels());
-    ThreadUtil.runOnEDT(() -> {
-      this.bufferedImage = image;
-      repaint();
-    });
+    CompletableFuture.supplyAsync(() -> ImageUtils.asBufferedImage(event.qctFile().imageIndex().asPixels()))
+        .thenAccept(
+            image -> ThreadUtil.runOnEDT(() -> {
+              this.bufferedImage = image;
+              repaint();
+            }));
   }
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
-    ThreadUtil.runOnEDT(() -> {
-      this.bufferedImage = null;
-      repaint();
-    });
+    this.bufferedImage = null;
+    repaint();
   }
 
   @Override
