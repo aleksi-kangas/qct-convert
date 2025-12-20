@@ -9,12 +9,14 @@ import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.core.meta.parser.MetadataParser;
 import com.github.aleksikangas.qct.core.parser.AbstractParser;
 import com.github.aleksikangas.qct.core.parser.feature.AsyncFileChannelAware;
+import com.github.aleksikangas.qct.core.parser.feature.PathAware;
 import com.github.aleksikangas.qct.core.parser.task.ParseTask;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -53,7 +55,8 @@ public class QctFileParser extends AbstractParser<QctFile, QctFileParser.Task> {
   public QctFile parse(final Task parseTask) {
     final Metadata metadata = metadataParser.parse(new MetadataParser.Task(parseTask.asyncFileChannel));
     final Palette palette = paletteParser.parse(new PaletteParser.Task(parseTask.asyncFileChannel));
-    return new QctFile(metadata,
+    return new QctFile(parseTask.path,
+                       metadata,
                        georeferencingCoefficientsParser.parse(new GeoreferencingCoefficientsParser.Task(parseTask.asyncFileChannel)),
                        palette,
                        interpolationMatrixParser.parse(new InterpolationMatrixParser.Task(parseTask.asyncFileChannel)),
@@ -62,6 +65,7 @@ public class QctFileParser extends AbstractParser<QctFile, QctFileParser.Task> {
                                                                         palette)));
   }
 
-  public record Task(AsynchronousFileChannel asyncFileChannel) implements ParseTask, AsyncFileChannelAware {
+  public record Task(AsynchronousFileChannel asyncFileChannel,
+                     Path path) implements ParseTask, AsyncFileChannelAware, PathAware {
   }
 }

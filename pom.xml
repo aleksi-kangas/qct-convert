@@ -40,6 +40,26 @@
         <system>GitHub Actions</system>
         <url>https://github.com/aleksi-kangas/qct-convert/actions</url>
     </ciManagement>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>imageio-ext-repository</id>
+            <name>imageio-ext Repository</name>
+            <url>https://maven.geo-solutions.it/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
@@ -49,6 +69,7 @@
 
     <modules>
         <module>qct-core</module>
+        <module>qct-export</module>
         <module>qct-ui</module>
     </modules>
 
@@ -114,6 +135,18 @@
                 <groupId>com.miglayout</groupId>
                 <artifactId>miglayout-swing</artifactId>
                 <version>11.4.2</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/it.geosolutions.imageio-ext/imageio-ext-gdalframework -->
+            <dependency>
+                <groupId>it.geosolutions.imageio-ext</groupId>
+                <artifactId>imageio-ext-gdalframework</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/it.geosolutions.imageio-ext/imageio-ext-png -->
+            <dependency>
+                <groupId>it.geosolutions.imageio-ext</groupId>
+                <artifactId>imageio-ext-png</artifactId>
+                <version>2.0.1</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.jboss.weld.se/weld-se-core -->
             <dependency>

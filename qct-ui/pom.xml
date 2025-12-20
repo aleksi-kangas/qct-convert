@@ -54,6 +54,11 @@
             <artifactId>qct-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.aleksikangas</groupId>
+            <artifactId>qct-export</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.formdev</groupId>

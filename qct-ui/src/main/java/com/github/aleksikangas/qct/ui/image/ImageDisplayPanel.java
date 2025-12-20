@@ -24,7 +24,7 @@ public final class ImageDisplayPanel extends AbstractPanel {
   private final transient Controller controller;
 
   @Nullable
-  private transient BufferedImage bufferedImage;
+  private transient BufferedImage bufferedImage = null;
 
   public ImageDisplayPanel(final Controller controller) {
     super(new MigLayout("", "[fill, grow]", "[fill, grow][fill]"));

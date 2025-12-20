@@ -30,7 +30,8 @@ import java.util.concurrent.Executors;
  * +--------+--------------+----------------------------------------------------+
  * </pre>
  */
-public record QctFile(Metadata metadata,
+public record QctFile(Path path,
+                      Metadata metadata,
                       GeoreferencingCoefficients georeferencingCoefficients,
                       Palette palette,
                       InterpolationMatrix interpolationMatrix,
@@ -45,7 +46,7 @@ public record QctFile(Metadata metadata,
     try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
                                                                                        Set.of(StandardOpenOption.READ),
                                                                                        Executors.newVirtualThreadPerTaskExecutor())) {
-      return Parsers.execute(QctFileParser.class, new QctFileParser.Task(asyncFileChannel));
+      return Parsers.execute(QctFileParser.class, new QctFileParser.Task(asyncFileChannel, path));
     } catch (final IOException e) {
       throw new QctRuntimeException(e);
     }
