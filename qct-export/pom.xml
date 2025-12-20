@@ -34,8 +34,8 @@
         </dependency>
 
         <dependency>
-            <groupId>it.geosolutions.imageio-ext</groupId>
-            <artifactId>imageio-ext-gdalframework</artifactId>
+            <groupId>org.gdal</groupId>
+            <artifactId>gdal</artifactId>
         </dependency>
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>

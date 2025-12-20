@@ -136,17 +136,17 @@
                 <artifactId>miglayout-swing</artifactId>
                 <version>11.4.2</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/it.geosolutions.imageio-ext/imageio-ext-gdalframework -->
-            <dependency>
-                <groupId>it.geosolutions.imageio-ext</groupId>
-                <artifactId>imageio-ext-gdalframework</artifactId>
-                <version>2.0.1</version>
-            </dependency>
             <!-- https://mvnrepository.com/artifact/it.geosolutions.imageio-ext/imageio-ext-png -->
             <dependency>
                 <groupId>it.geosolutions.imageio-ext</groupId>
                 <artifactId>imageio-ext-png</artifactId>
                 <version>2.0.1</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.gdal/gdal -->
+            <dependency>
+                <groupId>org.gdal</groupId>
+                <artifactId>gdal</artifactId>
+                <version>3.11.0</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.jboss.weld.se/weld-se-core -->
             <dependency>

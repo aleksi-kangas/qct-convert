@@ -42,6 +42,14 @@ public record QctFile(Path path,
     return "Metadata:" + "\n" + metadata.toString() + "\n" + "Georeferencing Coefficients:" + "\n" + georeferencingCoefficients.toString();
   }
 
+  public int width() {
+    return imageIndex().width();
+  }
+
+  public int height() {
+    return imageIndex().height();
+  }
+
   public static QctFile parse(final Path path) {
     try (final AsynchronousFileChannel asyncFileChannel = AsynchronousFileChannel.open(path,
                                                                                        Set.of(StandardOpenOption.READ),

@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
 /**
@@ -71,15 +72,52 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
   public QctPixel[][] asPixels() {
     final var pixels = new QctPixel[height()][width()];
     IntStream.range(0, height())
-        .parallel()
-        .forEach(y -> {
-          final var rowPixels = new QctPixel[width()];
-          Arrays.parallelSetAll(rowPixels, x -> {
-            final ImageTile imageTile = imageTile(y / ImageTile.HEIGHT, x / ImageTile.WIDTH);
-            return imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
-          });
-          pixels[y] = rowPixels;
-        });
+             .parallel()
+             .forEach(y -> {
+               final var rowPixels = new QctPixel[width()];
+               Arrays.parallelSetAll(rowPixels, x -> {
+                 final ImageTile imageTile = imageTile(y / ImageTile.HEIGHT, x / ImageTile.WIDTH);
+                 return imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
+               });
+               pixels[y] = rowPixels;
+             });
     return pixels;
+  }
+
+  public int[] redPixels() {
+    return extractChannelValues(pixel -> pixel.color().getRed());
+  }
+
+  public int[] greenPixels() {
+    return extractChannelValues(pixel -> pixel.color().getGreen());
+  }
+
+  public int[] bluePixels() {
+    return extractChannelValues(pixel -> pixel.color().getBlue());
+  }
+
+  public int[] channelPixels(final int channel) {
+    return switch (channel) {
+      case 0 -> redPixels();
+      case 1 -> greenPixels();
+      case 2 -> bluePixels();
+      default -> throw new IllegalArgumentException();
+    };
+  }
+
+  private int[] extractChannelValues(final ToIntFunction<QctPixel> channelExtractor) {
+    final var channelValues = new int[height() * width()];
+    IntStream.range(0, height())
+             .parallel()
+             .forEach(y -> {
+               final var rowValues = new int[width()];
+               Arrays.parallelSetAll(rowValues, x -> {
+                 final ImageTile imageTile = imageTile(y / ImageTile.HEIGHT, x / ImageTile.WIDTH);
+                 final QctPixel pixel = imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
+                 return channelExtractor.applyAsInt(pixel);
+               });
+               System.arraycopy(rowValues, 0, channelValues, y * width(), rowValues.length);
+             });
+    return channelValues;
   }
 }

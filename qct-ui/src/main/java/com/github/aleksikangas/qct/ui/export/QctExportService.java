@@ -2,6 +2,7 @@ package com.github.aleksikangas.qct.ui.export;
 
 import com.github.aleksikangas.qct.core.QctFile;
 import com.github.aleksikangas.qct.export.QctExportRuntimeException;
+import com.github.aleksikangas.qct.export.geotiff.GeoTiffExporter;
 import com.github.aleksikangas.qct.export.png.PngExporter;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
@@ -57,8 +58,13 @@ public final class QctExportService implements DecodeSuccessEvent.Aware, DecodeF
           PngExporter.exportPng(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
           exportSuccessEventPublisher.fireAsync(new ExportSuccessEvent());
         }
+        case GEO_TIFF -> {
+          GeoTiffExporter.exportGeoTiff(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
+          exportSuccessEventPublisher.fireAsync(new ExportSuccessEvent());
+        }
       }
     } catch (final QctExportRuntimeException e) {
+      LOG.warn("Export failed", e);
       exportFailureEventPublisher.fireAsync(new ExportFailureEvent(e));
     }
   }
