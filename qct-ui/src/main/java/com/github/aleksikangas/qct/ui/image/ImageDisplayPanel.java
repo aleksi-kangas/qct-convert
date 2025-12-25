@@ -4,17 +4,15 @@ import com.github.aleksikangas.qct.core.image.ImageUtils;
 import com.github.aleksikangas.qct.ui.common.AbstractController;
 import com.github.aleksikangas.qct.ui.common.AbstractPanel;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.util.ThreadUtil;
+import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
-import javax.annotation.Nullable;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +35,11 @@ public final class ImageDisplayPanel extends AbstractPanel {
   }
 
   @Override
+  public void onDecodeRequest(final DecodeRequestEvent event) {
+    clear();
+  }
+
+  @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
     CompletableFuture.supplyAsync(() -> ImageUtils.asBufferedImage(event.qctFile().imageIndex().asPixels()))
         .thenAccept(
@@ -48,8 +51,7 @@ public final class ImageDisplayPanel extends AbstractPanel {
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
-    this.bufferedImage = null;
-    repaint();
+    clear();
   }
 
   @Override
@@ -87,6 +89,11 @@ public final class ImageDisplayPanel extends AbstractPanel {
     } finally {
       g2d.dispose();
     }
+  }
+
+  private void clear() {
+    this.bufferedImage = null;
+    repaint();
   }
 
   @ApplicationScoped

@@ -4,6 +4,7 @@ import com.github.aleksikangas.qct.core.meta.Metadata;
 import com.github.aleksikangas.qct.ui.common.AbstractController;
 import com.github.aleksikangas.qct.ui.common.AbstractPanel;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.util.ThreadUtil;
 import jakarta.annotation.PostConstruct;
@@ -11,9 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.util.Objects;
 
 public final class MetadataPanel extends AbstractPanel {
@@ -158,6 +157,11 @@ public final class MetadataPanel extends AbstractPanel {
   }
 
   @Override
+  public void onDecodeRequest(final DecodeRequestEvent event) {
+    clear();
+  }
+
+  @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
     final Metadata metadata = event.qctFile().metadata();
     magicNumberField.setText(metadata.magicNumber().toString());
@@ -191,6 +195,10 @@ public final class MetadataPanel extends AbstractPanel {
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
+    clear();
+  }
+
+  private void clear() {
     magicNumberField.setText("");
     fileFormatVersionField.setText("");
     widthField.setText("");

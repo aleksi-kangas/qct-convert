@@ -3,6 +3,7 @@ package com.github.aleksikangas.qct.ui.export;
 import com.github.aleksikangas.qct.ui.common.AbstractController;
 import com.github.aleksikangas.qct.ui.common.AbstractPanel;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportRequestEvent;
@@ -16,9 +17,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -37,38 +36,38 @@ public final class ExportPanel extends AbstractPanel {
     super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[grow][grow]", "[fill, grow]"));
     this.controller = Objects.requireNonNull(controller);
     setBorder(BorderFactory.createTitledBorder("Export"));
-    exportGeoTiffButton.setEnabled(false);
+    enableButtons(false);
     exportGeoTiffButton.addActionListener(_ -> exportAsGeoTiff());
     add(exportGeoTiffButton);
-    exportPngButton.setEnabled(false);
     exportPngButton.addActionListener(_ -> exportAsPng());
     add(exportPngButton, "alignx right, wrap");
   }
 
   @Override
+  public void onDecodeRequest(final DecodeRequestEvent event) {
+    enableButtons(false);
+  }
+
+  @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
     decodedQctFilePath = event.qctFile().path();
-    exportGeoTiffButton.setEnabled(true);
-    exportPngButton.setEnabled(true);
+    enableButtons(true);
   }
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
     decodedQctFilePath = null;
-    exportGeoTiffButton.setEnabled(false);
-    exportPngButton.setEnabled(false);
+    enableButtons(false);
   }
 
   @Override
   public void onExportSuccess(final ExportSuccessEvent event) {
-    exportGeoTiffButton.setEnabled(true);
-    exportPngButton.setEnabled(true);
+    enableButtons(true);
   }
 
   @Override
   public void onExportFailure(final ExportFailureEvent event) {
-    exportGeoTiffButton.setEnabled(true);
-    exportPngButton.setEnabled(true);
+    enableButtons(true);
   }
 
   private void exportAsGeoTiff() {
@@ -108,6 +107,11 @@ public final class ExportPanel extends AbstractPanel {
                                           .toString()
                                           .replace(".qct", "")
                                           .replace(".QCT", "") + exportFormat.extension());
+  }
+
+  private void enableButtons(final boolean enabled) {
+    exportGeoTiffButton.setEnabled(enabled);
+    exportPngButton.setEnabled(enabled);
   }
 
   @ApplicationScoped

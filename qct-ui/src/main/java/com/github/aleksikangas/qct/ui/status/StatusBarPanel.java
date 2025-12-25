@@ -11,12 +11,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.ObservesAsync;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.util.Objects;
 
-public final class StatusBarPanel extends AbstractPanel implements DecodeRequestEvent.Aware {
+public final class StatusBarPanel extends AbstractPanel {
   private final transient Controller controller;
 
   private final JLabel statusLabel = new JLabel();
@@ -39,12 +37,15 @@ public final class StatusBarPanel extends AbstractPanel implements DecodeRequest
 
   @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
-    statusLabel.setText("");
-    progressBar.setVisible(false);
+    clear();
   }
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
+    clear();
+  }
+
+  private void clear() {
     statusLabel.setText("");
     progressBar.setVisible(false);
   }

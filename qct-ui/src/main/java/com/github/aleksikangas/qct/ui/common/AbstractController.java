@@ -1,15 +1,21 @@
 package com.github.aleksikangas.qct.ui.common;
 
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportSuccessEvent;
 import jakarta.enterprise.event.ObservesAsync;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-public abstract class AbstractController<T extends AbstractPanel> implements DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware, ExportSuccessEvent.Aware, ExportFailureEvent.Aware {
+public abstract class AbstractController<T extends AbstractPanel> implements DecodeRequestEvent.Aware, DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware, ExportSuccessEvent.Aware, ExportFailureEvent.Aware {
   protected T panel;
+
+  @Override
+  public void onDecodeRequest(@ObservesAsync final DecodeRequestEvent event) {
+    SwingUtilities.invokeLater(() -> panel.onDecodeRequest(event));
+  }
 
   @Override
   public void onDecodeSuccess(@ObservesAsync final DecodeSuccessEvent event) {

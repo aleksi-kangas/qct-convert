@@ -4,14 +4,14 @@ import com.github.aleksikangas.qct.core.meta.DatumShift;
 import com.github.aleksikangas.qct.ui.common.AbstractController;
 import com.github.aleksikangas.qct.ui.common.AbstractPanel;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
+import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.util.ThreadUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.util.Objects;
 
 public final class DatumShiftPanel extends AbstractPanel {
@@ -35,6 +35,11 @@ public final class DatumShiftPanel extends AbstractPanel {
   }
 
   @Override
+  public void onDecodeRequest(final DecodeRequestEvent event) {
+    clear();
+  }
+
+  @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
     final DatumShift datumShift = event.qctFile().metadata().extendedData().datumShift();
     northField.setText(String.valueOf(datumShift.north()));
@@ -43,6 +48,10 @@ public final class DatumShiftPanel extends AbstractPanel {
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
+    clear();
+  }
+
+  private void clear() {
     northField.setText("");
     eastField.setText("");
   }
