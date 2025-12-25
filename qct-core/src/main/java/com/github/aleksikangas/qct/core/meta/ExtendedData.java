@@ -29,7 +29,7 @@ public record ExtendedData(String mapType,
   @Nonnull
   @Override
   public String toString() {
-    return String.format("\t\tMap Type: %s%", mapType) +
+    return String.format("\t\tMap Type: %s%n", mapType) +
         String.format("\t\tDatum Shift: %s%n", datumShift) +
         String.format("\t\tDisk Name: %s", diskName) +
         String.format("\t\tLicence Information: %n%s%n", licenseInformation) +
