@@ -1,5 +1,7 @@
 package com.github.aleksikangas.qct.core.meta;
 
+import com.github.aleksikangas.qct.core.QctRuntimeException;
+
 import java.util.Arrays;
 
 /**
@@ -27,7 +29,7 @@ public enum MagicNumber {
     return Arrays.stream(MagicNumber.values())
         .filter(f -> f.value == value)
         .findFirst()
-        .orElseThrow();
+        .orElseThrow(() -> new QctRuntimeException(String.format("Unknown MagicNumber: %d", value)));
   }
 
   @Override

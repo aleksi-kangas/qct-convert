@@ -1,5 +1,7 @@
 package com.github.aleksikangas.qct.core.meta;
 
+import com.github.aleksikangas.qct.core.QctRuntimeException;
+
 import java.util.Arrays;
 
 /**
@@ -29,7 +31,7 @@ public enum FileFormatVersion {
     return Arrays.stream(FileFormatVersion.values())
         .filter(f -> f.value == value)
         .findFirst()
-        .orElseThrow();
+        .orElseThrow(() -> new QctRuntimeException(String.format("Unknown FileFormatVersion: %d", value)));
   }
 
   @Override
