@@ -129,7 +129,7 @@ public final class ExportPanel extends AbstractPanel {
     }
 
     private void export(final ExportFormat exportFormat, final Path exportPath) {
-      exportRequestEventPublisher.fireAsync(new ExportRequestEvent(exportFormat, exportPath));
+      exportRequestEventPublisher.fire(new ExportRequestEvent(exportFormat, exportPath));
     }
   }
 }

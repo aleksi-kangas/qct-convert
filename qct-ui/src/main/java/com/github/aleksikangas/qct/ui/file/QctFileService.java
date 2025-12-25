@@ -1,19 +1,19 @@
 package com.github.aleksikangas.qct.ui.file;
 
 import com.github.aleksikangas.qct.core.QctFile;
-import com.github.aleksikangas.qct.core.QctRuntimeException;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
-import jakarta.enterprise.event.ObservesAsync;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @ApplicationScoped
@@ -33,16 +33,19 @@ public class QctFileService implements DecodeRequestEvent.Aware {
   }
 
   @Override
-  public void onDecodeRequest(@ObservesAsync final DecodeRequestEvent e) {
+  public void onDecodeRequest(@Observes final DecodeRequestEvent e) {
     qctFileAtomicReference.set(null);
-    try {
-      final QctFile qctFile = QctFile.parse(e.qctFilePath());
-      qctFileAtomicReference.set(qctFile);
-      decodeSuccessEventPublisher.fireAsync(new DecodeSuccessEvent(qctFile));
-    } catch (final QctRuntimeException ex) {
-      LOG.warn("Failed to parse QctFile", ex);
-      decodeFailureEventPublisher.fireAsync(new DecodeFailureEvent(ex));
-    }
+    CompletableFuture.supplyAsync(() -> QctFile.parse(e.qctFilePath()))
+        .thenAccept(qctFile -> {
+          LOG.info("QctFile decoding success");
+          qctFileAtomicReference.set(qctFile);
+          decodeSuccessEventPublisher.fire(new DecodeSuccessEvent(qctFile));
+        })
+        .exceptionally(ex -> {
+          LOG.warn("Failed to parse QctFile", ex);
+          decodeFailureEventPublisher.fire(new DecodeFailureEvent(ex));
+          return null;
+        });
   }
 
   public Optional<QctFile> getQctFile() {

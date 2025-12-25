@@ -12,10 +12,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.nio.file.Files;
@@ -95,7 +92,7 @@ public final class FilePanel extends AbstractPanel {
     }
 
     private void decodeQctFile(final Path qctFilePath) {
-      decodeRequestEventPublisher.fireAsync(new DecodeRequestEvent(qctFilePath));
+      decodeRequestEventPublisher.fire(new DecodeRequestEvent(qctFilePath));
     }
   }
 }

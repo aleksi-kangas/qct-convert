@@ -8,7 +8,6 @@ import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.util.ThreadUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.ObservesAsync;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -55,11 +54,6 @@ public final class StatusBarPanel extends AbstractPanel {
     @PostConstruct
     public void init() {
       ThreadUtil.runOnEDT(() -> panel = new StatusBarPanel(this));
-    }
-
-    @Override
-    public void onDecodeRequest(@ObservesAsync final DecodeRequestEvent event) {
-      SwingUtilities.invokeLater(() -> panel.onDecodeRequest(event));
     }
   }
 }

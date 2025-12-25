@@ -1,6 +1,5 @@
 package com.github.aleksikangas.qct.ui.export;
 
-import com.github.aleksikangas.qct.export.QctExportRuntimeException;
 import com.github.aleksikangas.qct.export.geotiff.GeoTiffExporter;
 import com.github.aleksikangas.qct.export.png.PngExporter;
 import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
@@ -9,13 +8,14 @@ import com.github.aleksikangas.qct.ui.events.export.ExportSuccessEvent;
 import com.github.aleksikangas.qct.ui.file.QctFileService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
-import jakarta.enterprise.event.ObservesAsync;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @ApplicationScoped
 public class QctExportService implements ExportRequestEvent.Aware {
@@ -35,24 +35,25 @@ public class QctExportService implements ExportRequestEvent.Aware {
   }
 
   @Override
-  public void onExportRequest(@ObservesAsync final ExportRequestEvent event) {
+  public void onExportRequest(@Observes final ExportRequestEvent event) {
     qctFileService.getQctFile()
         .ifPresent(qctFile -> {
-          try {
+          CompletableFuture.runAsync(() -> {
             switch (event.exportFormat()) {
               case PNG -> {
                 PngExporter.exportPng(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
-                exportSuccessEventPublisher.fireAsync(new ExportSuccessEvent());
+                exportSuccessEventPublisher.fire(new ExportSuccessEvent());
               }
               case GEO_TIFF -> {
                 GeoTiffExporter.exportGeoTiff(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
-                exportSuccessEventPublisher.fireAsync(new ExportSuccessEvent());
+                exportSuccessEventPublisher.fire(new ExportSuccessEvent());
               }
             }
-          } catch (final QctExportRuntimeException e) {
-            LOG.warn("Export failed", e);
-            exportFailureEventPublisher.fireAsync(new ExportFailureEvent(e));
-          }
+          }).exceptionally(ex -> {
+            LOG.warn("Export failed", ex);
+            exportFailureEventPublisher.fire(new ExportFailureEvent(ex));
+            return null;
+          });
         });
   }
 
