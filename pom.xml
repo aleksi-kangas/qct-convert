@@ -40,6 +40,7 @@
         <system>GitHub Actions</system>
         <url>https://github.com/aleksi-kangas/qct-convert/actions</url>
     </ciManagement>
+
     <repositories>
         <repository>
             <id>central</id>
