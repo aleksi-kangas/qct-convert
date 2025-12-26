@@ -1,9 +1,0 @@
-{
-  "name": "qct-convert",
-  "version": "0.0.1",
-  "dependencies": [
-    "gdal",
-    "gtest",
-    "proj"
-  ]
-}
