@@ -1,6 +1,7 @@
 package com.github.aleksikangas.qct.core.color;
 
 import com.github.aleksikangas.qct.core.parser.Parseable;
+import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -28,6 +29,10 @@ import java.util.Objects;
 public record Palette(Color[] colors) implements Parseable {
   public static final long BYTE_OFFSET = 0x01A0L;
   public static final int SIZE = 128;
+
+  public Palette {
+    Preconditions.checkArgument(colors.length == SIZE);
+  }
 
   @Override
   public boolean equals(final Object o) {
@@ -79,5 +84,35 @@ public record Palette(Color[] colors) implements Parseable {
   public int getRGBA(final int paletteIndex) {
     Objects.checkIndex(paletteIndex, SIZE);
     return colors[paletteIndex].getRGB();
+  }
+
+  public int[] asRGBA() {
+    final var rgba = new int[SIZE];
+    Arrays.parallelSetAll(rgba, i -> colors[i].getRGB());
+    return rgba;
+  }
+
+  public byte[] redBytes() {
+    final var redBytes = new byte[SIZE];
+    for (int paletteIndex = 0; paletteIndex < SIZE; ++paletteIndex) {
+      redBytes[paletteIndex] = (byte) colors[paletteIndex].getRed();
+    }
+    return redBytes;
+  }
+
+  public byte[] greenBytes() {
+    final var greenBytes = new byte[SIZE];
+    for (int paletteIndex = 0; paletteIndex < SIZE; ++paletteIndex) {
+      greenBytes[paletteIndex] = (byte) colors[paletteIndex].getGreen();
+    }
+    return greenBytes;
+  }
+
+  public byte[] blueBytes() {
+    final var blueBytes = new byte[SIZE];
+    for (int paletteIndex = 0; paletteIndex < SIZE; ++paletteIndex) {
+      blueBytes[paletteIndex] = (byte) colors[paletteIndex].getBlue();
+    }
+    return blueBytes;
   }
 }

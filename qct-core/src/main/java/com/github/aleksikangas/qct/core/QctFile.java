@@ -43,15 +43,15 @@ public record QctFile(Path path,
   }
 
   public int height() {
-    return imageIndex().height();
+    return imageIndex.height();
   }
 
   public int width() {
-    return imageIndex().width();
+    return imageIndex.width();
   }
 
   public int pixelCount() {
-    return Math.multiplyExact(height(), width());
+    return imageIndex.pixelCount();
   }
 
   public static QctFile parse(final Path path) {

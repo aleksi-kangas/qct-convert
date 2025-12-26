@@ -1,8 +1,11 @@
 package com.github.aleksikangas.qct.core.image.util;
 
 import com.github.aleksikangas.qct.core.QctFile;
+import com.github.aleksikangas.qct.core.color.Palette;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
+import java.awt.image.WritableRaster;
 import java.util.Arrays;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -37,18 +40,22 @@ public final class ImageIndexUtils {
    * @return transformed {@link BufferedImage}
    */
   public static BufferedImage asBufferedImage(final QctFile qctFile) {
-    final var bufferedImage = new BufferedImage(qctFile.width(), qctFile.height(), BufferedImage.TYPE_INT_ARGB);
-    IntStream.range(0, qctFile.height())
-             .parallel()
-             .forEach(y -> {
-               final var rowPaletteIndices = qctFile.imageIndex().rowPaletteIndices(y);
-               final var rowPixels = new int[qctFile.width()];
-               Arrays.parallelSetAll(rowPixels, x -> {
-                 final int paletteIndex = rowPaletteIndices[x];
-                 return qctFile.palette().getRGBA(paletteIndex);
-               });
-               bufferedImage.setRGB(0, y, qctFile.width(), 1, rowPixels, 0, qctFile.width());
-             });
+    final var indexColorModel = new IndexColorModel(8,
+                                                    Palette.SIZE,
+                                                    qctFile.palette().redBytes(),
+                                                    qctFile.palette().greenBytes(),
+                                                    qctFile.palette().blueBytes(),
+                                                    null);
+    final var bufferedImage = new BufferedImage(qctFile.width(),
+                                                qctFile.height(),
+                                                BufferedImage.TYPE_BYTE_INDEXED,
+                                                indexColorModel);
+    final WritableRaster writableRaster = bufferedImage.getRaster();
+    writableRaster.setDataElements(0,
+                                   0,
+                                   qctFile.width(),
+                                   qctFile.height(),
+                                   qctFile.imageIndex().asFlatBytePaletteIndices());
     return bufferedImage;
   }
 

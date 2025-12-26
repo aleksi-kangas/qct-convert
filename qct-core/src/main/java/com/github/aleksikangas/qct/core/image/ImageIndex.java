@@ -55,6 +55,10 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
     return widthTiles() * ImageTile.WIDTH;
   }
 
+  public int pixelCount() {
+    return Math.multiplyExact(height(), width());
+  }
+
   public ImageTile imageTile(final int yTile, final int xTile) {
     Objects.checkIndex(yTile, heightTiles());
     Objects.checkIndex(xTile, widthTiles());
@@ -77,6 +81,18 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
              .parallel()
              .forEach(y -> paletteIndices[y] = rowPaletteIndices(y));
     return paletteIndices;
+  }
+
+  public byte[] asFlatBytePaletteIndices() {
+    final var bytePaletteIndices = new byte[pixelCount()];
+    IntStream.range(0, pixelCount())
+             .parallel()
+             .forEach(i -> {
+               final int y = i / width();
+               final int x = i % width();
+               bytePaletteIndices[i] = (byte) paletteIndexOfPixel(y, x);
+             });
+    return bytePaletteIndices;
   }
 
   public int[] rowPaletteIndices(final int y) {
