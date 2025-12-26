@@ -1,6 +1,5 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
-import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 
@@ -20,8 +19,8 @@ public interface ImageTileDecoder {
    *
    * @param asyncFileChannel to read from
    * @param byteOffset       byte offset of the {@link ImageTile}
-   * @return decoded pixels of the {@link ImageTile}
+   * @return decoded pixels of the {@link ImageTile}, as {@link com.github.aleksikangas.qct.core.color.Palette} indices
    */
   @Nonnull
-  QctPixel[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
+  int[][] decode(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
 }

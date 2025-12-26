@@ -60,9 +60,7 @@ public class QctFileParser extends AbstractParser<QctFile, QctFileParser.Task> {
                        georeferencingCoefficientsParser.parse(new GeoreferencingCoefficientsParser.Task(parseTask.asyncFileChannel)),
                        palette,
                        interpolationMatrixParser.parse(new InterpolationMatrixParser.Task(parseTask.asyncFileChannel)),
-                       imageIndexParser.parse(new ImageIndexParser.Task(parseTask.asyncFileChannel,
-                                                                        metadata,
-                                                                        palette)));
+                       imageIndexParser.parse(new ImageIndexParser.Task(parseTask.asyncFileChannel, metadata)));
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,

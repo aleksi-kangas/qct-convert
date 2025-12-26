@@ -1,12 +1,10 @@
 package com.github.aleksikangas.qct.core.image;
 
-import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.google.common.base.Preconditions;
+import jakarta.annotation.Nonnull;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
 /**
@@ -33,6 +31,7 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
     return Arrays.deepHashCode(imageTiles);
   }
 
+  @Nonnull
   @Override
   public String toString() {
     return "ImageIndex{" +
@@ -57,67 +56,34 @@ public record ImageIndex(ImageTile[][] imageTiles) implements Parseable {
   }
 
   public ImageTile imageTile(final int yTile, final int xTile) {
-    Preconditions.checkArgument(0 <= yTile && yTile < heightTiles());
-    Preconditions.checkArgument(0 <= xTile && xTile < widthTiles());
+    Objects.checkIndex(yTile, heightTiles());
+    Objects.checkIndex(xTile, widthTiles());
     return imageTiles[yTile][xTile];
   }
 
-  public QctPixel pixel(final int y, final int x) {
-    Preconditions.checkArgument(0 <= y && y < height());
-    Preconditions.checkArgument(0 <= x && x < width());
-    final ImageTile imageTile = imageTiles[y / ImageTile.HEIGHT][x / ImageTile.WIDTH];
-    return imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
+  public ImageTile imageTileOfPixel(final int yPixel, final int xPixel) {
+    Objects.checkIndex(yPixel, height());
+    Objects.checkIndex(xPixel, width());
+    return imageTiles[yPixel / ImageTile.HEIGHT][xPixel / ImageTile.WIDTH];
   }
 
-  public QctPixel[][] asPixels() {
-    final var pixels = new QctPixel[height()][width()];
+  public int paletteIndexOfPixel(final int yPixel, final int xPixel) {
+    return imageTileOfPixel(yPixel, xPixel).paletteIndices()[yPixel % ImageTile.HEIGHT][xPixel % ImageTile.WIDTH];
+  }
+
+  public int[][] asPaletteIndices() {
+    final var paletteIndices = new int[height()][width()];
     IntStream.range(0, height())
              .parallel()
-             .forEach(y -> {
-               final var rowPixels = new QctPixel[width()];
-               Arrays.parallelSetAll(rowPixels, x -> {
-                 final ImageTile imageTile = imageTile(y / ImageTile.HEIGHT, x / ImageTile.WIDTH);
-                 return imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
-               });
-               pixels[y] = rowPixels;
-             });
-    return pixels;
+             .forEach(y -> paletteIndices[y] = rowPaletteIndices(y));
+    return paletteIndices;
   }
 
-  public int[] redPixels() {
-    return extractChannelValues(pixel -> pixel.color().getRed());
-  }
-
-  public int[] greenPixels() {
-    return extractChannelValues(pixel -> pixel.color().getGreen());
-  }
-
-  public int[] bluePixels() {
-    return extractChannelValues(pixel -> pixel.color().getBlue());
-  }
-
-  public int[] channelPixels(final int channel) {
-    return switch (channel) {
-      case 0 -> redPixels();
-      case 1 -> greenPixels();
-      case 2 -> bluePixels();
-      default -> throw new IllegalArgumentException();
-    };
-  }
-
-  private int[] extractChannelValues(final ToIntFunction<QctPixel> channelExtractor) {
-    final var channelValues = new int[height() * width()];
-    IntStream.range(0, height())
+  public int[] rowPaletteIndices(final int y) {
+    final var rowPaletteIndices = new int[width()];
+    IntStream.range(0, width())
              .parallel()
-             .forEach(y -> {
-               final var rowValues = new int[width()];
-               Arrays.parallelSetAll(rowValues, x -> {
-                 final ImageTile imageTile = imageTile(y / ImageTile.HEIGHT, x / ImageTile.WIDTH);
-                 final QctPixel pixel = imageTile.pixel(y % ImageTile.HEIGHT, x % ImageTile.WIDTH);
-                 return channelExtractor.applyAsInt(pixel);
-               });
-               System.arraycopy(rowValues, 0, channelValues, y * width(), rowValues.length);
-             });
-    return channelValues;
+             .forEach(x -> rowPaletteIndices[x] = paletteIndexOfPixel(y, x));
+    return rowPaletteIndices;
   }
 }

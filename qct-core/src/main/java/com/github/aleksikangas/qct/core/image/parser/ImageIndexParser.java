@@ -1,8 +1,6 @@
 package com.github.aleksikangas.qct.core.image.parser;
 
 import com.github.aleksikangas.qct.core.QctRuntimeException;
-import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.color.parser.task.PaletteAware;
 import com.github.aleksikangas.qct.core.image.ImageIndex;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.meta.Metadata;
@@ -53,8 +51,7 @@ public class ImageIndexParser extends AbstractParser<ImageIndex, ImageIndexParse
         final var task = new ImageTileParser.Task(parseTask.asyncFileChannel,
                                                   imageTileByteOffset,
                                                   y,
-                                                  x,
-                                                  parseTask.palette);
+                                                  x);
         final int yTile = y;
         final int xTile = x;
         imageTileFutures.add(imageTileParser.parseAsync(task).thenAccept(imageTile -> imageTiles[yTile][xTile] = imageTile));
@@ -74,7 +71,6 @@ public class ImageIndexParser extends AbstractParser<ImageIndex, ImageIndexParse
   }
 
   public record Task(AsynchronousFileChannel asyncFileChannel,
-                     Metadata metadata,
-                     Palette palette) implements ParseTask, AsyncFileChannelAware, MetadataAware, PaletteAware {
+                     Metadata metadata) implements ParseTask, AsyncFileChannelAware, MetadataAware {
   }
 }

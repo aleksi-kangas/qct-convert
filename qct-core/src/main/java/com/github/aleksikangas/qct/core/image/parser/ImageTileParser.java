@@ -1,8 +1,5 @@
 package com.github.aleksikangas.qct.core.image.parser;
 
-import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.color.QctPixel;
-import com.github.aleksikangas.qct.core.color.parser.task.PaletteAware;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.decoders.ImageTileDecoder;
@@ -38,20 +35,16 @@ public class ImageTileParser extends AbstractParser<ImageTile, ImageTileParser.T
   @Override
   public ImageTile parse(final Task parseTask) {
     final ImageTileEncoding imageTileEncoding = encodingOf(parseTask.asyncFileChannel, parseTask.byteOffset);
-    final ImageTileDecoder imageTileDecoder = ImageTileDecoderFactory.create(imageTileEncoding,
-                                                                             parseTask.palette);
+    final ImageTileDecoder imageTileDecoder = ImageTileDecoderFactory.create(imageTileEncoding);
     try {
-      final QctPixel[][] pixels = imageTileDecoder.decode(parseTask.asyncFileChannel, parseTask.byteOffset);
-      return new ImageTile(imageTileEncoding, pixels);
+      final int[][] paletteIndices = imageTileDecoder.decode(parseTask.asyncFileChannel, parseTask.byteOffset);
+      return new ImageTile(imageTileEncoding, paletteIndices);
     } catch (final QctDecoderException e) {
-      LOG.warn("Failed to decode ImageTile=[y={}, x={}], replacing with palette first color (R={}, G={}, B={}) pixels",
+      LOG.warn("Failed to decode ImageTile=[y={}, x={}], replacing with palette first color index",
                parseTask.y,
                parseTask.x,
-               parseTask.palette.getColor(0).getRed(),
-               parseTask.palette.getColor(0).getGreen(),
-               parseTask.palette.getColor(0).getBlue(),
                e);
-      return new ImageTile(imageTileEncoding, allPaletteFirstColorPixels(parseTask.palette));
+      return new ImageTile(imageTileEncoding, new int[ImageTile.HEIGHT][ImageTile.WIDTH]);
     }
   }
 
@@ -66,20 +59,9 @@ public class ImageTileParser extends AbstractParser<ImageTile, ImageTileParser.T
     return ImageTileEncoding.RUN_LENGTH_ENCODING;
   }
 
-  private static QctPixel[][] allPaletteFirstColorPixels(final Palette palette) {
-    final var pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
-    for (int y = 0; y < ImageTile.HEIGHT; ++y) {
-      for (int x = 0; x < ImageTile.WIDTH; ++x) {
-        pixels[y][x] = new QctPixel(palette.getColor(0), 0);
-      }
-    }
-    return pixels;
-  }
-
   public record Task(AsynchronousFileChannel asyncFileChannel,
                      long byteOffset,
                      int y,
-                     int x,
-                     Palette palette) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware, CoordinatesAware, PaletteAware {
+                     int x) implements ParseTask, AsyncFileChannelAware, ByteOffsetAware, CoordinatesAware {
   }
 }

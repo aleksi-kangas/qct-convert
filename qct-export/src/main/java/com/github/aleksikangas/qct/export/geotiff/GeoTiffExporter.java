@@ -2,6 +2,7 @@ package com.github.aleksikangas.qct.export.geotiff;
 
 import com.github.aleksikangas.qct.core.QctFile;
 import com.github.aleksikangas.qct.core.georef.GeoreferencingCoefficients;
+import com.github.aleksikangas.qct.core.image.util.ImageIndexUtils;
 import com.github.aleksikangas.qct.core.meta.DatumShift;
 import com.github.aleksikangas.qct.export.QctExportRuntimeException;
 import org.gdal.gdal.Band;
@@ -13,7 +14,6 @@ import org.gdal.osr.SpatialReference;
 
 import javax.annotation.concurrent.GuardedBy;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public final class GeoTiffExporter {
@@ -23,26 +23,6 @@ public final class GeoTiffExporter {
   private static final Object GDAL_REGISTER_LOCK = new Object();
   @GuardedBy("GDAL_REGISTER_LOCK")
   private static boolean isGdalRegistered = false;
-
-  private enum RasterBand {
-    RED(0),
-    GREEN(1),
-    BLUE(2);
-
-    private final int channel;
-
-    RasterBand(final int channel) {
-      this.channel = channel;
-    }
-
-    public int channel() {
-      return channel;
-    }
-
-    public int bandIndex() {
-      return channel + 1;
-    }
-  }
 
   public static void exportGeoTiff(final QctFile qctFile, final Path geoTiffPath) throws QctExportRuntimeException {
     registerGdal();
@@ -89,14 +69,24 @@ public final class GeoTiffExporter {
   }
 
   private static void writeRasterBands(final Dataset dataset, final QctFile qctFile) {
-    Arrays.stream(RasterBand.values()).forEach(rasterBand -> {
-      final Band band = dataset.GetRasterBand(rasterBand.bandIndex());
-      band.WriteRaster(0,
-                       0,
-                       qctFile.width(),
-                       qctFile.height(),
-                       qctFile.imageIndex().channelPixels(rasterBand.channel()));
-    });
+    final Band redBand = dataset.GetRasterBand(0);
+    redBand.WriteRaster(0,
+                        0,
+                        qctFile.width(),
+                        qctFile.height(),
+                        ImageIndexUtils.channelValues(qctFile, ImageIndexUtils.Channel.RED));
+    final Band greenBand = dataset.GetRasterBand(1);
+    greenBand.WriteRaster(0,
+                          0,
+                          qctFile.width(),
+                          qctFile.height(),
+                          ImageIndexUtils.channelValues(qctFile, ImageIndexUtils.Channel.GREEN));
+    final Band blueBand = dataset.GetRasterBand(2);
+    blueBand.WriteRaster(0,
+                         0,
+                         qctFile.width(),
+                         qctFile.height(),
+                         ImageIndexUtils.channelValues(qctFile, ImageIndexUtils.Channel.BLUE));
   }
 
   private static void registerGdal() {

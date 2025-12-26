@@ -2,7 +2,7 @@ package com.github.aleksikangas.qct.export.png;
 
 import ar.com.hjg.pngj.FilterType;
 import com.github.aleksikangas.qct.core.QctFile;
-import com.github.aleksikangas.qct.core.image.ImageUtils;
+import com.github.aleksikangas.qct.core.image.util.ImageIndexUtils;
 import com.github.aleksikangas.qct.export.QctExportRuntimeException;
 import it.geosolutions.imageio.plugins.png.PNGWriter;
 
@@ -14,7 +14,7 @@ public final class PngExporter {
   public static void exportPng(final QctFile qctFile, final Path pngPath) throws QctExportRuntimeException {
     final var pngWriter = new PNGWriter();
     try {
-      pngWriter.writePNG(ImageUtils.asBufferedImage(qctFile.imageIndex().asPixels()),
+      pngWriter.writePNG(ImageIndexUtils.asBufferedImage(qctFile),
                          Files.newOutputStream(pngPath),
                          1.0f,
                          FilterType.FILTER_NONE);

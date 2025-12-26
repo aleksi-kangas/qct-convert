@@ -42,12 +42,16 @@ public record QctFile(Path path,
     return "Metadata:" + "\n" + metadata.toString() + "\n" + "Georeferencing Coefficients:" + "\n" + georeferencingCoefficients.toString();
   }
 
+  public int height() {
+    return imageIndex().height();
+  }
+
   public int width() {
     return imageIndex().width();
   }
 
-  public int height() {
-    return imageIndex().height();
+  public int pixelCount() {
+    return Math.multiplyExact(height(), width());
   }
 
   public static QctFile parse(final Path path) {

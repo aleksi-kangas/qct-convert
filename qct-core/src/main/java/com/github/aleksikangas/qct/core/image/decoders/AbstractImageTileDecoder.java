@@ -1,6 +1,5 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
-import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 
@@ -16,9 +15,9 @@ abstract class AbstractImageTileDecoder implements ImageTileDecoder {
 
   @Nonnull
   @Override
-  public final QctPixel[][] decode(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) throws QctDecoderException {
-    final QctPixel[][] pixels = decodePixels(asyncFileChannel, byteOffset);
-    return deinterlaceRows(pixels);
+  public final int[][] decode(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) throws QctDecoderException {
+    final int[][] paletteIndices = decodePaletteIndices(asyncFileChannel, byteOffset);
+    return deinterlaceRows(paletteIndices);
   }
 
   /**
@@ -26,12 +25,12 @@ abstract class AbstractImageTileDecoder implements ImageTileDecoder {
    *
    * @param asyncFileChannel to read from
    * @param byteOffset       byte offset of the {@link ImageTile}
-   * @return decoded pixels of the {@link ImageTile}
+   * @return decoded pixels of the {@link ImageTile}, as {@link com.github.aleksikangas.qct.core.color.Palette} indices
    * @implSpec Shall not perform any deinterlacing of the rows.
-   * @see #deinterlaceRows(QctPixel[][])
+   * @see #deinterlaceRows(int[][])
    */
   @Nonnull
-  protected abstract QctPixel[][] decodePixels(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
+  protected abstract int[][] decodePaletteIndices(AsynchronousFileChannel asyncFileChannel, long byteOffset) throws QctDecoderException;
 
   /**
    * Deinterlaces rows of an {@link ImageTile}. The pixel content of each tile is scanned from left to right in rows of
@@ -39,15 +38,15 @@ abstract class AbstractImageTileDecoder implements ImageTileDecoder {
    * sequence. The decompressed tile data must be scanned out row at a time using this row sequence. See Chapter 7.1 in
    * the specification.
    *
-   * @param pixels of the {@link ImageTile}
-   * @return deinterlaced pixels of the {@link ImageTile}
+   * @param paletteIndices of the {@link ImageTile}
+   * @return deinterlaced {@link com.github.aleksikangas.qct.core.color.Palette} indices of the {@link ImageTile}
    */
-  private QctPixel[][] deinterlaceRows(final QctPixel[][] pixels) {
-    final var deinterlacedPixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
+  private int[][] deinterlaceRows(final int[][] paletteIndices) {
+    final var deinterlacedPaletteIndices = new int[ImageTile.HEIGHT][ImageTile.WIDTH];
     for (int i = 0; i < ImageTile.HEIGHT; ++i) {
-      deinterlacedPixels[DEINTERLACED_ROW_SEQUENCE[i]] = pixels[i];
+      deinterlacedPaletteIndices[DEINTERLACED_ROW_SEQUENCE[i]] = paletteIndices[i];
     }
-    return deinterlacedPixels;
+    return deinterlacedPaletteIndices;
   }
 
   private static int[] deinterlacedRowSequence() {

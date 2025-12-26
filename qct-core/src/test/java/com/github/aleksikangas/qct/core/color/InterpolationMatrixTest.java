@@ -13,9 +13,9 @@ final class InterpolationMatrixTest {
   @Test
   void test() {
     final var interpolationMatrix = generateSymmetric();
-    assertEquals(2, interpolationMatrix.colorIndexOf(2, 0));
-    assertEquals(2, interpolationMatrix.colorIndexOf(0, 2));
-    assertEquals(258, interpolationMatrix.colorIndexOf(2, 2));
+    assertEquals(2, interpolationMatrix.paletteIndexOf(2, 0));
+    assertEquals(2, interpolationMatrix.paletteIndexOf(0, 2));
+    assertEquals(258, interpolationMatrix.paletteIndexOf(2, 2));
   }
 
   private static InterpolationMatrix generateSymmetric() {

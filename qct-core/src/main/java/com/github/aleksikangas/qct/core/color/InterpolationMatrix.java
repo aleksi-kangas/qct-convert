@@ -48,7 +48,7 @@ public record InterpolationMatrix(int[] indices) implements Parseable {
     return Arrays.toString(indices);
   }
 
-  public int colorIndexOf(final int yColorIndex, final int xColorIndex) {
+  public int paletteIndexOf(final int yColorIndex, final int xColorIndex) {
     return indices[offsetOf(yColorIndex, xColorIndex)];
   }
 

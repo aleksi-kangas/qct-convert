@@ -1,6 +1,6 @@
 package com.github.aleksikangas.qct.ui.image;
 
-import com.github.aleksikangas.qct.core.image.ImageUtils;
+import com.github.aleksikangas.qct.core.image.util.ImageIndexUtils;
 import com.github.aleksikangas.qct.ui.common.AbstractController;
 import com.github.aleksikangas.qct.ui.common.AbstractPanel;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
@@ -41,7 +41,7 @@ public final class ImageDisplayPanel extends AbstractPanel {
 
   @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
-    CompletableFuture.supplyAsync(() -> ImageUtils.asBufferedImage(event.qctFile().imageIndex().asPixels()))
+    CompletableFuture.supplyAsync(() -> ImageIndexUtils.asBufferedImage(event.qctFile()))
         .thenAccept(
             image -> ThreadUtil.runOnEDT(() -> {
               this.bufferedImage = image;

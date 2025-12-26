@@ -1,10 +1,9 @@
 package com.github.aleksikangas.qct.core.color;
 
 import com.github.aleksikangas.qct.core.parser.Parseable;
-import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -29,11 +28,6 @@ import java.util.Objects;
 public record Palette(Color[] colors) implements Parseable {
   public static final long BYTE_OFFSET = 0x01A0L;
   public static final int SIZE = 128;
-
-  public Color getColor(final int paletteIndex) {
-    Preconditions.checkArgument(0 <= paletteIndex && paletteIndex < SIZE);
-    return colors[paletteIndex];
-  }
 
   @Override
   public boolean equals(final Object o) {
@@ -65,4 +59,25 @@ public record Palette(Color[] colors) implements Parseable {
     return stringBuilder.toString();
   }
 
+  /**
+   * Get the {@link Color} of the given palette index.
+   *
+   * @param paletteIndex to obtain
+   * @return {@link Color} of the given palette index
+   */
+  public Color getColor(final int paletteIndex) {
+    Objects.checkIndex(paletteIndex, SIZE);
+    return colors[paletteIndex];
+  }
+
+  /**
+   * Get the 8-bit RGBA color value, packed as integer (bits 24-31 are alpha, 16-23 are red, 8-15 are green, 0-7 are blue)
+   *
+   * @param paletteIndex to obtain
+   * @return 8-bit RGBA color value
+   */
+  public int getRGBA(final int paletteIndex) {
+    Objects.checkIndex(paletteIndex, SIZE);
+    return colors[paletteIndex].getRGB();
+  }
 }

@@ -1,11 +1,11 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
 import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.reader.DynamicByteBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class HuffmanCodeBook {
   private final List<Integer> bytes = new ArrayList<>(256);
@@ -60,16 +60,17 @@ public final class HuffmanCodeBook {
     return bytes.get(node) > 128;
   }
 
-  QctPixel getColor(final Palette palette) {
-    return getColor(pointer, palette);
+  int getPaletteIndex() {
+    return getPaletteIndex(pointer);
   }
 
-  QctPixel getColor(final int node, final Palette palette) {
+  int getPaletteIndex(final int node) {
     if (!isColor(node)) {
       throw new IllegalStateException("Attempting to get color in a non-color node");
     }
     final int paletteIndex = bytes.get(node);
-    return new QctPixel(palette.getColor(paletteIndex), paletteIndex);
+    Objects.checkIndex(paletteIndex, Palette.SIZE);
+    return paletteIndex;
   }
 
   void step(final boolean bit) {

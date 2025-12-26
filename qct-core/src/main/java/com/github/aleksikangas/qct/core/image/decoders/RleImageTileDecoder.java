@@ -1,7 +1,5 @@
 package com.github.aleksikangas.qct.core.image.decoders;
 
-import com.github.aleksikangas.qct.core.color.Palette;
-import com.github.aleksikangas.qct.core.color.QctPixel;
 import com.github.aleksikangas.qct.core.image.ImageTile;
 import com.github.aleksikangas.qct.core.image.ImageTileEncoding;
 import com.github.aleksikangas.qct.core.image.color.SubPalette;
@@ -12,18 +10,11 @@ import com.github.aleksikangas.qct.core.reader.QctReader;
 
 import javax.annotation.Nonnull;
 import java.nio.channels.AsynchronousFileChannel;
-import java.util.Objects;
 
 /**
  * An {@link ImageTileDecoder} for {@link ImageTile}s using {@link ImageTileEncoding#RUN_LENGTH_ENCODING}.
  */
 final class RleImageTileDecoder extends AbstractImageTileDecoder {
-  private final Palette palette;
-
-  RleImageTileDecoder(final Palette palette) {
-    this.palette = Objects.requireNonNull(palette);
-  }
-
   @Override
   public ImageTileEncoding decoderFor() {
     return ImageTileEncoding.RUN_LENGTH_ENCODING;
@@ -31,8 +22,8 @@ final class RleImageTileDecoder extends AbstractImageTileDecoder {
 
   @Nonnull
   @Override
-  protected QctPixel[][] decodePixels(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
-    final QctPixel[][] pixels = new QctPixel[ImageTile.HEIGHT][ImageTile.WIDTH];
+  protected int[][] decodePaletteIndices(final AsynchronousFileChannel asyncFileChannel, final long byteOffset) {
+    final int[][] paletteIndices = new int[ImageTile.HEIGHT][ImageTile.WIDTH];
     final SubPalette subPalette = Parsers.execute(SubPaletteParser.class, new SubPaletteParser.Task(asyncFileChannel,
                                                                                                     byteOffset,
                                                                                                     SubPaletteSizeType.NORMAL));
@@ -46,15 +37,14 @@ final class RleImageTileDecoder extends AbstractImageTileDecoder {
     while (pixelCount < ImageTile.PIXEL_COUNT) {
       final int rleByte = bytes[byteIndex++];
       final DecodedRleByte decodedRleByte = decodeRleByte(rleByte, subPalette);
-      final var color = new QctPixel(palette.colors()[decodedRleByte.paletteIndex], decodedRleByte.paletteIndex);
       for (int i = 0; i < decodedRleByte.runLength; ++i) {
         final int y = (pixelCount + i) / ImageTile.WIDTH;
         final int x = (pixelCount + i) % ImageTile.WIDTH;
-        pixels[y][x] = color;
+        paletteIndices[y][x] = decodedRleByte.paletteIndex();
       }
       pixelCount += decodedRleByte.runLength;
     }
-    return pixels;
+    return paletteIndices;
   }
 
   private static DecodedRleByte decodeRleByte(final int rleByte, final SubPalette subPalette) {
