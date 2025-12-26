@@ -28,7 +28,7 @@ import java.util.Objects;
 public record InterpolationMatrix(int[] indices) implements Parseable {
   public static final long BYTE_OFFSET = 0x05A0L;
   public static final int SIZE_COLUMNS = 128;
-  public static final int SIZE_ROWS = 1288;
+  public static final int SIZE_ROWS = 128;
   public static final int SIZE = SIZE_COLUMNS * SIZE_ROWS;
 
   @Override
