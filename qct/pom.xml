@@ -31,7 +31,6 @@
 
     <modules>
         <module>dependencies</module>
-        <module>dependencies/external</module>
     </modules>
 
     <build>
@@ -82,13 +81,6 @@
             <dependency>
                 <groupId>com.github.aleksikangas</groupId>
                 <artifactId>qct-dependencies</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.github.aleksikangas</groupId>
-                <artifactId>qct-dependencies-external</artifactId>
                 <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
