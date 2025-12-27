@@ -40,12 +40,14 @@ public class QctExportService implements ExportRequestEvent.Aware {
         .ifPresent(qctFile -> {
           CompletableFuture.runAsync(() -> {
             switch (event.exportFormat()) {
-              case PNG -> {
-                PngExporter.exportPng(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
-                exportSuccessEventPublisher.fire(new ExportSuccessEvent());
-              }
               case GEO_TIFF -> {
                 GeoTiffExporter.exportGeoTiff(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
+                LOG.info("GeoTIFF export successful: {}", event.exportPath());
+                exportSuccessEventPublisher.fire(new ExportSuccessEvent());
+              }
+              case PNG -> {
+                PngExporter.exportPng(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
+                LOG.info("PNG export successful: {}", event.exportPath());
                 exportSuccessEventPublisher.fire(new ExportSuccessEvent());
               }
             }

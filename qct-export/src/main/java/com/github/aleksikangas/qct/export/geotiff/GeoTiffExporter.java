@@ -42,7 +42,7 @@ public final class GeoTiffExporter {
       setGeoTransform(dataset, qctFile);
       setProjection(dataset);
       writeRasterBands(dataset, qctFile);
-      dataset.FlushCache();
+      dataset.Close();
     } catch (final Throwable t) {
       throw new QctExportRuntimeException(t);
     }
@@ -69,19 +69,19 @@ public final class GeoTiffExporter {
   }
 
   private static void writeRasterBands(final Dataset dataset, final QctFile qctFile) {
-    final Band redBand = dataset.GetRasterBand(0);
+    final Band redBand = dataset.GetRasterBand(1);
     redBand.WriteRaster(0,
                         0,
                         qctFile.width(),
                         qctFile.height(),
                         ImageIndexUtils.channelValues(qctFile, ImageIndexUtils.Channel.RED));
-    final Band greenBand = dataset.GetRasterBand(1);
+    final Band greenBand = dataset.GetRasterBand(2);
     greenBand.WriteRaster(0,
                           0,
                           qctFile.width(),
                           qctFile.height(),
                           ImageIndexUtils.channelValues(qctFile, ImageIndexUtils.Channel.GREEN));
-    final Band blueBand = dataset.GetRasterBand(2);
+    final Band blueBand = dataset.GetRasterBand(3);
     blueBand.WriteRaster(0,
                          0,
                          qctFile.width(),

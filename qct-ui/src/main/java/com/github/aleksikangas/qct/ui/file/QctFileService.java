@@ -37,12 +37,12 @@ public class QctFileService implements DecodeRequestEvent.Aware {
     qctFileAtomicReference.set(null);
     CompletableFuture.supplyAsync(() -> QctFile.parse(e.qctFilePath()))
         .thenAccept(qctFile -> {
-          LOG.info("QctFile decoding success");
+          LOG.info("QctFile decode successful: {}", e.qctFilePath());
           qctFileAtomicReference.set(qctFile);
           decodeSuccessEventPublisher.fire(new DecodeSuccessEvent(qctFile));
         })
         .exceptionally(ex -> {
-          LOG.warn("Failed to parse QctFile", ex);
+          LOG.warn("Failed to decode QctFile: {}", e.qctFilePath(), ex);
           decodeFailureEventPublisher.fire(new DecodeFailureEvent(ex));
           return null;
         });
