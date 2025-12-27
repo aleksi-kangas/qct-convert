@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public enum ExportFormat {
   GEO_TIFF(".tiff"),
+  KML(".kml"),
   PNG(".png");
 
   private final String extension;
@@ -20,6 +21,7 @@ public enum ExportFormat {
   public String toString() {
     return switch (this) {
       case GEO_TIFF -> "GeoTIFF";
+      case KML -> "KML";
       case PNG -> "PNG";
     };
   }

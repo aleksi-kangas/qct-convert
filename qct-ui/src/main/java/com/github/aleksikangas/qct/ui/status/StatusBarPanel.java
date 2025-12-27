@@ -5,6 +5,9 @@ import com.github.aleksikangas.qct.ui.common.AbstractPanel;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
+import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
+import com.github.aleksikangas.qct.ui.events.export.ExportRequestEvent;
+import com.github.aleksikangas.qct.ui.events.export.ExportSuccessEvent;
 import com.github.aleksikangas.qct.ui.util.ThreadUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,8 +22,11 @@ public final class StatusBarPanel extends AbstractPanel {
   private final JLabel statusLabel = new JLabel();
   private final JProgressBar progressBar = new JProgressBar();
 
+  private boolean isDecoding = false;
+  private boolean isExporting = false;
+
   public StatusBarPanel(final Controller controller) {
-    super(new MigLayout("", "[grow][fill, grow]", "[fill, grow]"));
+    super(new MigLayout("", "[][fill, grow]", "[fill, grow]"));
     this.controller = Objects.requireNonNull(controller);
     progressBar.setIndeterminate(true);
     progressBar.setVisible(false);
@@ -30,27 +36,64 @@ public final class StatusBarPanel extends AbstractPanel {
 
   @Override
   public void onDecodeRequest(final DecodeRequestEvent event) {
-    statusLabel.setText("Decoding...");
-    progressBar.setVisible(true);
+    isDecoding = true;
+    updateStatusLabel();
+    updateProgressBar();
   }
 
   @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
-    clear();
+    isDecoding = false;
+    updateStatusLabel();
+    updateProgressBar();
   }
 
   @Override
   public void onDecodeFailure(final DecodeFailureEvent event) {
-    clear();
+    isDecoding = false;
+    updateStatusLabel();
+    updateProgressBar();
   }
 
-  private void clear() {
-    statusLabel.setText("");
-    progressBar.setVisible(false);
+  @Override
+  public void onExportRequest(final ExportRequestEvent event) {
+    isExporting = true;
+    updateStatusLabel();
+    updateProgressBar();
+  }
+
+  @Override
+  public void onExportFailure(final ExportFailureEvent event) {
+    isExporting = false;
+    updateStatusLabel();
+    updateProgressBar();
+  }
+
+  @Override
+  public void onExportSuccess(final ExportSuccessEvent event) {
+    isExporting = false;
+    updateStatusLabel();
+    updateProgressBar();
+  }
+
+  private void updateStatusLabel() {
+    if (isDecoding) {
+      statusLabel.setText("Decoding...");
+    }
+    else if (isExporting) {
+      statusLabel.setText("Exporting...");
+    }
+    else {
+      statusLabel.setText("");
+    }
+  }
+
+  private void updateProgressBar() {
+    progressBar.setVisible(isDecoding || isExporting);
   }
 
   @ApplicationScoped
-  public static class Controller extends AbstractController<StatusBarPanel> implements DecodeRequestEvent.Aware {
+  public static class Controller extends AbstractController<StatusBarPanel> {
     @PostConstruct
     public void init() {
       ThreadUtil.runOnEDT(() -> panel = new StatusBarPanel(this));

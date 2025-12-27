@@ -4,12 +4,15 @@ import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
+import com.github.aleksikangas.qct.ui.events.export.ExportRequestEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportSuccessEvent;
 
 import javax.swing.*;
 import java.awt.*;
 
-public abstract class AbstractPanel extends JPanel implements DecodeRequestEvent.Aware, DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware, ExportSuccessEvent.Aware, ExportFailureEvent.Aware {
+public abstract class AbstractPanel extends JPanel
+    implements DecodeRequestEvent.Aware, DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware,
+    ExportRequestEvent.Aware, ExportSuccessEvent.Aware, ExportFailureEvent.Aware {
   protected AbstractPanel(final LayoutManager layout, final boolean isDoubleBuffered) {
     super(layout, isDoubleBuffered);
   }
@@ -38,6 +41,11 @@ public abstract class AbstractPanel extends JPanel implements DecodeRequestEvent
 
   @Override
   public void onDecodeSuccess(final DecodeSuccessEvent event) {
+    // NO-OP
+  }
+
+  @Override
+  public void onExportRequest(final ExportRequestEvent event) {
     // NO-OP
   }
 

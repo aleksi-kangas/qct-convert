@@ -25,6 +25,7 @@ import java.util.Optional;
 
 public final class ExportPanel extends AbstractPanel {
   private final JButton exportGeoTiffButton = new JButton("GeoTiff...");
+  private final JButton exportKmlButton = new JButton("KML...");
   private final JButton exportPngButton = new JButton("PNG...");
 
   private final transient Controller controller;
@@ -33,14 +34,16 @@ public final class ExportPanel extends AbstractPanel {
   private transient Path decodedQctFilePath = null;
 
   public ExportPanel(final Controller controller) {
-    super(new MigLayout("fill, insets 4 10 4 10, gap 10", "[grow][grow]", "[fill, grow]"));
+    super(new MigLayout("fill, insets 4 10 4 10, gap 20", "[grow][grow][grow]", "[fill, grow]"));
     this.controller = Objects.requireNonNull(controller);
     setBorder(BorderFactory.createTitledBorder("Export"));
     enableButtons(false);
     exportGeoTiffButton.addActionListener(_ -> exportAsGeoTiff());
-    add(exportGeoTiffButton);
+    add(exportGeoTiffButton, "grow");
+    exportKmlButton.addActionListener(_ -> exportAsKml());
+    add(exportKmlButton, "grow");
     exportPngButton.addActionListener(_ -> exportAsPng());
-    add(exportPngButton, "alignx right, wrap");
+    add(exportPngButton, "grow");
   }
 
   @Override
@@ -73,15 +76,23 @@ public final class ExportPanel extends AbstractPanel {
   private void exportAsGeoTiff() {
     Preconditions.checkNotNull(decodedQctFilePath);
     selectExportPath(ExportFormat.GEO_TIFF).ifPresent(exportPath -> {
-      exportGeoTiffButton.setEnabled(false);
+      enableButtons(false);
       controller.export(ExportFormat.GEO_TIFF, exportPath);
+    });
+  }
+
+  private void exportAsKml() {
+    Preconditions.checkNotNull(decodedQctFilePath);
+    selectExportPath(ExportFormat.KML).ifPresent(exportPath -> {
+      enableButtons(false);
+      controller.export(ExportFormat.KML, exportPath);
     });
   }
 
   private void exportAsPng() {
     Preconditions.checkNotNull(decodedQctFilePath);
     selectExportPath(ExportFormat.PNG).ifPresent(exportPath -> {
-      exportPngButton.setEnabled(false);
+      enableButtons(false);
       controller.export(ExportFormat.PNG, exportPath);
     });
   }
@@ -111,6 +122,7 @@ public final class ExportPanel extends AbstractPanel {
 
   private void enableButtons(final boolean enabled) {
     exportGeoTiffButton.setEnabled(enabled);
+    exportKmlButton.setEnabled(enabled);
     exportPngButton.setEnabled(enabled);
   }
 

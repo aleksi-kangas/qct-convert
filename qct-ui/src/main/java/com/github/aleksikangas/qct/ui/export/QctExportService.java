@@ -1,6 +1,7 @@
 package com.github.aleksikangas.qct.ui.export;
 
 import com.github.aleksikangas.qct.export.geotiff.GeoTiffExporter;
+import com.github.aleksikangas.qct.export.kml.KmlExporter;
 import com.github.aleksikangas.qct.export.png.PngExporter;
 import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportRequestEvent;
@@ -43,6 +44,11 @@ public class QctExportService implements ExportRequestEvent.Aware {
               case GEO_TIFF -> {
                 GeoTiffExporter.exportGeoTiff(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
                 LOG.info("GeoTIFF export successful: {}", event.exportPath());
+                exportSuccessEventPublisher.fire(new ExportSuccessEvent());
+              }
+              case KML -> {
+                KmlExporter.exportKml(qctFile, ensureExtension(event.exportFormat(), event.exportPath()));
+                LOG.info("KML export successful: {}", event.exportPath());
                 exportSuccessEventPublisher.fire(new ExportSuccessEvent());
               }
               case PNG -> {

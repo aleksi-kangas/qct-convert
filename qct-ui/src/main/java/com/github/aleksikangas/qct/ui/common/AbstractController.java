@@ -4,12 +4,13 @@ import com.github.aleksikangas.qct.ui.events.decode.DecodeFailureEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeRequestEvent;
 import com.github.aleksikangas.qct.ui.events.decode.DecodeSuccessEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportFailureEvent;
+import com.github.aleksikangas.qct.ui.events.export.ExportRequestEvent;
 import com.github.aleksikangas.qct.ui.events.export.ExportSuccessEvent;
 import jakarta.enterprise.event.Observes;
 
 import javax.swing.*;
 
-public abstract class AbstractController<T extends AbstractPanel> implements DecodeRequestEvent.Aware, DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware, ExportSuccessEvent.Aware, ExportFailureEvent.Aware {
+public abstract class AbstractController<T extends AbstractPanel> implements DecodeRequestEvent.Aware, DecodeSuccessEvent.Aware, DecodeFailureEvent.Aware, ExportRequestEvent.Aware, ExportSuccessEvent.Aware, ExportFailureEvent.Aware {
   protected T panel;
 
   @Override
@@ -25,6 +26,11 @@ public abstract class AbstractController<T extends AbstractPanel> implements Dec
   @Override
   public void onDecodeFailure(@Observes final DecodeFailureEvent event) {
     SwingUtilities.invokeLater(() -> panel.onDecodeFailure(event));
+  }
+
+  @Override
+  public void onExportRequest(@Observes final ExportRequestEvent event) {
+    SwingUtilities.invokeLater(() -> panel.onExportRequest(event));
   }
 
   @Override

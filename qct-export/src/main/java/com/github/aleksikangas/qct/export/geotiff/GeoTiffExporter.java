@@ -5,6 +5,7 @@ import com.github.aleksikangas.qct.core.georef.GeoreferencingCoefficients;
 import com.github.aleksikangas.qct.core.image.util.ImageIndexUtils;
 import com.github.aleksikangas.qct.core.meta.DatumShift;
 import com.github.aleksikangas.qct.export.QctExportRuntimeException;
+import com.github.aleksikangas.qct.export.gdal.GdalRegistration;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.Driver;
@@ -12,24 +13,20 @@ import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.osr.SpatialReference;
 
-import javax.annotation.concurrent.GuardedBy;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 public final class GeoTiffExporter {
   private static final int BAND_COUNT = 3;
   private static final int EPSG_4326_WGS84 = 4326;
-
-  private static final Object GDAL_REGISTER_LOCK = new Object();
-  @GuardedBy("GDAL_REGISTER_LOCK")
-  private static boolean isGdalRegistered = false;
+  private static final String GTIFF_DRIVER_NAME = "GTiff";
 
   public static void exportGeoTiff(final QctFile qctFile, final Path geoTiffPath) throws QctExportRuntimeException {
-    registerGdal();
+    GdalRegistration.register();
     try {
-      final Driver driver = gdal.GetDriverByName("GTiff");
+      final Driver driver = gdal.GetDriverByName(GTIFF_DRIVER_NAME);
       if (driver == null) {
-        throw new QctExportRuntimeException("'GTiff' driver not found");
+        throw new QctExportRuntimeException(String.format("'%s' driver not found", GTIFF_DRIVER_NAME));
       }
       final Dataset dataset = driver.Create(geoTiffPath.toString(),
                                             qctFile.width(),
@@ -43,6 +40,7 @@ public final class GeoTiffExporter {
       setProjection(dataset);
       writeRasterBands(dataset, qctFile);
       dataset.Close();
+      dataset.delete();
     } catch (final Throwable t) {
       throw new QctExportRuntimeException(t);
     }
@@ -87,19 +85,6 @@ public final class GeoTiffExporter {
                          qctFile.width(),
                          qctFile.height(),
                          ImageIndexUtils.channelValues(qctFile, ImageIndexUtils.Channel.BLUE));
-  }
-
-  private static void registerGdal() {
-    try {
-      synchronized (GDAL_REGISTER_LOCK) {
-        if (!isGdalRegistered) {
-          gdal.AllRegister();
-          isGdalRegistered = true;
-        }
-      }
-    } catch (final Throwable t) {
-      throw new QctExportRuntimeException(t);
-    }
   }
 
   private GeoTiffExporter() {
