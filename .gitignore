@@ -1,2 +1,4 @@
 .idea
+gdal/src
+gdal/install
 target

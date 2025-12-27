@@ -89,7 +89,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>qct/assembly/distribution.xml</descriptor>
+                        <descriptor>qct/assembly/release.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

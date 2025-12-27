@@ -1,3 +1,2 @@
 #!/bin/bash
-cd ..
-java -cp "./lib/*" com.github.aleksikangas.qct.ui.QctApplication
+java -cp "../lib/*" -Djava.library.path="../native" com.github.aleksikangas.qct.ui.QctApplication
