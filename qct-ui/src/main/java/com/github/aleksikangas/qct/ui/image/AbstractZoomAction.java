@@ -7,7 +7,7 @@ abstract class AbstractZoomAction extends AbstractAction {
   static final double ZOOM_HIGH_QUALITY_THRESHOLD = 10.0;
 
   protected static final double ZOOM_MIN = 0.33;
-  protected static final double ZOOM_MAX = 20.0;
+  protected static final double ZOOM_MAX = 50.0;
   protected static final double ZOOM_STEP = 0.2;
 
   protected final ImageDisplayPanel panel;
