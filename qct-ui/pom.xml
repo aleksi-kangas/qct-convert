@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <relativePath>../qct</relativePath>
         <groupId>com.github.aleksikangas</groupId>
         <artifactId>qct</artifactId>
         <version>1.0-SNAPSHOT</version>
@@ -17,42 +18,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/distribution.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>com.github.aleksikangas</groupId>
             <artifactId>qct-core</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.aleksikangas</groupId>
             <artifactId>qct-export</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>

@@ -14,7 +14,7 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <directory>src/main/scripts</directory>
+            <directory>qct/scripts</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode> <!-- Executable -->
         </fileSet>

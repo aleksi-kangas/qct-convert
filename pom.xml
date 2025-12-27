@@ -3,10 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <relativePath>qct</relativePath>
+        <groupId>com.github.aleksikangas</groupId>
+        <artifactId>qct</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-    <groupId>com.github.aleksikangas</groupId>
-    <artifactId>qct</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>qct-convert</artifactId>
     <packaging>pom</packaging>
 
     <developers>
@@ -41,6 +45,12 @@
         <url>https://github.com/aleksi-kangas/qct-convert/actions</url>
     </ciManagement>
 
+    <properties>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <repositories>
         <repository>
             <id>central</id>
@@ -61,120 +71,51 @@
         </repository>
     </repositories>
 
-
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <modules>
+        <module>qct</module>
         <module>qct-core</module>
         <module>qct-export</module>
         <module>qct-ui</module>
     </modules>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-enforcer-plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.6.2</version>
-                    <executions>
-                        <execution>
-                            <id>enforce-versions</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireMavenVersion>
-                                        <version>3.9.9</version>
-                                    </requireMavenVersion>
-                                    <requireJavaVersion>
-                                        <version>1.25.0</version>
-                                    </requireJavaVersion>
-                                </rules>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.8.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>qct/assembly/distribution.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- https://mvnrepository.com/artifact/com.formdev/flatlaf -->
-            <dependency>
-                <groupId>com.formdev</groupId>
-                <artifactId>flatlaf</artifactId>
-                <version>3.6.2</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations -->
-            <dependency>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-annotations</artifactId>
-                <version>4.9.8</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-swing -->
-            <dependency>
-                <groupId>com.miglayout</groupId>
-                <artifactId>miglayout-swing</artifactId>
-                <version>11.4.2</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/it.geosolutions.imageio-ext/imageio-ext-png -->
-            <dependency>
-                <groupId>it.geosolutions.imageio-ext</groupId>
-                <artifactId>imageio-ext-png</artifactId>
-                <version>2.0.1</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.gdal/gdal -->
-            <dependency>
-                <groupId>org.gdal</groupId>
-                <artifactId>gdal</artifactId>
-                <version>3.11.0</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.jboss.weld.se/weld-se-core -->
-            <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-shaded</artifactId>
-                <version>6.0.3.Final</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>2.0.17</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>6.0.0</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.aleksikangas</groupId>
+            <artifactId>qct-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.aleksikangas</groupId>
+            <artifactId>qct-export</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.aleksikangas</groupId>
+            <artifactId>qct-ui</artifactId>
+        </dependency>
+    </dependencies>
 </project>
