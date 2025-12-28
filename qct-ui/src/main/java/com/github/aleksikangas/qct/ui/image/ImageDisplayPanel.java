@@ -27,8 +27,8 @@ public final class ImageDisplayPanel extends AbstractPanel {
   public ImageDisplayPanel(final Controller controller) {
     super(new MigLayout("insets 4", "[fill, grow]", "[fill, grow][fill]"));
     this.controller = Objects.requireNonNull(controller);
-    getInputMap().put(KeyStroke.getKeyStroke(ZoomInAction.KEY_CODE, 0), ZoomInAction.KEY);
-    getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0), ZoomOutAction.KEY);
+    getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(ZoomInAction.KEY_CODE, 0), ZoomInAction.KEY);
+    getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0), ZoomOutAction.KEY);
     getActionMap().put(ZoomInAction.KEY, new ZoomInAction(this, state));
     getActionMap().put(ZoomOutAction.KEY, new ZoomOutAction(this, state));
     addMouseListener(new MinimapMouseAdapter(this, state));
