@@ -19,6 +19,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -106,10 +107,19 @@ public final class ExportPanel extends AbstractPanel {
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileChooser.setSelectedFile(getSuggestedPath(decodedQctFilePath, exportFormat).toFile());
-    if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-      return Optional.of(fileChooser.getSelectedFile().toPath());
+    if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+      return Optional.empty();
     }
-    return Optional.empty();
+    final Path selectedPath = fileChooser.getSelectedFile().toPath();
+    if (!Files.exists(selectedPath)) {
+      return Optional.of(selectedPath);
+    }
+    return JOptionPane.showConfirmDialog(null,
+                                         String.format("Overwrite existing file?%n%s", selectedPath),
+                                         "Overwrite",
+                                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
+        ? Optional.of(selectedPath)
+        : Optional.empty();
   }
 
   private static Path getSuggestedPath(final Path qctFilePath, final ExportFormat exportFormat) {
