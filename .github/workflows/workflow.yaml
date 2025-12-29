@@ -40,7 +40,7 @@ jobs:
           name: ${{ matrix.os-short }}
           if-no-files-found: error
           path: |
-            ${{ github.workspace }}/qct-ui/target/*-jar-with-dependencies.jar
+            ${{ github.workspace }}/target/*.zip
 
   release:
     name: "Create GitHub Release"
