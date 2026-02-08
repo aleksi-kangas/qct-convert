@@ -14,7 +14,8 @@ mkdir "${INSTALL_DIR}"
 cd src/build || exit
 
 # Build GDAL with CMake
-cmake -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+cmake -G Ninja \
+      -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
       -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
       -UGDAL_ENABLE_DRIVER_* -UOGR_ENABLE_DRIVER_* \
       -DGDAL_BUILD_OPTIONAL_DRIVERS:BOOL=OFF -DOGR_BUILD_OPTIONAL_DRIVERS:BOOL=OFF \
@@ -53,6 +54,7 @@ case "$(uname -s)" in
 esac
 echo "Detected platform: ${PLATFORM}"
 NATIVE_DIR="${GDAL_DIR}/../qct/native/${PLATFORM}"
+rm -rf "${NATIVE_DIR}"
 mkdir -p "${NATIVE_DIR}"
 echo "Native directory: ${NATIVE_DIR}"
 
