@@ -60,14 +60,17 @@ echo "Native directory: ${NATIVE_DIR}"
 
 # Copy GDAL library
 find "${INSTALL_DIR}" \( -path "*/bin/*.dll" -o -path "*/lib/libgdal.${LIB_EXT}*" \) \
-    -type f -not -path "*/cmake/*" \
+    \( -type f -o -type l \) \
+    -not -path "*/cmake/*" \
     -exec cp -v {} "${NATIVE_DIR}/" \;
 
 # Copy the GDAL JNI Library
 if [ "${PLATFORM}" == "windows" ]; then
-    find "${INSTALL_DIR}/jni" -type f -name "gdalalljni.dll" -exec cp -v {} "${NATIVE_DIR}/" \;
+    find "${INSTALL_DIR}/jni" -type f -name "gdalalljni.dll" \
+    -exec cp -v {} "${NATIVE_DIR}/" \;
 else
-    find "${INSTALL_DIR}/jni" -type f -name "libgdalalljni${LIB_EXT}" -exec cp -v {} "${NATIVE_DIR}/" \;
+    find "${INSTALL_DIR}/jni" \( -type f -o -type l \) -name "libgdalalljni${LIB_EXT}" \
+    -exec cp -v {} "${NATIVE_DIR}/" \;
 fi
 
 GDAL_LIB=$(find "${NATIVE_DIR}" -maxdepth 1 -type f \( -name "gdal.dll" -o -name "libgdal.${LIB_EXT}*" \) | head -n 1)
