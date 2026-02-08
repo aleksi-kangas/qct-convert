@@ -4,5 +4,9 @@ conda create -y -n gdal -c conda-forge \
   ninja \
   compilers \
   ant \
+  blosc \
+  libtool \
+  lz4 \
   proj \
-  swig
+  swig \
+  unixodbc
