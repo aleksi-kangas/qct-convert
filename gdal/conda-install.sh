@@ -10,4 +10,4 @@ conda create -n gdal -c conda-forge -y \
   proj \
   swig \
   unixodbc
-read -p -r "Conda GDAL environment install complete. Activate with 'conda activate gdal'. Press any key to continue... " -n1 -s
+read -p "Conda GDAL environment install complete. Activate with 'conda activate gdal'. Press any key to continue... " -n1 -s
