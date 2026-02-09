@@ -18,6 +18,10 @@
             <outputDirectory>native</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>qct/share</directory>
+            <outputDirectory>share</outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>qct/scripts</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode> <!-- Executable -->
