@@ -18,7 +18,8 @@ file(GET_RUNTIME_DEPENDENCIES
 )
 
 foreach(_file ${_resolved})
-    file(COPY ${_file} DESTINATION ${OUTPUT_DIR})
+    file(REAL_PATH "${_file}" _real_file)
+    file(COPY "${_real_file}" DESTINATION ${OUTPUT_DIR})
     message(STATUS "Bundled: ${_file}")
 endforeach()
 
