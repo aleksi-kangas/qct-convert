@@ -36,7 +36,7 @@ jobs:
           activate-environment: gdal
           auto-activate-base: false
           auto-update-conda: true
-          environment-file: ${{ github.workspace }}/gdal/conda-environment.yaml
+          environment-file: gdal/conda-environment.yaml
 
       - name: "Build GDAL with Java bindings"
         working-directory: ${{ github.workspace }}/gdal
