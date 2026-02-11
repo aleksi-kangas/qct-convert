@@ -49,6 +49,7 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <platform/>
     </properties>
 
     <repositories>
@@ -78,6 +79,43 @@
         <module>qct-ui</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>macos-build</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <platform>macos</platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-build</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <properties>
+                <platform>linux</platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-build</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <platform>windows</platform>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -88,6 +126,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <finalName>${project.artifactId}-${project.version}-${platform}</finalName>
                     <descriptors>
                         <descriptor>qct/assembly/release.xml</descriptor>
                     </descriptors>
