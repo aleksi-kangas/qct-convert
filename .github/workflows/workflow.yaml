@@ -28,6 +28,9 @@ jobs:
             conda-environment-file: gdal/conda-environment-windows.yaml
 
     steps:
+      - name: "Enable long paths for Git"
+        run: git config --global core.longpaths true
+
       - name: "Checkout repository"
         uses: actions/checkout@v6
         with:
