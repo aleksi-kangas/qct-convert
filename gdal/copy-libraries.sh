@@ -91,4 +91,4 @@ if [ -d "${CONDA_SHARE_DIR}/proj" ]; then
     echo "PROJ data copied from Conda."
 fi
 
-read -p "GDAL library copy completed. Press any key to continue... " -n1 -s
+echo "GDAL libraries copied."

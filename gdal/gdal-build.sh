@@ -29,6 +29,4 @@ cmake -G Ninja \
 cmake --build . --config Release --parallel
 cmake --build . --target install --config Release
 
-read -p "GDAL build completed. Press any key to continue... " -n1 -s
-
-cd "${GDAL_DIR}" || exit
+echo "GDAL build completed."

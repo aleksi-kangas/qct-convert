@@ -30,6 +30,28 @@ jobs:
           distribution: "temurin"
           java-version: "25"
 
+      - name: "Install Conda"
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gdal
+          auto-activate-base: false
+          auto-update-conda: true
+          environment-file: ${{ github.workspace }}/gdal/conda-environment.yaml
+
+      - name: "Build GDAL with Java bindings"
+        working-directory: ${{ github.workspace }}/gdal
+        shell: bash -l {0}
+        run: |
+          chmod +x ./gdal-build.sh
+          ./gdal-build.sh
+
+      - name: "Copy GDAL libraries"
+        working-directory: ${{ github.workspace }}/gdal
+        shell: bash -l {0}
+        run: |
+          chmod +x ./copy-libraries.sh
+          ./copy-libraries.sh
+
       - name: "Package"
         run: mvn -B clean package
 
