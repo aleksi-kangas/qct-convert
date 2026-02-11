@@ -25,8 +25,8 @@ cmake -G Ninja \
       -DBUILD_TESTING=OFF \
       -DBUILD_PYTHON_BINDINGS=OFF \
       -DBUILD_JAVA_BINDINGS=ON -DGDAL_JAVA_INSTALL_DIR="${INSTALL_DIR}/java" -DGDAL_JAVA_JNI_INSTALL_DIR="${INSTALL_DIR}/jni" \
-      ..
-cmake --build . --config Release --parallel
-cmake --build . --target install --config Release
+      .. || { echo "Configuration failed"; exit 1; }
+cmake --build . --config Release --parallel || { echo "Build failed"; exit 1; }
+cmake --build . --target install --config Release || { echo "Install failed"; exit 1; }
 
 echo "GDAL build completed."
