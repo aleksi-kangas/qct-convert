@@ -1,0 +1,13 @@
+name: gdal
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ant
+  - blosc
+  - cmake
+  - compilers
+  - ninja
+  - lz4
+  - proj
+  - swig

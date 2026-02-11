@@ -18,7 +18,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest,windows-latest ]
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-latest
+            conda-environment-file: gdal/conda-environment-unix.yaml
+          - os: ubuntu-latest
+            conda-environment-file: gdal/conda-environment-unix.yaml
+          - os: windows-latest
+            conda-environment-file: gdal/conda-environment-windows.yaml
 
     steps:
       - name: "Checkout repository"
@@ -36,7 +43,7 @@ jobs:
           activate-environment: gdal
           auto-activate-base: false
           auto-update-conda: true
-          environment-file: gdal/conda-environment.yaml
+          environment-file: ${{ matrix.conda-environment-file }}
 
       - name: "Build GDAL with Java bindings"
         working-directory: ${{ github.workspace }}/gdal
