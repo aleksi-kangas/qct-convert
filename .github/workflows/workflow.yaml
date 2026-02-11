@@ -41,7 +41,6 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: gdal
-          auto-activate-base: false
           auto-update-conda: true
           environment-file: ${{ matrix.conda-environment-file }}
 
