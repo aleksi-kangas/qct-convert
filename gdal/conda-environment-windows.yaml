@@ -6,7 +6,6 @@ dependencies:
   - ant
   - blosc
   - cmake
-  - compilers
   - expat
   - ninja
   - lz4

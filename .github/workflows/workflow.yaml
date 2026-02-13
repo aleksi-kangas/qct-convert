@@ -22,16 +22,10 @@ jobs:
         include:
           - os: macos-latest
             conda-environment-file: gdal/conda-environment-unix.yaml
-            cc: clang
-            cxx: clang++
           - os: ubuntu-latest
             conda-environment-file: gdal/conda-environment-unix.yaml
-            cc: gcc
-            cxx: gcc
           - os: windows-latest
             conda-environment-file: gdal/conda-environment-windows.yaml
-            cc: clang
-            cxx: clang
 
     steps:
       - name: "Enable long paths for Git"
@@ -57,9 +51,6 @@ jobs:
 
       - name: "Build GDAL with Java bindings"
         working-directory: ${{ github.workspace }}/gdal
-        env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
         shell: bash -l {0}
         run: |
           chmod +x ./gdal-build.sh
