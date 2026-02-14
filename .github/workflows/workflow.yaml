@@ -59,6 +59,10 @@ jobs:
         run: |
           chmod +x ./gdal-build.sh
           ./gdal-build.sh
+          
+      - name: "Install dylibbundler"
+        if: runner.os == 'macOS'
+        run: brew install dylibbundler
 
       - name: "Copy GDAL libraries"
         working-directory: ${{ github.workspace }}/gdal

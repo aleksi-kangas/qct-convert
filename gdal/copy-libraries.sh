@@ -79,28 +79,36 @@ cp -v "${GDAL_JNI_SOURCE}" "${NATIVE_DIR}/"
 GDAL_LIB="${NATIVE_DIR}/$(basename "${GDAL_LIB_SOURCE}")"
 GDAL_JNI_LIB="${NATIVE_DIR}/$(basename "${GDAL_JNI_SOURCE}")"
 
-# Copy runtime dependencies of GDAL library
-if [ -z "${GDAL_LIB}" ]; then
-    echo "Error: Missing GDAL library in ${NATIVE_DIR}"
-    exit 1
-else
-    echo "Step: Resolving dependencies for ${GDAL_LIB}..."
-    cmake -DBINARY_FILE="${GDAL_LIB}" \
-          -DSEARCH_DIRECTORIES="${CONDA_LIBRARY_DIR}" \
-          -DOUTPUT_DIR="${NATIVE_DIR}" \
-          -P runtime-dependencies.cmake || { echo "CMake dependency resolution failed for GDAL_LIB"; exit 1; }
-fi
+# --- Dependency Resolution ---
+if [ "$PLATFORM" == "macos" ]; then
+    echo "Step: Resolving macOS dependencies with dylibbundler..."
 
-# Copy runtime dependencies of GDAL JNI library
-if [ -z "${GDAL_JNI_LIB}" ]; then
-    echo "Error: Missing GDAL JNI library in ${NATIVE_DIR}"
-    exit 1
+    if ! command -v dylibbundler &> /dev/null; then
+        echo "ERROR: dylibbundler not found. Please 'brew install dylibbundler' in CI."
+        exit 1
+    fi
+
+    dylibbundler -od -b \
+        -x "${GDAL_JNI_LIB}" \
+        -x "${GDAL_LIB}" \
+        -d "${NATIVE_DIR}" \
+        -p "@loader_path/"
+
+    install_name_tool -add_rpath "@loader_path/" "${GDAL_JNI_LIB}" 2>/dev/null || true
+    install_name_tool -add_rpath "@loader_path/" "${GDAL_LIB}" 2>/dev/null || true
+
 else
-    echo "Step: Resolving dependencies for ${GDAL_JNI_LIB}..."
-    cmake -DBINARY_FILE="${GDAL_JNI_LIB}" \
-          -DSEARCH_DIRECTORIES="${CONDA_LIBRARY_DIR}" \
-          -DOUTPUT_DIR="${NATIVE_DIR}" \
-          -P runtime-dependencies.cmake || { echo "CMake dependency resolution failed for JNI_LIB"; exit 1; }
+    echo "Step: Resolving dependencies for ${PLATFORM} using CMake..."
+
+    # Fallback to your existing CMake logic for Windows and Linux
+    for LIB in "${GDAL_LIB}" "${GDAL_JNI_LIB}"; do
+        if [ -f "$LIB" ]; then
+            cmake -DBINARY_FILE="${LIB}" \
+                  -DSEARCH_DIRECTORIES="${CONDA_LIBRARY_DIR}" \
+                  -DOUTPUT_DIR="${NATIVE_DIR}" \
+                  -P runtime-dependencies.cmake || { echo "Dependency resolution failed for $LIB"; exit 1; }
+        fi
+    done
 fi
 
 # Copy GDAL & PROJ share data
