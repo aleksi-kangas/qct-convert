@@ -89,6 +89,7 @@
             </activation>
             <properties>
                 <platform>macos</platform>
+                <script.extension>sh</script.extension>
             </properties>
         </profile>
         <profile>
@@ -101,6 +102,7 @@
             </activation>
             <properties>
                 <platform>linux</platform>
+                <script.extension>sh</script.extension>
             </properties>
         </profile>
         <profile>
@@ -112,6 +114,7 @@
             </activation>
             <properties>
                 <platform>windows</platform>
+                <script.extension>bat</script.extension>
             </properties>
         </profile>
     </profiles>

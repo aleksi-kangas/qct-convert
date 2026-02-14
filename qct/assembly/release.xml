@@ -25,6 +25,9 @@
             <directory>qct/scripts</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode> <!-- Executable -->
+            <includes>
+                <include>start.${script.extension}</include>
+            </includes>
         </fileSet>
     </fileSets>
 </assembly>

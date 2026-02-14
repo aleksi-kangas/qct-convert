@@ -1,3 +1,5 @@
 .idea
 gdal/install
+qct/native
+qct/share
 target
