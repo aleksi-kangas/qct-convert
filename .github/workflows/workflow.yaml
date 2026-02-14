@@ -37,7 +37,7 @@ jobs:
           submodules: true
 
       - name: "Setup MSVC"
-        if: runner.os == "Windows"
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: "Install JDK"
