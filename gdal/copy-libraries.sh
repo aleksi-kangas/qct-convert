@@ -89,10 +89,13 @@ if [ "$PLATFORM" == "macos" ]; then
     fi
 
     dylibbundler -od -b \
-        -x "${GDAL_JNI_LIB}" \
-        -x "${GDAL_LIB}" \
-        -d "${NATIVE_DIR}" \
-        -p "@loader_path/"
+          -x "${GDAL_JNI_LIB}" \
+          -x "${GDAL_LIB}" \
+          -d "${NATIVE_DIR}" \
+          -p "@loader_path/" \
+          -s "${CONDA_LIBRARY_DIR}" \
+          -s "${INSTALL_DIR}/lib" \
+          --non-interactive
 
     install_name_tool -add_rpath "@loader_path/" "${GDAL_JNI_LIB}" 2>/dev/null || true
     install_name_tool -add_rpath "@loader_path/" "${GDAL_LIB}" 2>/dev/null || true
