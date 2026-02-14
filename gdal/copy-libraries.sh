@@ -1,12 +1,9 @@
 #!/bin/bash
 # To be executed in '<repository root>/gdal' after executing 'gdal-build.sh'
 
-# --- CI Debugging Setup ---
 set -e          # Exit on error
 set -o pipefail # Capture errors in piped commands
-# set -x        # Uncomment this to see every command executed (very loud, but helpful for CI)
 
-# Function to handle errors and print line numbers
 error_handler() {
     echo "-------------------------------------------------------"
     echo "ERROR: Command failed at line $1"
@@ -55,9 +52,12 @@ echo "Cleaning and creating: ${NATIVE_DIR}"
 rm -rf "${NATIVE_DIR}" || exit 1
 mkdir -p "${NATIVE_DIR}" || exit 1
 
-GDAL_LIB_SOURCE=$(find -L "${INSTALL_DIR}" \( -path "*/bin/*.dll" -o -path "*/lib/libgdal${LIB_EXT}*" \) \
+GDAL_LIB_SOURCE=$(find -L "${INSTALL_DIR}" \
+    \( -path "*/bin/*.dll" -o -path "*/lib/libgdal${LIB_EXT}*" \) \
     -type f -not -path "*/cmake/*" | head -n 1)
-GDAL_JNI_SOURCE=$(find -L "${INSTALL_DIR}" -type f -name "*gdalalljni*" | head -n 1)
+GDAL_JNI_SOURCE=$(find -L "${INSTALL_DIR}" \
+    -name "*gdalalljni*" \
+    -type f | head -n 1)
 
 if [ -z "${GDAL_LIB_SOURCE}" ] || [ -z "${GDAL_JNI_SOURCE}" ]; then
     echo "-------------------------------------------------------"
@@ -73,54 +73,26 @@ if [ -z "${GDAL_LIB_SOURCE}" ] || [ -z "${GDAL_JNI_SOURCE}" ]; then
     exit 1
 fi
 
+if [ "$PLATFORM" == "macos" ]; then
+    echo "Step: Creating versioned symlink in native directory..."
+
+    REAL_LIB_NAME=$(basename "${GDAL_LIB_SOURCE}")
+    SYMLINK_NAME="libgdal.38.dylib"
+    echo "Linking ${SYMLINK_NAME} -> ${REAL_LIB_NAME}"
+    (cd "${NATIVE_DIR}" && ln -sf "${REAL_LIB_NAME}" "${SYMLINK_NAME}")
+fi
 cp -v "${GDAL_LIB_SOURCE}" "${NATIVE_DIR}/"
 cp -v "${GDAL_JNI_SOURCE}" "${NATIVE_DIR}/"
 
-GDAL_LIB="${NATIVE_DIR}/$(basename "${GDAL_LIB_SOURCE}")"
 GDAL_JNI_LIB="${NATIVE_DIR}/$(basename "${GDAL_JNI_SOURCE}")"
 
-# --- Dependency Resolution ---
-if [ "$PLATFORM" == "macos" ]; then
-    echo "Step: Resolving macOS dependencies with dylibbundler..."
+echo "Step: Resolving dependencies for ${PLATFORM} using CMake..."
 
-    if ! command -v dylibbundler &> /dev/null; then
-        echo "ERROR: dylibbundler not found. Please 'brew install dylibbundler' in CI."
-        exit 1
-    fi
+cmake -DBINARY_FILE="${GDAL_JNI_LIB}" \
+      -DSEARCH_DIRECTORIES="${NATIVE_DIR}" \
+      -DOUTPUT_DIR="${NATIVE_DIR}" \
+      -P runtime-dependencies.cmake || { echo "Dependency resolution failed for $LIB"; exit 1; }
 
-    # -od: Overwrite directory (look for dependencies here)
-    # -b:  Batch mode (non-interactive)
-    # -x:  Executable/Library to fix
-    # -d:  The directory where the bundled dependencies should be placed
-    # -p:  The prefix to use for the internal dependency paths
-
-    echo "Bundling dependencies for: ${GDAL_LIB}"
-    dylibbundler -b -x "${GDAL_LIB}" -d "${NATIVE_DIR}" -p "@loader_path/"
-
-    echo "Bundling dependencies for: ${GDAL_JNI_LIB}"
-    dylibbundler -b -x "${GDAL_JNI_LIB}" -d "${NATIVE_DIR}" -p "@loader_path/"
-
-    echo "Refining RPATHs for macOS portability..."
-    chmod +w "${NATIVE_DIR}"/*
-    for dylib in "${NATIVE_DIR}"/*.dylib; do
-        install_name_tool -add_rpath "@loader_path/" "$dylib" 2>/dev/null || true
-    done
-
-else
-    echo "Step: Resolving dependencies for ${PLATFORM} using CMake..."
-
-    # Fallback to your existing CMake logic for Windows and Linux
-    for LIB in "${GDAL_LIB}" "${GDAL_JNI_LIB}"; do
-        if [ -f "$LIB" ]; then
-            cmake -DBINARY_FILE="${LIB}" \
-                  -DSEARCH_DIRECTORIES="${CONDA_LIBRARY_DIR}" \
-                  -DOUTPUT_DIR="${NATIVE_DIR}" \
-                  -P runtime-dependencies.cmake || { echo "Dependency resolution failed for $LIB"; exit 1; }
-        fi
-    done
-fi
-
-# Copy GDAL & PROJ share data
 SHARE_DIR="${GDAL_DIR}/../qct/share"
 echo "Step: Setting up share directory at ${SHARE_DIR}"
 rm -rf "${SHARE_DIR}" || exit 1
