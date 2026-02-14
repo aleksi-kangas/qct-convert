@@ -88,25 +88,23 @@ if [ "$PLATFORM" == "macos" ]; then
         exit 1
     fi
 
-    dylibbundler -od -b \
-        -x "${GDAL_JNI_LIB}" \
-        -x "${GDAL_LIB}" \
-        -d "${NATIVE_DIR}" \
-        -p "@loader_path/" \
-        -s "${CONDA_LIBRARY_DIR}" \
-        -s "${INSTALL_DIR}/lib" \
-        -s "/usr/local/lib"
+    # -od: Overwrite directory (look for dependencies here)
+    # -b:  Batch mode (non-interactive)
+    # -x:  Executable/Library to fix
+    # -d:  The directory where the bundled dependencies should be placed
+    # -p:  The prefix to use for the internal dependency paths
 
-    echo "Updating Install Names (IDs)..."
-    install_name_tool -id "@loader_path/$(basename "${GDAL_LIB}")" "${GDAL_LIB}"
-    install_name_tool -id "@loader_path/$(basename "${GDAL_JNI_LIB}")" "${GDAL_JNI_LIB}"
+    echo "Bundling dependencies for: ${GDAL_LIB}"
+    dylibbundler -b -x "${GDAL_LIB}" -d "${NATIVE_DIR}" -p "@loader_path/"
 
-    echo "Adding RPATHs..."
-    install_name_tool -add_rpath "@loader_path/" "${GDAL_JNI_LIB}" 2>/dev/null || true
-    install_name_tool -add_rpath "@loader_path/" "${GDAL_LIB}" 2>/dev/null || true
+    echo "Bundling dependencies for: ${GDAL_JNI_LIB}"
+    dylibbundler -b -x "${GDAL_JNI_LIB}" -d "${NATIVE_DIR}" -p "@loader_path/"
 
-    echo "Verification of ${GDAL_JNI_LIB}:"
-    otool -L "${GDAL_JNI_LIB}" | grep "@loader_path"
+    echo "Refining RPATHs for macOS portability..."
+    chmod +w "${NATIVE_DIR}"/*
+    for dylib in "${NATIVE_DIR}"/*.dylib; do
+        install_name_tool -add_rpath "@loader_path/" "$dylib" 2>/dev/null || true
+    done
 
 else
     echo "Step: Resolving dependencies for ${PLATFORM} using CMake..."
