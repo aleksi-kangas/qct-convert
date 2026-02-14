@@ -55,28 +55,29 @@ echo "Cleaning and creating: ${NATIVE_DIR}"
 rm -rf "${NATIVE_DIR}" || exit 1
 mkdir -p "${NATIVE_DIR}" || exit 1
 
-# Copy GDAL library
-echo "Step: Copying GDAL libraries from ${INSTALL_DIR}..."
-find "${INSTALL_DIR}" \( -path "*/bin/*.dll" -o -path "*/lib/libgdal${LIB_EXT}*" \) \
-    \( -type f -o -type l \) \
-    -not -path "*/cmake/*" \
-    -exec cp -v {} "${NATIVE_DIR}/" \; || { echo "Failed to find or copy GDAL libs"; exit 1; }
+GDAL_LIB_SOURCE=$(find -L "${INSTALL_DIR}" \( -path "*/bin/*.dll" -o -path "*/lib/libgdal${LIB_EXT}*" \) \
+    -type f -not -path "*/cmake/*" | head -n 1)
+GDAL_JNI_SOURCE=$(find -L "${INSTALL_DIR}" -type f -name "*gdalalljni*" | head -n 1)
 
-# Copy GDAL JNI library
-echo "Step: Copying JNI libraries..."
-if [ "${PLATFORM}" == "windows" ]; then
-    find "${INSTALL_DIR}/jni" -type f -name "gdalalljni.dll" \
-    -exec cp -v {} "${NATIVE_DIR}/" \; || { echo "JNI copy failed (Windows)"; exit 1; }
-else
-    find "${INSTALL_DIR}/jni" \( -type f -o -type l \) -name "libgdalalljni${LIB_EXT}" \
-    -exec cp -v {} "${NATIVE_DIR}/" \; || { echo "JNI copy failed (Unix)"; exit 1; }
+if [ -z "${GDAL_LIB_SOURCE}" ] || [ -z "${GDAL_JNI_SOURCE}" ]; then
+    echo "-------------------------------------------------------"
+    echo "ERROR: Required libraries not found in source directory."
+    echo "GDAL Source: ${GDAL_LIB_SOURCE:-MISSING}"
+    echo "JNI Source:  ${GDAL_JNI_SOURCE:-MISSING}"
+    echo "-------------------------------------------------------"
+
+    echo "DEBUG: Listing entire source tree for investigation [${INSTALL_DIR}]:"
+    ls -R -F "${INSTALL_DIR}"
+
+    echo "-------------------------------------------------------"
+    exit 1
 fi
 
-GDAL_LIB=$(find "${NATIVE_DIR}" -maxdepth 1 -type f \( -name "gdal.dll" -o -name "libgdal${LIB_EXT}*" \) | head -n 1)
-GDAL_JNI_LIB=$(find "${NATIVE_DIR}" -maxdepth 1 -type f -name "*gdalalljni*" | head -n 1)
+cp -v "${GDAL_LIB_SOURCE}" "${NATIVE_DIR}/"
+cp -v "${GDAL_JNI_SOURCE}" "${NATIVE_DIR}/"
 
-echo "GDAL library found at: ${GDAL_LIB:-NOT FOUND}"
-echo "GDAL JNI library found at: ${GDAL_JNI_LIB:-NOT FOUND}"
+GDAL_LIB="${NATIVE_DIR}/$(basename "${GDAL_LIB_SOURCE}")"
+GDAL_JNI_LIB="${NATIVE_DIR}/$(basename "${GDAL_JNI_SOURCE}")"
 
 # Copy runtime dependencies of GDAL library
 if [ -z "${GDAL_LIB}" ]; then
