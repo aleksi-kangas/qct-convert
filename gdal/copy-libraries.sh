@@ -89,16 +89,24 @@ if [ "$PLATFORM" == "macos" ]; then
     fi
 
     dylibbundler -od -b \
-          -x "${GDAL_JNI_LIB}" \
-          -x "${GDAL_LIB}" \
-          -d "${NATIVE_DIR}" \
-          -p "@loader_path/" \
-          -s "${CONDA_LIBRARY_DIR}" \
-          -s "${INSTALL_DIR}/lib" \
-          --non-interactive
+        -x "${GDAL_JNI_LIB}" \
+        -x "${GDAL_LIB}" \
+        -d "${NATIVE_DIR}" \
+        -p "@loader_path/" \
+        -s "${CONDA_LIBRARY_DIR}" \
+        -s "${INSTALL_DIR}/lib" \
+        -s "/usr/local/lib"
 
+    echo "Updating Install Names (IDs)..."
+    install_name_tool -id "@loader_path/$(basename "${GDAL_LIB}")" "${GDAL_LIB}"
+    install_name_tool -id "@loader_path/$(basename "${GDAL_JNI_LIB}")" "${GDAL_JNI_LIB}"
+
+    echo "Adding RPATHs..."
     install_name_tool -add_rpath "@loader_path/" "${GDAL_JNI_LIB}" 2>/dev/null || true
     install_name_tool -add_rpath "@loader_path/" "${GDAL_LIB}" 2>/dev/null || true
+
+    echo "Verification of ${GDAL_JNI_LIB}:"
+    otool -L "${GDAL_JNI_LIB}" | grep "@loader_path"
 
 else
     echo "Step: Resolving dependencies for ${PLATFORM} using CMake..."
