@@ -18,10 +18,10 @@ by *Craig Shelley* with a Graphical User Interface (GUI).
 
 ![](map.png)
 *A small sample of a `.png` file exported from a `.qct` file, depicting the famous Ben Nevis, the highest point in the
-UK. All rights reserved by Ordnance Survey.*
+UK. All map rights reserved by Ordnance Survey.*
 
 ![](ui.png)
-*GUI of the QCT Convert tool. All rights reserved by Waterway Routes.*
+*GUI of the QCT Convert tool. All map rights reserved by Waterway Routes.*
 
 ## Features
 
