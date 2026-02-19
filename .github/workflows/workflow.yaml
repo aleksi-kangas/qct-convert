@@ -58,9 +58,6 @@ jobs:
           activate-environment: gdal
           auto-update-conda: true
           environment-file: ${{ matrix.conda-environment-file }}
-          # Caches the Conda env itself to speed up setup
-          cache-environment: true
-          cache-environment-key: ${{ runner.os }}-conda-${{ hashFiles(matrix.conda-environment-file) }}
 
       - name: "Cache GDAL Build"
         id: cache-gdal
