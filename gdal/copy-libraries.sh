@@ -73,14 +73,21 @@ if [ -z "${GDAL_LIB_SOURCE}" ] || [ -z "${GDAL_JNI_SOURCE}" ]; then
     exit 1
 fi
 
-if [ "$PLATFORM" == "macos" ]; then
+if [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "linux" ]; then
     echo "Step: Creating versioned symlink in native directory..."
 
     REAL_LIB_NAME=$(basename "${GDAL_LIB_SOURCE}")
-    SYMLINK_NAME="libgdal.38.dylib"
+
+    if [ "$PLATFORM" == "macos" ]; then
+        SYMLINK_NAME="libgdal.38.dylib"
+    else
+        SYMLINK_NAME="libgdal.so.38"
+    fi
+
     echo "Linking ${SYMLINK_NAME} -> ${REAL_LIB_NAME}"
     (cd "${NATIVE_DIR}" && ln -sf "${REAL_LIB_NAME}" "${SYMLINK_NAME}")
 fi
+
 cp -v "${GDAL_LIB_SOURCE}" "${NATIVE_DIR}/"
 cp -v "${GDAL_JNI_SOURCE}" "${NATIVE_DIR}/"
 
