@@ -87,9 +87,8 @@ cp -v "${GDAL_JNI_SOURCE}" "${NATIVE_DIR}/"
 GDAL_JNI_LIB="${NATIVE_DIR}/$(basename "${GDAL_JNI_SOURCE}")"
 
 echo "Step: Resolving dependencies for ${PLATFORM} using CMake..."
-
 cmake -DBINARY_FILE="${GDAL_JNI_LIB}" \
-      -DSEARCH_DIRECTORIES="${NATIVE_DIR}" \
+      -DSEARCH_DIRECTORIES="${CONDA_LIBRARY_DIR}" \
       -DOUTPUT_DIR="${NATIVE_DIR}" \
       -P runtime-dependencies.cmake || { echo "Dependency resolution failed for $LIB"; exit 1; }
 
